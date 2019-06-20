@@ -158,6 +158,17 @@ build-buildbarn-storage:
     SERVICE: bb_storage
   <<: *build-buildbarn-template
 
+build-recc:
+  stage: build-images-and-terraform
+  image: docker:stable
+  services:
+    - docker:dind
+  script:
+    - docker login -u $DOCKER_USER -p $DOCKER_PASS
+    - (cd docker/recc && docker build -t $DOCKER_ACCOUNT/recc-build:$CI_PIPELINE_ID -t $DOCKER_ACCOUNT/recc-build:latest -f recc-build.Dockerfile .)
+    - docker push $DOCKER_ACCOUNT/recc-build:$CI_PIPELINE_ID
+    - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then docker push $DOCKER_ACCOUNT/recc-build:latest; fi
+
 terraform-infra:
   stage: build-images-and-terraform
   image: $BASE_IMAGE
