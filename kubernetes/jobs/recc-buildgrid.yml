@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: abseil-with-recc
+  namespace: buildgrid
+spec:
+  template:
+    metadata:
+      name: abseil
+    spec:
+      containers:
+      - name: abseil
+        image: remoteapistesting/build-recc:latest
+        command:
+         - git clone --depth=1 https://github.com/abseil/abseil-cpp.git
+         - cd abseil-cpp
+         - mkdir -p build
+         - cd build && cmake ..
+         - export RECC_SERVER="buildgrid-stack:50051"
+         - export RECC_INSTANCE="main"
+         - make `CC=recc cc -j4`
+      restartPolicy: Never
+  backoffLimit: 0
