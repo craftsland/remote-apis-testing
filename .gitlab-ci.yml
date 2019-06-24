@@ -532,6 +532,46 @@ buildgrid-bazel-bazel:
       - master
   allow_failure: true
 
+kubernetes-buildgrid-recc:
+  stage: buildgrid-speedtest
+  image: $BASE_IMAGE
+  dependencies:
+    - terraform-infra
+  before_script:
+    - *before_badge
+    - *before_kubernetes
+  script:
+    - export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildgrid-*.yml
+    - kubectl create -f kubernetes/buildgrid/
+    - kubectl -n buildgrid rollout status statefulset buildgrid-stack
+    - kubectl -n buildgrid rollout status deployment.apps/worker
+    - until kubectl -n buildgrid get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n buildgrid get pods; sleep 10; done
+    - kubectl get all --all-namespaces
+    # TODO: See issue #14
+    - sleep 30
+    - kubectl create -f kubernetes/jobs/recc-buildgrid.yml
+    - kubectl -n buildgrid describe jobs/abseil-with-recc
+    - until kubectl -n buildgrid get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n buildgrid get pods; sleep 10; done
+    - kubectl -n buildgrid logs --follow jobs/abseil-with-recc
+    - kubectl -n buildgrid wait --for=condition=complete --timeout=5s job/abseil-with-recc
+    - "time=$(kubectl -n buildgrid logs --tail=10 jobs/abseil-with-recc | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    #- curl -o public/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-$time-green.svg
+  after_script:
+    - export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
+    - kubectl get all --all-namespaces
+    - kubectl delete namespace buildgrid
+  artifacts:
+    name: pages
+    paths:
+      - public/
+  only:
+    refs:
+      - master
+  except:
+    changes:
+      - "*.md"
+  allow_failure: true
 
 cleanup-terraform-job:
   stage: cleanup-and-deploy
