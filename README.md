@@ -27,7 +27,7 @@ This shows a build of Abseil with Bazel against three remote execution implement
 |             | BuildGrid             | Buildfarm             | Buildbarn             |
 | ----------- | --------------------- | --------------------- | --------------------- |
 | Bazel       | ![][abseil-buildgrid] | ![][abseil-buildfarm] | ![][abseil-buildbarn] |
-| BuildStream | TBA                   | TBA                   | TBA                   |
+| BuildStream | TBA                   | No compatible         | No compatible         |
 | RECC        | TBA                   | TBA                   | TBA                   |
 
 [abseil-buildgrid]: https://gitlab.com/remote-apis-testing/remote-apis-testing/builds/artifacts/master/raw/public/buildgrid-deployed.svg?job=pages
