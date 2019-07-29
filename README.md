@@ -11,13 +11,15 @@ Initial targets include:
 Potential additional targets are:
 * [RECC](https://gitlab.com/bloomberg/recc)
 * [BuildStream](https://gitlab.com/BuildStream/buildstream)
-* [BuildFarm](https://github.com/uber/bazel-buildfarm)
+* [Goma](https://chromium.googlesource.com/infra/goma/server/#)
 
 The initial aim is to test the latest version of Bazel against the latest versions of Buildbarn, Buildfarm and BuildGrid on a continuous basis, producing a compatibility matrix
 
-The initial test will be builds of [Abseil](https://github.com/abseil) and [Bazel](https://github.com/bazelbuild/bazel). This will be achieved using Gitlab CI, Terraform and Kubernetes with AWS.
+The initial test will be builds of [Abseil](https://github.com/abseil), and [Bazel](https://github.com/bazelbuild/bazel). This will be achieved using Gitlab CI, Terraform and Kubernetes with AWS.
 
-As a later step, we may want to develop more granular testing of the API, running through all of the gRPC calls and assessing them against the protocol defined in the API.
+As a later step, we may want to develop more granular testing of the API, running through all of the gRPC calls and assessing them against the protocol defined in the API. 
+
+See project [Roadmap](https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/roadmap) for more details.
 
 
 ## Status
@@ -29,6 +31,7 @@ This shows a build of Abseil with Bazel against three remote execution implement
 | Bazel       | ![][abseil-buildgrid] | ![][abseil-buildfarm] | ![][abseil-buildbarn] |
 | BuildStream | TBA                   | No compatible         | No compatible         |
 | RECC        | TBA                   | TBA                   | TBA                   |
+| Goma        | TBA                   | TBA                   | TBA                   |
 
 [abseil-buildgrid]: https://gitlab.com/remote-apis-testing/remote-apis-testing/builds/artifacts/master/raw/public/buildgrid-deployed.svg?job=pages
 [abseil-buildfarm]: https://gitlab.com/remote-apis-testing/remote-apis-testing/builds/artifacts/master/raw/public/buildfarm-deployed.svg?job=pages
@@ -37,7 +40,7 @@ This shows a build of Abseil with Bazel against three remote execution implement
 
 ## Timing
 
-This shows a build of Bazel with Bazel to produce the following timing information.
+This shows a build of Bazel(project) with Bazel(client) to produce end to end build times.
 
 |                      | CAS        | No. Workers | Concurrency per worker |
 | -------------------- | ---------- | ----------- | ---------------------- |
