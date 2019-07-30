@@ -60,6 +60,17 @@ build-docker-bazel-build-wrapper:
     changes:
       - "*.md"
 
+build-docker-buildgrid:
+  stage: build-images-and-terraform
+  image: docker:stable
+  services:
+    - docker:dind
+  script:
+    - docker login -u $DOCKER_USER -p $DOCKER_PASS
+    - (cd docker/buildgrid && docker build -f buildbox-worker.dockerfile -t $DOCKER_ACCOUNT/buildbox-worker:$CI_PIPELINE_ID -t $DOCKER_ACCOUNT/buildbox-worker:latest .)
+    - docker push $DOCKER_ACCOUNT/buildbox-worker:$CI_PIPELINE_ID
+    - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then docker push $DOCKER_ACCOUNT/buildbox-worker:latest; fi
+
 build-docker-bazel-buildgrid-wrapper:
   stage: build-images-and-terraform
   image: docker:stable
@@ -244,6 +255,7 @@ kubernetes-buildgrid:
     - *before_badge
     - *before_kubernetes
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildgrid-client.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/buildgrid/buildbox-worker.yml
   script:
     - *re_deployment_and_build_template
     - curl -o public/buildgrid-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
@@ -339,6 +351,7 @@ kubernetes-buildgrid-bazel:
     - *before_badge
     - *before_kubernetes
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildgrid-*.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/buildgrid/buildbox-worker.yml
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
