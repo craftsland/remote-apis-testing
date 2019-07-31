@@ -6,7 +6,7 @@ Initial targets include:
 * [Bazel](https://bazel.build/)
 * [Buildbarn](https://github.com/buildbarn)
 * [Buildfarm](https://github.com/bazelbuild/bazel-buildfarm)
-* [Buildgrid](https://gitlab.com/BuildGrid/buildgrid)
+* [BuildGrid](https://gitlab.com/BuildGrid/buildgrid)
 
 Potential additional targets are:
 * [RECC](https://gitlab.com/bloomberg/recc)
@@ -15,7 +15,7 @@ Potential additional targets are:
 
 The initial aim is to test the latest version of Bazel against the latest versions of Buildbarn, Buildfarm and BuildGrid on a continuous basis, producing a compatibility matrix
 
-The initial test will be builds of [Abseil](https://github.com/abseil), and [Bazel](https://github.com/bazelbuild/bazel). This will be achieved using Gitlab CI, Terraform and Kubernetes with AWS.
+The initial test will be builds of [Abseil](https://github.com/abseil) and [Bazel](https://github.com/bazelbuild/bazel). This will be achieved using Gitlab CI, Terraform and Kubernetes with AWS, running once a week on Saturdays and every time a branch is merged to master (this will happen via an approved merge request).
 
 As a later step, we may want to develop more granular testing of the API, running through all of the gRPC calls and assessing them against the protocol defined in the API. 
 
