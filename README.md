@@ -114,6 +114,8 @@ kubectl logs jobs/abseil -n buildbarn
 
 ## Local Testing
 
+### Minikube
+
 You can test changes to the Kubernetes deployments locally (avoiding the
 need for a cloud provider) with [minikube](https://github.com/kubernetes/minikube).
 Note that you'll need at least 4GB of RAM available to your cluster,
@@ -123,7 +125,24 @@ which can be achieved with the following command:
 minikube start --vm-driver kvm2 --memory 4096
 ```
 
-Assuming you already have `kubectl` installed, this command will also
-configure it to use your minikube cluster. After this you can use `kubectl`
+### dind-cluster
+
+You can also test locally with a multi-node setup using [dind-cluster](https://github.com/kubernetes-retired/kubeadm-dind-cluster)
+As dind-cluster does not include a storage provisioner one needs to deploy one manually.  After standing up your cluster deploy with
+
+```
+./dind-cluster-v1.14.sh up
+```
+
+Deploy the following yml files to deploy a host storage provisioner.
+
+```
+kubectl create -f https://raw.githubusercontent.com/MaZderMind/hostpath-provisioner/master/manifests/rbac.yaml
+kubectl create -f https://raw.githubusercontent.com/MaZderMind/hostpath-provisioner/master/manifests/storageclass.yaml
+kubectl create -f https://raw.githubusercontent.com/MaZderMind/hostpath-provisioner/master/manifests/deployment.yaml
+```
+
+Assuming you already have `kubectl` installed, these commands will also
+configure it to use your minikube/dind cluster. After this you can use `kubectl`
 commands as described above against your cluster to test your changes as
 needed.
