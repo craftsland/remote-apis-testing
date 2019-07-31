@@ -33,9 +33,9 @@ This shows a build of Abseil with Bazel against three remote execution implement
 | RECC        | TBA                   | TBA                   | TBA                   |
 | Goma        | TBA                   | TBA                   | TBA                   |
 
-[abseil-buildgrid]: https://gitlab.com/remote-apis-testing/remote-apis-testing/builds/artifacts/master/raw/public/buildgrid-deployed.svg?job=pages
-[abseil-buildfarm]: https://gitlab.com/remote-apis-testing/remote-apis-testing/builds/artifacts/master/raw/public/buildfarm-deployed.svg?job=pages
-[abseil-buildbarn]: https://gitlab.com/remote-apis-testing/remote-apis-testing/builds/artifacts/master/raw/public/buildbarn-deployed.svg?job=pages
+[abseil-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-deployed.svg
+[abseil-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-deployed.svg
+[abseil-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-deployed.svg
 
 
 ## Timing
@@ -48,9 +48,9 @@ This shows a build of Bazel(project) with Bazel(client) to produce end to end bu
 | ![][bazel-buildfarm] | In memory  | 1           | 4                      |
 | ![][bazel-buildbarn] | In memory  | 1           | 4                      |
 
-[bazel-buildgrid]: https://gitlab.com/remote-apis-testing/remote-apis-testing/builds/artifacts/master/raw/public/buildgrid-time.svg?job=pages
-[bazel-buildfarm]: https://gitlab.com/remote-apis-testing/remote-apis-testing/builds/artifacts/master/raw/public/buildfarm-time.svg?job=pages
-[bazel-buildbarn]: https://gitlab.com/remote-apis-testing/remote-apis-testing/builds/artifacts/master/raw/public/buildbarn-time.svg?job=pages
+[bazel-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-time.svg
+[bazel-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-time.svg
+[bazel-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-time.svg
 
 
 ### Terraform
