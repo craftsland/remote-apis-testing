@@ -127,19 +127,17 @@ minikube start --vm-driver kvm2 --memory 4096
 
 ### dind-cluster
 
-You can also test locally with a multi-node setup using [dind-cluster](https://github.com/kubernetes-retired/kubeadm-dind-cluster)
-As dind-cluster does not include a storage provisioner one needs to deploy one manually.  After standing up your cluster deploy with
+You can also test locally with a multi-node setup using the pre configured [dind-cluster](https://github.com/kubernetes-retired/kubeadm-dind-cluster#using-preconfigured-scripts) script.
 
 ```
-./dind-cluster-v1.14.sh up
+./dind-cluster.sh up
 ```
 
-Deploy the following yml files to deploy a host storage provisioner.
+As dind-cluster does not include a storage provisioner, you need to deploy one manually. This can be done using a helper script available in `./dev/`.
 
 ```
-kubectl create -f https://raw.githubusercontent.com/MaZderMind/hostpath-provisioner/master/manifests/rbac.yaml
-kubectl create -f https://raw.githubusercontent.com/MaZderMind/hostpath-provisioner/master/manifests/storageclass.yaml
-kubectl create -f https://raw.githubusercontent.com/MaZderMind/hostpath-provisioner/master/manifests/deployment.yaml
+chmod +x ./dev/storage_setup.sh
+./dev/storage_setup.sh up
 ```
 
 Assuming you already have `kubectl` installed, these commands will also
