@@ -18,7 +18,7 @@ stages:
 
 .before-badge-template: &before_badge |
   apt-get update && apt install -yq curl
-  mkdir -p public
+  mkdir -p badges
 
 .before-bazel-builds: &before_bazel_builds
   - mkdir -p ~/.docker
@@ -203,13 +203,13 @@ kubernetes-buildbarn:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildbarn-client.yml
   script:
     - *re_deployment_and_build_template
-    - curl -o public/buildbarn-deployed.svg $BADGE_URL/buildbarn-deployed-green.svg
+    - curl -o badges/buildbarn-deployed.svg $BADGE_URL/buildbarn-deployed-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
     name: pages
     paths:
-      - public/
+      - badges/
   except:
     changes:
       - "*.md"
@@ -230,13 +230,13 @@ kubernetes-buildfarm:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildfarm-client.yml
   script:
     - *re_deployment_and_build_template
-    - curl -o public/buildfarm-deployed.svg $BADGE_URL/buildfarm-deployed-green.svg
+    - curl -o badges/buildfarm-deployed.svg $BADGE_URL/buildfarm-deployed-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
     name: pages
     paths:
-      - public/
+      - badges/
   except:
     changes:
       - "*.md"
@@ -258,13 +258,13 @@ kubernetes-buildgrid:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/buildgrid/buildbox-worker.yml
   script:
     - *re_deployment_and_build_template
-    - curl -o public/buildgrid-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
+    - curl -o badges/buildgrid-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
     name: pages
     paths:
-      - public/
+      - badges/
   except:
     changes:
       - "*.md"
@@ -291,13 +291,13 @@ kubernetes-buildbarn-bazel:
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildbarn logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
-    - curl -o public/buildbarn-time.svg $BADGE_URL/buildbarn_bazel_build-$time-green.svg
+    - curl -o badges/buildbarn-time.svg $BADGE_URL/buildbarn_bazel_build-$time-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
     name: pages
     paths:
-      - public/
+      - badges/
   only:
     refs:
       - master
@@ -322,13 +322,13 @@ kubernetes-buildfarm-bazel:
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildfarm logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
-    - curl -o public/buildfarm-time.svg $BADGE_URL/buildfarm_bazel_build-$time-green.svg
+    - curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel_build-$time-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
     name: pages
     paths:
-      - public/
+      - badges/
   only:
     refs:
       - master
@@ -355,13 +355,13 @@ kubernetes-buildgrid-bazel:
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
-    - curl -o public/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-$time-green.svg
+    - curl -o badges/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-$time-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
     name: pages
     paths:
-      - public/
+      - badges/
   only:
     refs:
       - master
@@ -397,34 +397,37 @@ pages:
     - *before_badge
   script:
     - |
-      if [ ! -f "public/buildbarn-deployed.svg" ]; then
-        curl -o public/buildbarn-deployed.svg $BADGE_URL/buildbarn-failed-red.svg
+      if [ ! -f "badges/buildbarn-deployed.svg" ]; then
+        curl -o badges/buildbarn-deployed.svg $BADGE_URL/buildbarn-failed-red.svg
       fi
     - |
-      if [ ! -f "public/buildfarm-deployed.svg" ]; then
-        curl -o public/buildfarm-deployed.svg $BADGE_URL/buildfarm-failed-red.svg
+      if [ ! -f "badges/buildfarm-deployed.svg" ]; then
+        curl -o badges/buildfarm-deployed.svg $BADGE_URL/buildfarm-failed-red.svg
       fi
     - |
-      if [ ! -f "public/buildgrid-deployed.svg" ]; then
-        curl -o public/buildgrid-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
+      if [ ! -f "badges/buildgrid-deployed.svg" ]; then
+        curl -o badges/buildgrid-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
       fi
     - |
-      if [ ! -f "public/buildbarn-time.svg" ]; then
-        curl -o public/buildbarn-time.svg $BADGE_URL/buildbarn_bazel_build-failed-red.svg
+      if [ ! -f "badges/buildbarn-time.svg" ]; then
+        curl -o badges/buildbarn-time.svg $BADGE_URL/buildbarn_bazel_build-failed-red.svg
       fi
     - |
-      if [ ! -f "public/buildfarm-time.svg" ]; then
-        curl -o public/buildfarm-time.svg $BADGE_URL/buildfarm_bazel_build-failed-red.svg
+      if [ ! -f "badges/buildfarm-time.svg" ]; then
+        curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel_build-failed-red.svg
       fi
     - |
-      if [ ! -f "public/buildgrid-time.svg" ]; then
-        curl -o public/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-failed-red.svg
+      if [ ! -f "badges/buildgrid-time.svg" ]; then
+        curl -o badges/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-failed-red.svg
       fi
+    - mkdir public
+    - cp badges/* public/
   artifacts:
     name: pages
     paths:
     - public/
   when: always
+  # NOTE: Never enable this job in WIP branches!!
   only:
     refs:
       - master
