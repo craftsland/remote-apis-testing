@@ -32,6 +32,8 @@ by an empty line and then a free form detailed description of the change. The
 summary line must start with what changed, followed by a colon and a very brief
 description of the change.
 
+If the commit is a non functional documentation change e.g. a change to `README.md`, please include [ci skip] in the commit message as referenced [here](https://docs.gitlab.com/ee/ci/yaml/#skipping-jobs))
+
 For some good tips, please see [The seven rules of a great Git commit message](https://chris.beams.io/posts/git-commit/#seven-rules)
 
 ## Commit access
