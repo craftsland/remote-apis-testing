@@ -22,6 +22,7 @@ spec:
           - "--bots-remote=http://buildgrid-stack:50051"
           - "--cas-remote=http://buildgrid-stack:50051"
           - "--buildbox-run=/usr/local/bin/buildbox-run-hosttools"
+          - "--request-timeout=30"
         ports:
         - containerPort: 50051
           protocol: TCP
