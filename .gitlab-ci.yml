@@ -56,9 +56,6 @@ build-docker-bazel-build-wrapper:
     - (cd docker/bazel && docker build -t $DOCKER_ACCOUNT/bazel-build:$CI_PIPELINE_ID -t $DOCKER_ACCOUNT/bazel-build:latest -f bazel-build.Dockerfile .)
     - docker push $DOCKER_ACCOUNT/bazel-build:$CI_PIPELINE_ID
     - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then docker push $DOCKER_ACCOUNT/bazel-build:latest; fi
-  except:
-    changes:
-      - "*.md"
 
 build-docker-buildgrid:
   stage: build-images-and-terraform
@@ -81,9 +78,6 @@ build-docker-bazel-buildgrid-wrapper:
     - (cd docker/bazel && docker build -t $DOCKER_ACCOUNT/bazel-build-buildgrid:$CI_PIPELINE_ID -t $DOCKER_ACCOUNT/bazel-build-buildgrid:latest -f bazel-build-buildgrid.Dockerfile .)
     - docker push $DOCKER_ACCOUNT/bazel-build-buildgrid:$CI_PIPELINE_ID
     - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then docker push $DOCKER_ACCOUNT/bazel-build-buildgrid:latest; fi
-  except:
-    changes:
-      - "*.md"
   allow_failure: true
 
 build-buildbarn-remote-execution:
@@ -107,9 +101,6 @@ build-buildbarn-remote-execution:
           sed -i $output_dir/${service}_container_push -e "s#index.docker.io/buildbarn/\(.*\):{BUILD_SCM_TIMESTAMP}-{BUILD_SCM_REVISION}#index.docker.io/$DOCKER_ACCOUNT/\1:$CI_PIPELINE_ID#"
           bash $output_dir/${service}_container_push
       done
-  except:
-    changes:
-      - "*.md"
   allow_failure: true
 
 .build-buildbarn-template: &build-buildbarn-template
@@ -130,9 +121,6 @@ build-buildbarn-remote-execution:
     - (cd ${SERVICE} && bazel build --host_force_python=PY2 //cmd/${SERVICE}:${SERVICE}_container_push)
     - sed -i $output_dir/${SERVICE}_container_push -e "s#index.docker.io/buildbarn/\(.*\):{BUILD_SCM_TIMESTAMP}-{BUILD_SCM_REVISION}#index.docker.io/$DOCKER_ACCOUNT/\1:$CI_PIPELINE_ID#"
     - bash $output_dir/${SERVICE}_container_push
-  except:
-    changes:
-      - "*.md"
   allow_failure: true
 
 
@@ -157,9 +145,6 @@ terraform-infra:
       - terraform/
     untracked: true
     expire_in: 1 week
-  except:
-    changes:
-      - "*.md"
 
 .re-deployment-and-build-template: &re_deployment_and_build_template |
       set -x
@@ -210,9 +195,6 @@ kubernetes-buildbarn:
     name: pages
     paths:
       - badges/
-  except:
-    changes:
-      - "*.md"
   allow_failure: true
 
 kubernetes-buildfarm:
@@ -237,9 +219,6 @@ kubernetes-buildfarm:
     name: pages
     paths:
       - badges/
-  except:
-    changes:
-      - "*.md"
   allow_failure: true
 
 kubernetes-buildgrid:
@@ -265,9 +244,6 @@ kubernetes-buildgrid:
     name: pages
     paths:
       - badges/
-  except:
-    changes:
-      - "*.md"
   allow_failure: true
 
 kubernetes-buildbarn-bazel:
@@ -301,9 +277,6 @@ kubernetes-buildbarn-bazel:
   only:
     refs:
       - master
-  except:
-    changes:
-      - "*.md"
   allow_failure: true
 
 kubernetes-buildfarm-bazel:
@@ -332,9 +305,6 @@ kubernetes-buildfarm-bazel:
   only:
     refs:
       - master
-  except:
-    changes:
-      - "*.md"
   allow_failure: true
 
 
@@ -365,9 +335,6 @@ kubernetes-buildgrid-bazel:
   only:
     refs:
       - master
-  except:
-    changes:
-      - "*.md"
   allow_failure: true
 
 
@@ -386,9 +353,6 @@ cleanup-terraform-job:
   variables:
     GIT_STRATEGY: none
   when: always
-  except:
-    changes:
-      - "*.md"
 
 pages:
   stage: cleanup-and-deploy
@@ -431,6 +395,3 @@ pages:
   only:
     refs:
       - master
-  except:
-    changes:
-      - "*.md"
