@@ -149,12 +149,12 @@ terraform-infra:
 .re-deployment-and-build-template: &re_deployment_and_build_template |
       set -x
       export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
-      kubectl create -f kubernetes/$RE_NAME/
+      kubectl kustomize kubernetes/server/overlays/$RE_NAME/$CLIENT_NAME | kubectl create -f -
       until kubectl -n $RE_NAME get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n $RE_NAME get pods; sleep 10; done
       kubectl get all --all-namespaces
       # TODO: See issue #14
       sleep 30
-      kubectl create -f kubernetes/jobs/$CLIENT_NAME.yml
+      kubectl create -f kubernetes/client/$CLIENT_NAME/$RE_NAME/$JOB_NAME.yml
       kubectl -n $RE_NAME describe jobs/$JOB_NAME
       until kubectl -n $RE_NAME get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n $RE_NAME get pods; sleep 10; done
       kubectl -n $RE_NAME logs --follow jobs/$JOB_NAME
@@ -173,8 +173,8 @@ kubernetes-buildbarn:
   image: $BASE_IMAGE
   variables:
     RE_NAME: buildbarn
-    CLIENT_NAME: buildbarn-client
-    JOB_NAME: abseil
+    CLIENT_NAME: bazel
+    JOB_NAME: build-abseil
   dependencies:
     - terraform-infra
   before_script:
@@ -182,10 +182,10 @@ kubernetes-buildbarn:
     - *before_kubernetes
     - |
       for service in frontend scheduler-ubuntu16-04 storage worker-ubuntu16-04; do
-        sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/buildbarn/${service}.yaml
-        sed -i "s|remoteapistesting|$DOCKER_ACCOUNT|g" kubernetes/buildbarn/${service}.yaml
+        sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildbarn/${service}.yaml
+        sed -i "s|remoteapistesting|$DOCKER_ACCOUNT|g" kubernetes/server/base/buildbarn/${service}.yaml
       done
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildbarn-client.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildbarn/build-abseil.yml
   script:
     - *re_deployment_and_build_template
     - curl -o badges/buildbarn-deployed.svg $BADGE_URL/buildbarn-deployed-green.svg
@@ -202,14 +202,14 @@ kubernetes-buildfarm:
   image: $BASE_IMAGE
   variables:
     RE_NAME: buildfarm
-    CLIENT_NAME: buildfarm-client
-    JOB_NAME: abseil
+    CLIENT_NAME: bazel
+    JOB_NAME: build-abseil
   dependencies:
     - terraform-infra
   before_script:
     - *before_badge
     - *before_kubernetes
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildfarm-client.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildfarm/build-abseil.yml
   script:
     - *re_deployment_and_build_template
     - curl -o badges/buildfarm-deployed.svg $BADGE_URL/buildfarm-deployed-green.svg
@@ -228,13 +228,13 @@ kubernetes-buildgrid:
     - terraform-infra
   variables:
     RE_NAME: buildgrid
-    CLIENT_NAME: buildgrid-client
-    JOB_NAME: abseil
+    CLIENT_NAME: bazel
+    JOB_NAME: build-abseil
   before_script:
     - *before_badge
     - *before_kubernetes
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildgrid-client.yml
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/buildgrid/buildbox-worker.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildgrid/build-abseil.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
   script:
     - *re_deployment_and_build_template
     - curl -o badges/buildgrid-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
@@ -253,17 +253,17 @@ kubernetes-buildbarn-bazel:
     - terraform-infra
   variables:
     RE_NAME: buildbarn
-    CLIENT_NAME: buildbarn-bazel
-    JOB_NAME: bazel
+    CLIENT_NAME: bazel
+    JOB_NAME: build-bazel
   before_script:
     - *before_badge
     - *before_kubernetes
     - |
       for service in frontend scheduler-ubuntu16-04 storage worker-ubuntu16-04; do
-        sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/buildbarn/${service}.yaml
-        sed -i "s|remoteapistesting|$DOCKER_ACCOUNT|g" kubernetes/buildbarn/${service}.yaml
+        sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildbarn/${service}.yaml
+        sed -i "s|remoteapistesting|$DOCKER_ACCOUNT|g" kubernetes/server/base/buildbarn/${service}.yaml
       done
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildbarn-*.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildbarn/build-bazel.yml
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildbarn logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
@@ -286,12 +286,12 @@ kubernetes-buildfarm-bazel:
     - terraform-infra
   variables:
     RE_NAME: buildfarm
-    CLIENT_NAME: buildfarm-bazel
-    JOB_NAME: bazel
+    CLIENT_NAME: bazel
+    JOB_NAME: build-bazel
   before_script:
     - *before_badge
     - *before_kubernetes
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildfarm-*.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildfarm/buildfarm-*.yml
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildfarm logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
@@ -315,13 +315,13 @@ kubernetes-buildgrid-bazel:
     - terraform-infra
   variables:
     RE_NAME: buildgrid
-    CLIENT_NAME: buildgrid-bazel
-    JOB_NAME: bazel
+    CLIENT_NAME: bazel
+    JOB_NAME: build-bazel
   before_script:
     - *before_badge
     - *before_kubernetes
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildgrid-*.yml
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/buildgrid/buildbox-worker.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildgrid/build-bazel.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"

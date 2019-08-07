@@ -19,6 +19,7 @@ spec:
         - /usr/local/bin/bgd
         - server
         - start
+        - -vvv
         - /config/artifacts.conf
         image: registry.gitlab.com/buildgrid/buildgrid.hub.docker.com/buildgrid:nightly
         name: buildgrid-stack
@@ -61,8 +62,9 @@ data:
         services:
           - !action-cache &main-action
             storage: *main-storage
-            max-cached-refs: 256
+            max-cached-refs: 1024
             allow-updates: true
+            cache-failed-actions: true
 
           - !execution
             storage: *main-storage
@@ -73,6 +75,11 @@ data:
 
           - !bytestream
             storage: *main-storage
+
+          - !reference-cache
+            storage: *main-storage
+            max-cached-refs: 128
+            allow-updates: true
     thread-pool-size: 100
 
 kind: ConfigMap
