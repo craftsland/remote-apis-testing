@@ -40,7 +40,7 @@ module "eks" {
 
   cluster_name              = "k8-cluster-${var.cluster_id}"
   cluster_security_group_id = "module.security_group.this_security_group_id"
-  cluster_version           = "1.11"
+  cluster_version           = "1.13"
 
   subnets = data.aws_subnet_ids.all.ids
 
