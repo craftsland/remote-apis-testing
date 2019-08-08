@@ -18,7 +18,7 @@ spec:
         image: remoteapistesting/buildbox-worker:latest
         command:
           - "buildbox-worker"
-          - "--instance=main"
+          - "--instance="
           - "--bots-remote=http://buildgrid-stack:50051"
           - "--cas-remote=http://buildgrid-stack:50051"
           - "--buildbox-run=/usr/local/bin/buildbox-run-hosttools"

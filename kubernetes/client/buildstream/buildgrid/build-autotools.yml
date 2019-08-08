@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: build-autotools
+  namespace: buildgrid
+spec:
+  template:
+    metadata:
+      name: build-autotools
+    spec:
+      containers:
+      - name: build-autotools
+        image: remoteapistesting/buildstream-master-extra:latest
+        command: ["/bin/bash", "-c"]
+        args:
+         - cp /config/project.conf /buildstream/doc/examples/autotools/project.conf;
+           cd /buildstream/doc/examples/autotools;
+           cat project.conf;
+           bst --debug --verbose build hello.bst
+        volumeMounts:
+          - mountPath: /config
+            name: config
+      volumes:
+        - configMap:
+            name: bst-config
+          name: config
+      restartPolicy: Never
+  backoffLimit: 0
+
+---
+apiVersion: v1
+data:
+  project.conf: |
+    # Unique project name
+    name: autotools
+
+    # Required BuildStream format version
+    format-version: 9
+
+    # Subdirectory where elements are stored
+    element-path: elements
+
+    # Define some aliases for the tarballs we download
+    aliases:
+      alpine: https://bst-integration-test-images.ams3.cdn.digitaloceanspaces.com/
+      gnu: http://ftpmirror.gnu.org/gnu/automake/
+
+    remote-execution:
+      execution-service:
+        url: http://buildgrid-stack:50051
+      storage-service:
+        url: http://buildgrid-stack:50051
+      action-cache-service:
+        url: http://buildgrid-stack:50051
+
+kind: ConfigMap
+metadata:
+  name: bst-config
+  namespace: buildgrid

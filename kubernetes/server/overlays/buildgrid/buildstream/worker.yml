@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: buildgrid
+spec:
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: registry.gitlab.com/buildgrid/buildgrid.hub.docker.com/buildgrid:nightly
+        securityContext:
+          privileged: true
+        command: [
+          "bgd", "bot", "--parent=", "-vvv",
+          "--remote=http://buildgrid-stack:50051",
+          "--remote-cas=http://buildgrid-stack:50051",
+          "buildbox",
+          "--local-cas", "/var/lib/buildgrid/cache",
+          "--fuse-dir", "/mnt"]
