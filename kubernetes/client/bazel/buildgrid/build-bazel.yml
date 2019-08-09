@@ -1,15 +1,15 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: bazel
+  name: build-bazel
   namespace: buildgrid
 spec:
   template:
     metadata:
-      name: bazel
+      name: build-bazel
     spec:
       containers:
-      - name: bazel
+      - name: build-bazel
         image: remoteapistesting/bazel-build-buildgrid:latest
         command:
          - /bin/bash

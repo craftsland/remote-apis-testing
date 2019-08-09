@@ -1,0 +1,11 @@
+resources:
+- bb-namespace.yml
+- config-storage.yml
+- scheduler-ubuntu16-04.yaml
+- config-frontend.yml
+- config-worker.yml
+- storage.yaml
+- config-runner.yml
+- frontend.yaml
+- worker-ubuntu16-04.yaml
+- config-scheduler.yml

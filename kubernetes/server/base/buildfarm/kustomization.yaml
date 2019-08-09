@@ -1,0 +1,6 @@
+resources:
+- config-worker.yml
+- config-server.yml
+- buildfarm-worker.yml
+- buildfarm-server.yml
+- buildfarm-namespace.yml
