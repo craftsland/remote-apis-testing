@@ -53,7 +53,8 @@ data:
         port: 50051
         insecure-mode: true
     instances:
-      - name: main
+      # Buildstream seems unable to work with named instances.
+      - name: ''
 
         storages:
           - !lru-storage &main-storage
