@@ -548,13 +548,13 @@ kubernetes-buildgrid-recc:
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/abseil-with-recc | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
-    #- curl -o public/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-$time-green.svg
+    - curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
     name: pages
     paths:
-      - public/
+      - badges/
   only:
     refs:
       - master
@@ -600,6 +600,10 @@ pages:
     - |
       if [ ! -f "badges/buildgrid-buildstream-deployed.svg" ]; then
         curl -o badges/buildgrid-buildstream-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
+      fi
+    - |
+      if [ ! -f "badges/buildgrid-recc-deployed.svg" ]; then
+        curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
       fi
     - |
       if [ ! -f "badges/buildbarn-time.svg" ]; then
