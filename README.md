@@ -24,12 +24,12 @@ See project [Roadmap](https://gitlab.com/remote-apis-testing/remote-apis-testing
 
 ## Status
 
-This shows a build of Abseil with Bazel against three remote execution implementations.
+This shows the status of client implementations against server implementations in a set of tests.
 
 |             | BuildGrid                  | Buildfarm            | Buildbarn            |
 |-------------|----------------------------|----------------------|----------------------|
 | Bazel       | ![][bazel-buildgrid]       | ![][bazel-buildfarm] | ![][bazel-buildbarn] |
-| BuildStream | ![][buildstream-buildgrid] | No compatible        | No compatible        |
+| BuildStream | ![][buildstream-buildgrid] | Not compatible       | Not compatible       |
 | RECC        | TBA                        | TBA                  | TBA                  |
 | Goma        | TBA                        | TBA                  | TBA                  |
 
