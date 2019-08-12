@@ -291,7 +291,7 @@ kubernetes-buildfarm-bazel:
   before_script:
     - *before_badge
     - *before_kubernetes
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildfarm/buildfarm-*.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildfarm/build-bazel.yml
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildfarm logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
