@@ -16,6 +16,7 @@ stages:
   - build-with-buildstream
   - build-with-bazel
   - buildgrid-speedtest
+  - recc-buildgrid-speedtest
   - buildbarn-speedtest
   - buildfarm-speedtest
   - buildbarn-speedtest-no-concurrency
@@ -533,34 +534,23 @@ buildgrid-bazel-bazel:
   allow_failure: true
 
 kubernetes-buildgrid-recc:
-  stage: buildgrid-speedtest
+  stage: recc-buildgrid-speedtest
   image: $BASE_IMAGE
   dependencies:
     - terraform-infra
+  variables:
+    RE_NAME: buildgrid
+    CLIENT_NAME: recc-buildgrid
+    JOB_NAME: abseil-with-recc
   before_script:
-    - *before_badge
     - *before_kubernetes
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/recc-buildgrid.yml
   script:
-    - export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/buildgrid-*.yml
-    - kubectl create -f kubernetes/buildgrid/
-    - kubectl -n buildgrid rollout status statefulset buildgrid-stack
-    - kubectl -n buildgrid rollout status deployment.apps/worker
-    - until kubectl -n buildgrid get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n buildgrid get pods; sleep 10; done
-    - kubectl get all --all-namespaces
-    # TODO: See issue #14
-    - sleep 30
-    - kubectl create -f kubernetes/jobs/recc-buildgrid.yml
-    - kubectl -n buildgrid describe jobs/abseil-with-recc
-    - until kubectl -n buildgrid get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n buildgrid get pods; sleep 10; done
-    - kubectl -n buildgrid logs --follow jobs/abseil-with-recc
-    - kubectl -n buildgrid wait --for=condition=complete --timeout=5s job/abseil-with-recc
+    - *re_deployment_and_build_template
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/abseil-with-recc | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     #- curl -o public/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-$time-green.svg
   after_script:
-    - export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
-    - kubectl get all --all-namespaces
-    - kubectl delete namespace buildgrid
+    - *re_cleanup_template
   artifacts:
     name: pages
     paths:
