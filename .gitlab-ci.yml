@@ -201,7 +201,7 @@ kubernetes-buildbarn:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildbarn/build-abseil.yml
   script:
     - *re_deployment_and_build_template
-    - curl -o badges/buildbarn-deployed.svg $BADGE_URL/buildbarn-deployed-green.svg
+    - curl -o badges/buildbarn-bazel-deployed.svg $BADGE_URL/buildbarn-deployed-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -225,7 +225,7 @@ kubernetes-buildfarm:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildfarm/build-abseil.yml
   script:
     - *re_deployment_and_build_template
-    - curl -o badges/buildfarm-deployed.svg $BADGE_URL/buildfarm-deployed-green.svg
+    - curl -o badges/buildfarm-bazel-deployed.svg $BADGE_URL/buildfarm-deployed-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -250,7 +250,7 @@ kubernetes-buildgrid:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
   script:
     - *re_deployment_and_build_template
-    - curl -o badges/buildgrid-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
+    - curl -o badges/buildgrid-bazel-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -275,7 +275,7 @@ kubernetes-buildgrid-buildstream-autotools:
     - sed -i "s|remoteapistesting|$DOCKER_ACCOUNT|g" kubernetes/client/buildstream/buildgrid/build-autotools.yml
   script:
     - *re_deployment_and_build_template
-    - curl -o badges/buildstream-deployed.svg $BADGE_URL/buildstream-deployed-green.svg
+    - curl -o badges/buildgrid-buildstream-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -399,16 +399,20 @@ pages:
     - *before_badge
   script:
     - |
-      if [ ! -f "badges/buildbarn-deployed.svg" ]; then
-        curl -o badges/buildbarn-deployed.svg $BADGE_URL/buildbarn-failed-red.svg
+      if [ ! -f "badges/buildbarn-bazel-deployed.svg" ]; then
+        curl -o badges/buildbarn-bazel-deployed.svg $BADGE_URL/buildbarn-failed-red.svg
       fi
     - |
-      if [ ! -f "badges/buildfarm-deployed.svg" ]; then
-        curl -o badges/buildfarm-deployed.svg $BADGE_URL/buildfarm-failed-red.svg
+      if [ ! -f "badges/buildfarm-bazel-deployed.svg" ]; then
+        curl -o badges/buildfarm-bazel-deployed.svg $BADGE_URL/buildfarm-failed-red.svg
       fi
     - |
-      if [ ! -f "badges/buildgrid-deployed.svg" ]; then
-        curl -o badges/buildgrid-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
+      if [ ! -f "badges/buildgrid-bazel-deployed.svg" ]; then
+        curl -o badges/buildgrid-bazel-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
+      fi
+    - |
+      if [ ! -f "badges/buildgrid-buildstream-deployed.svg" ]; then
+        curl -o badges/buildgrid-buildstream-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
       fi
     - |
       if [ ! -f "badges/buildbarn-time.svg" ]; then

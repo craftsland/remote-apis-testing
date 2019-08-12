@@ -24,33 +24,34 @@ See project [Roadmap](https://gitlab.com/remote-apis-testing/remote-apis-testing
 
 ## Status
 
-This shows a build of Abseil with Bazel against three remote execution implementations.
+This shows the status of client implementations against server implementations in a set of tests.
 
-|             | BuildGrid             | Buildfarm             | Buildbarn             |
-| ----------- | --------------------- | --------------------- | --------------------- |
-| Bazel       | ![][abseil-buildgrid] | ![][abseil-buildfarm] | ![][abseil-buildbarn] |
-| BuildStream | TBA                   | No compatible         | No compatible         |
-| RECC        | TBA                   | TBA                   | TBA                   |
-| Goma        | TBA                   | TBA                   | TBA                   |
+|             | BuildGrid                  | Buildfarm            | Buildbarn            |
+|-------------|----------------------------|----------------------|----------------------|
+| Bazel       | ![][bazel-buildgrid]       | ![][bazel-buildfarm] | ![][bazel-buildbarn] |
+| BuildStream | ![][buildstream-buildgrid] | Not compatible       | Not compatible       |
+| RECC        | TBA                        | TBA                  | TBA                  |
+| Goma        | TBA                        | TBA                  | TBA                  |
 
-[abseil-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-deployed.svg
-[abseil-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-deployed.svg
-[abseil-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-deployed.svg
+[bazel-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-bazel-deployed.svg
+[bazel-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-bazel-deployed.svg
+[bazel-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-bazel-deployed.svg
+[buildstream-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-buildstream-deployed.svg
 
 
 ## Timing
 
 This shows a build of Bazel(project) with Bazel(client) to produce end to end build times.
 
-|                      | CAS        | No. Workers | Concurrency per worker |
-| -------------------- | ---------- | ----------- | ---------------------- |
-| ![][bazel-buildgrid] | In memory  | 1           | 1                      |
-| ![][bazel-buildfarm] | In memory  | 1           | 4                      |
-| ![][bazel-buildbarn] | In memory  | 1           | 4                      |
+|                           | CAS       | No. Workers | Concurrency per worker |
+|---------------------------|-----------|-------------|------------------------|
+| ![][bazel-buildgrid-time] | In memory | 1           | 1                      |
+| ![][bazel-buildfarm-time] | In memory | 1           | 4                      |
+| ![][bazel-buildbarn-time] | In memory | 1           | 4                      |
 
-[bazel-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-time.svg
-[bazel-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-time.svg
-[bazel-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-time.svg
+[bazel-buildgrid-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-time.svg
+[bazel-buildfarm-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-time.svg
+[bazel-buildbarn-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-time.svg
 
 
 ### Terraform
