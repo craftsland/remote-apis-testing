@@ -15,8 +15,8 @@ stages:
   - monitoring
   - build-with-buildstream
   - build-with-bazel
+  - build-with-recc
   - buildgrid-speedtest
-  - recc-buildgrid-speedtest
   - buildbarn-speedtest
   - buildfarm-speedtest
   - buildbarn-speedtest-no-concurrency
@@ -534,7 +534,7 @@ buildgrid-bazel-bazel:
   allow_failure: true
 
 kubernetes-buildgrid-recc:
-  stage: recc-buildgrid-speedtest
+  stage: build-with-recc
   image: $BASE_IMAGE
   dependencies:
     - terraform-infra
