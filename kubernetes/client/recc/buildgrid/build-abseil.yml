@@ -19,7 +19,7 @@ spec:
          - mkdir -p build
          - cd build && cmake ..
          - export RECC_SERVER="buildgrid-stack:50051"
-         - export RECC_INSTANCE="main"
+         - export RECC_INSTANCE=""
          - make `CC=recc`
       restartPolicy: Never
   backoffLimit: 0
