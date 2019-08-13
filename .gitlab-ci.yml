@@ -541,7 +541,7 @@ kubernetes-buildgrid-recc:
   variables:
     RE_NAME: buildgrid
     CLIENT_NAME: recc
-    JOB_NAME: abseil-with-recc
+    JOB_NAME: build-abseil
   before_script:
     - *before_kubernetes
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/recc/buildgrid/build-abseil.yml
