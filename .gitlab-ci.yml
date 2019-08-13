@@ -555,12 +555,6 @@ kubernetes-buildgrid-recc:
     name: pages
     paths:
       - badges/
-  only:
-    refs:
-      - master
-  except:
-    changes:
-      - "*.md"
   allow_failure: true
 
 cleanup-terraform-job:
