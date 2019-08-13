@@ -1,13 +1,12 @@
 FROM debian:buster
 
 
-RUN apt update && apt install -yq git openjdk-11-jdk \
+RUN apt update && apt install -yq git openjdk-11-jdk wget \
     curl gnupg # For curl | apt-key to work
 
-RUN echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt testing jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
-RUN curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
-RUN apt update && apt -yq install bazel
-
+RUN wget -O install-bazel.deb \
+    https://github.com/bazelbuild/bazel/releases/download/0.28.1/bazel_0.28.1-linux-x86_64.deb
+RUN apt install -yq ./install-bazel.deb && rm install-bazel.deb
 
 RUN apt install -yq git clang
 
