@@ -544,10 +544,10 @@ kubernetes-buildgrid-recc:
     JOB_NAME: abseil-with-recc
   before_script:
     - *before_kubernetes
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/jobs/recc-buildgrid.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/recc/buildgrid/build-abseil.yml
   script:
     - *re_deployment_and_build_template
-    - "time=$(kubectl -n buildgrid logs --tail=10 jobs/abseil-with-recc | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - "time=$(kubectl -n buildgrid logs --tail=10 jobs/recc | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
   after_script:
     - *re_cleanup_template
