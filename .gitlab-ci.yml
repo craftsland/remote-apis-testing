@@ -307,7 +307,7 @@ kubernetes-buildbarn-bazel:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildbarn/build-bazel.yml
   script:
     - *re_deployment_and_build_template
-    - "time=$(kubectl -n buildbarn logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - "time=$(kubectl -n buildbarn logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildbarn-time.svg $BADGE_URL/buildbarn_bazel_build-$time-green.svg
   after_script:
     - *re_cleanup_template
@@ -335,7 +335,7 @@ kubernetes-buildfarm-bazel:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildfarm/build-bazel.yml
   script:
     - *re_deployment_and_build_template
-    - "time=$(kubectl -n buildfarm logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - "time=$(kubectl -n buildfarm logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel_build-$time-green.svg
   after_script:
     - *re_cleanup_template
@@ -365,7 +365,7 @@ kubernetes-buildgrid-bazel:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
   script:
     - *re_deployment_and_build_template
-    - "time=$(kubectl -n buildgrid logs --tail=10 jobs/bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - "time=$(kubectl -n buildgrid logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-$time-green.svg
   after_script:
     - *re_cleanup_template
