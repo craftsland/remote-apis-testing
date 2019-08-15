@@ -20,6 +20,6 @@ spec:
            export RECC_SERVER=buildgrid-stack:50051;
            export RECC_INSTANCE=main;
            export RECC_VERBOSE=1;
-           make `CC=recc`
+           make CC=recc
       restartPolicy: Never
   backoffLimit: 0
