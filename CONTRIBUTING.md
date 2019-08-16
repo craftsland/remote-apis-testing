@@ -11,6 +11,18 @@ The author of any patch is expected to take ownership of that code and is to
 support it for a reasonable time-frame. This means addressing any unforeseen
 side effects and quirks the feature may have introduced.
 
+## Modifying .gitlab-ci.yml
+
+Modifications to .gitlab-ci.yml are expected to maintain a similar structure
+and naming convention across jobs and stages. Clients are generally grouped
+into stages building against each server implementation with the exception of
+speedtests (building the bazel project) where each speedtest gets its own stage.
+This is to prevent multiple jobs running alongside the job and potentially
+hindering performance.
+
+Badges are stored in `badges/` until the `pages` job runs (only on master)
+and moves the contents to `public/` and making them available via gitlab pages.
+
 ## Patch submissions
 
 Branches must be submitted as merge requests on GitLab :please obtain a 

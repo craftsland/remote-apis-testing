@@ -184,7 +184,7 @@ terraform-infra:
       kubectl delete namespace $RE_NAME
       set +x
 
-kubernetes-buildbarn:
+buildbarn-bazel-abseil:
   stage: build-with-bazel
   image: $BASE_IMAGE
   variables:
@@ -213,7 +213,7 @@ kubernetes-buildbarn:
       - badges/
   allow_failure: true
 
-kubernetes-buildfarm:
+buildfarm-bazel-abseil:
   stage: build-with-bazel
   image: $BASE_IMAGE
   variables:
@@ -237,7 +237,7 @@ kubernetes-buildfarm:
       - badges/
   allow_failure: true
 
-kubernetes-buildgrid:
+buildgrid-bazel-abseil:
   stage: build-with-bazel
   image: $BASE_IMAGE
   dependencies:
@@ -262,7 +262,7 @@ kubernetes-buildgrid:
       - badges/
   allow_failure: true
 
-kubernetes-buildgrid-buildstream-autotools:
+buildgrid-buildstream-autotools:
   stage: build-with-buildstream
   image: $BASE_IMAGE
   dependencies:
@@ -287,7 +287,7 @@ kubernetes-buildgrid-buildstream-autotools:
       - badges/
   allow_failure: true
 
-kubernetes-buildbarn-bazel:
+buildbarn-bazel-bazel:
   stage: buildbarn-speedtest
   image: $BASE_IMAGE
   dependencies:
@@ -320,7 +320,7 @@ kubernetes-buildbarn-bazel:
       - master
   allow_failure: true
 
-kubernetes-buildfarm-bazel:
+buildfarm-bazel-bazel:
   stage: buildfarm-speedtest
   image: $BASE_IMAGE
   dependencies:
@@ -349,7 +349,7 @@ kubernetes-buildfarm-bazel:
   allow_failure: true
 
 
-kubernetes-buildgrid-bazel:
+buildgrid-bazel-bazel:
   stage: buildgrid-speedtest
   image: $BASE_IMAGE
   dependencies:
