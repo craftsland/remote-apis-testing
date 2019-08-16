@@ -23,6 +23,7 @@ spec:
           - "--cas-remote=http://buildgrid-stack:50051"
           - "--buildbox-run=/usr/local/bin/buildbox-run-hosttools"
           - "--request-timeout=30"
+          - "--log-level=trace"
         ports:
         - containerPort: 50051
           protocol: TCP
