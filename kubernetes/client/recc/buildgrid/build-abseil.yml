@@ -18,6 +18,7 @@ spec:
            mkdir -p build;
            cd build && cmake ..;
            export RECC_SERVER=buildgrid-stack:50051;
+           export RECC_FORCE_REMOTE=1;
            export RECC_VERBOSE=1;
            make -j4 CC="recc g++"
       restartPolicy: Never
