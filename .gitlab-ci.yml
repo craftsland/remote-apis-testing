@@ -190,6 +190,13 @@ terraform-infra:
       cp dashboard.pdf metrics/$RE_NAME.pdf
       set +x
 
+.re-post-build-logging: &re_post_build_logging |
+      mkdir logs
+      for POD in $(kubectl get pods --namespace $RE_NAME -o name)
+      do
+        kubectl logs -n $RE_NAME --all-containers $POD > logs/$(echo $POD | sed "s|pod/||g")_log.txt;
+      done
+
 .re-cleanup-template: &re_cleanup_template |
       set -x
       export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
@@ -243,6 +250,7 @@ buildbarn-bazel-abseil:
   script:
     - *re_deployment_and_build_template
     - curl -o badges/buildbarn-bazel-deployed.svg $BADGE_URL/buildbarn-deployed-green.svg
+    - *re_post_build_logging
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -250,6 +258,7 @@ buildbarn-bazel-abseil:
     paths:
       - badges/
       - metrics/
+      - logs/
   allow_failure: true
 
 buildfarm-bazel-abseil:
@@ -269,6 +278,7 @@ buildfarm-bazel-abseil:
   script:
     - *re_deployment_and_build_template
     - curl -o badges/buildfarm-bazel-deployed.svg $BADGE_URL/buildfarm-deployed-green.svg
+    - *re_post_build_logging
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -276,6 +286,8 @@ buildfarm-bazel-abseil:
     paths:
       - badges/
       - metrics/
+      - logs/
+
   allow_failure: true
 
 buildgrid-bazel-abseil:
@@ -296,12 +308,14 @@ buildgrid-bazel-abseil:
   script:
     - *re_deployment_and_build_template
     - curl -o badges/buildgrid-bazel-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
+    - *re_post_build_logging
   after_script:
     - *re_cleanup_template
   artifacts:
     name: pages
     paths:
       - badges/
+      - logs/
   allow_failure: true
 
 buildgrid-buildstream-autotools:
@@ -322,6 +336,7 @@ buildgrid-buildstream-autotools:
   script:
     - *re_deployment_and_build_template
     - curl -o badges/buildgrid-buildstream-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
+    - *re_post_build_logging
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -329,6 +344,7 @@ buildgrid-buildstream-autotools:
     paths:
       - badges/
       - metrics/
+      - logs/
   allow_failure: true
 
 buildbarn-bazel-bazel:
@@ -354,6 +370,7 @@ buildbarn-bazel-bazel:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildbarn logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildbarn-time.svg $BADGE_URL/buildbarn_bazel_build-$time-green.svg
+    - *re_post_build_logging
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -361,6 +378,7 @@ buildbarn-bazel-bazel:
     paths:
       - badges/
       - metrics/
+      - logs/
   only:
     refs:
       - master
@@ -384,6 +402,7 @@ buildfarm-bazel-bazel:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildfarm logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel_build-$time-green.svg
+    - *re_post_build_logging
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -391,6 +410,7 @@ buildfarm-bazel-bazel:
     paths:
       - badges/
       - metrics/
+      - logs/
   only:
     refs:
       - master
@@ -416,6 +436,7 @@ buildgrid-bazel-bazel:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-$time-green.svg
+    - *re_post_build_logging
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -423,6 +444,7 @@ buildgrid-bazel-bazel:
     paths:
       - badges/
       - metrics/
+      - logs/
   only:
     refs:
       - master
