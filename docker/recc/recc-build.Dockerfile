@@ -10,6 +10,8 @@ RUN apt-get update \
        libssl-dev \
        make \
        pkg-config \
+       autotools-dev \
+       autoconf \
     && apt-get clean
 
 RUN git clone https://gitlab.com/bloomberg/recc.git

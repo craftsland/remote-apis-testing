@@ -13,13 +13,13 @@ spec:
         image: remoteapistesting/recc-build:latest
         command: ["/bin/bash", "-x", "-c"]
         args:
-         - git clone --depth=1 https://github.com/abseil/abseil-cpp.git;
-           cd abseil-cpp;
-           mkdir -p build;
-           cd build && cmake ..;
+         - wget https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz;
+           tar xvf hello-2.10.tar.gz;
+           cd hello-2.10;
+           ./configure;
            export RECC_SERVER=buildgrid-stack:50051;
-           export RECC_FORCE_REMOTE=1;
            export RECC_VERBOSE=1;
-           make -j4 CC="recc g++"
+           make CC="recc cc;
+           ./hello
       restartPolicy: Never
   backoffLimit: 0
