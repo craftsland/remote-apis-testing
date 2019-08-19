@@ -230,6 +230,13 @@ deploy-monitoring:
     - kubectl get all --all-namespaces
     - set +x
 
+.before-buildbarn-builds: &before_buildbarn_builds |
+      for service in frontend scheduler-ubuntu16-04 storage worker-ubuntu16-04; do
+        sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildbarn/${service}.yaml
+        sed -i "s|remoteapistesting|$DOCKER_ACCOUNT|g" kubernetes/server/base/buildbarn/${service}.yaml
+      done
+
+
 buildbarn-bazel-abseil:
   stage: build-with-bazel
   image: $BASE_IMAGE
@@ -243,11 +250,7 @@ buildbarn-bazel-abseil:
     - *before_badge
     - *before_kubernetes
     - *before_monitoring
-    - |
-      for service in frontend scheduler-ubuntu16-04 storage worker-ubuntu16-04; do
-        sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildbarn/${service}.yaml
-        sed -i "s|remoteapistesting|$DOCKER_ACCOUNT|g" kubernetes/server/base/buildbarn/${service}.yaml
-      done
+    - *before_buildbarn_builds
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildbarn/build-abseil.yml
   script:
     - *re_deployment_and_build_template
@@ -362,11 +365,7 @@ buildbarn-bazel-bazel:
     - *before_badge
     - *before_kubernetes
     - *before_monitoring
-    - |
-      for service in frontend scheduler-ubuntu16-04 storage worker-ubuntu16-04; do
-        sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildbarn/${service}.yaml
-        sed -i "s|remoteapistesting|$DOCKER_ACCOUNT|g" kubernetes/server/base/buildbarn/${service}.yaml
-      done
+    - *before_buildbarn_builds
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildbarn/build-bazel.yml
   script:
     - *re_deployment_and_build_template
