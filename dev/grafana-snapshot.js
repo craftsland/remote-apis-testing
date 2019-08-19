@@ -9,7 +9,7 @@ const puppeteer = require('puppeteer');
 
    var userName = 'admin';
    var password = 'admin';
-   var baseUrl = 'http://127.0.0.1:3000/d/85a562078cdf77779eaa1add43ccec1e/'
+   var baseUrl = 'http://127.0.0.1:3000/d/'
 
    var dashboardName = process.argv[2];
    var nameSpace = process.argv[3];
@@ -53,7 +53,7 @@ const puppeteer = require('puppeteer');
 	           {waitUntil: 'networkidle2'});
 
    
-   if (dashboardName == 'kubernetes-compute-resources-namespace-pods') {
+   if (dashboardName == '85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods') {
 
       // Close quota tabs 
    
@@ -70,7 +70,7 @@ const puppeteer = require('puppeteer');
    // Create pdf of dashboard	
    await page.pdf({
                   path: 'dashboard.pdf',
-                  format: 'A4',
+                  format: 'A3',
                   scale: 0.75,
                   displayHeaderFooter: false,
                   printBackground: false,
