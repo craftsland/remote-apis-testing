@@ -18,6 +18,8 @@ stages:
   - buildgrid-speedtest
   - buildbarn-speedtest
   - buildfarm-speedtest
+  - buildbarn-speedtest-no-concurrency
+  - buildfarm-speedtest-no-concurrency
   - cleanup-and-deploy
 
 .before-badge-template: &before_badge |
@@ -385,6 +387,41 @@ buildbarn-bazel-bazel:
       - master
   allow_failure: true
 
+buildbarn-bazel-bazel-no-concurrency:
+  stage: buildbarn-speedtest-no-concurrency
+  image: $BASE_IMAGE
+  dependencies:
+    - terraform-infra
+  variables:
+    RE_NAME: buildbarn
+    CLIENT_NAME: bazel
+    JOB_NAME: build-bazel
+  before_script:
+    - *before_badge
+    - *before_kubernetes
+    - *before_monitoring
+    - *before_buildbarn_builds
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildbarn/build-bazel.yml
+    # Replace configuration value to set concurrency to 1
+    - "sed -i 's|\"concurrency\": 4|\"concurrency\": 1|g' kubernetes/server/base/buildbarn/config-worker.yml"
+  script:
+    - *re_deployment_and_build_template
+    - "time=$(kubectl -n buildbarn logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - curl -o badges/buildbarn-time-concurrency-1.svg $BADGE_URL/buildbarn_bazel_build-$time-green.svg
+    - *re_post_build_logging
+  after_script:
+    - *re_cleanup_template
+  artifacts:
+    name: pages
+    paths:
+      - badges/
+      - metrics/
+      - logs/
+  only:
+    refs:
+      - master
+  allow_failure: true
+
 buildfarm-bazel-bazel:
   stage: buildfarm-speedtest
   image: $BASE_IMAGE
@@ -417,6 +454,39 @@ buildfarm-bazel-bazel:
       - master
   allow_failure: true
 
+buildfarm-bazel-bazel-no-concurrency:
+  stage: buildfarm-speedtest-no-concurrency
+  image: $BASE_IMAGE
+  dependencies:
+    - terraform-infra
+  variables:
+    RE_NAME: buildfarm
+    CLIENT_NAME: bazel
+    JOB_NAME: build-bazel
+  before_script:
+    - *before_badge
+    - *before_kubernetes
+    - *before_monitoring
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildfarm/build-bazel.yml
+    # Replace configuration value to set concurrency to 1
+    - "sed -i 's|execute_stage_width: 4|execute_stage_width: 1|g' kubernetes/server/base/buildbarn/config-worker.yml"
+  script:
+    - *re_deployment_and_build_template
+    - "time=$(kubectl -n buildfarm logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - curl -o badges/buildfarm-time-concurrency-1.svg $BADGE_URL/buildfarm_bazel_build-$time-green.svg
+    - *re_post_build_logging
+  after_script:
+    - *re_cleanup_template
+  artifacts:
+    name: pages
+    paths:
+      - badges/
+      - metrics/
+      - logs/
+  only:
+    refs:
+      - master
+  allow_failure: true
 
 buildgrid-bazel-bazel:
   stage: buildgrid-speedtest
@@ -497,6 +567,14 @@ pages:
     - |
       if [ ! -f "badges/buildfarm-time.svg" ]; then
         curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel_build-failed-red.svg
+      fi
+    - |
+      if [ ! -f "badges/buildbarn-time-concurrency-1.svg" ]; then
+        curl -o badges/buildbarn-time-concurrency-1.svg $BADGE_URL/buildbarn_bazel_build-failed-red.svg
+      fi
+    - |
+      if [ ! -f "badges/buildfarm-time-concurrency-1.svg" ]; then
+        curl -o badges/buildfarm-time-concurrency-1.svg $BADGE_URL/buildfarm_bazel_build-failed-red.svg
       fi
     - |
       if [ ! -f "badges/buildgrid-time.svg" ]; then
