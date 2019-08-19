@@ -18,8 +18,7 @@ spec:
            cd hello-2.10;
            ./configure;
            export RECC_SERVER=buildgrid-stack:50051;
-           export RECC_VERBOSE=1;
-           make CC="recc cc;
+           make CC="recc cc";
            ./hello
       restartPolicy: Never
   backoffLimit: 0
