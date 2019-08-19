@@ -159,7 +159,7 @@ build-buildbarn-storage:
     SERVICE: bb_storage
   <<: *build-buildbarn-template
 
-build-recc:
+build-docker-recc-buildgrid:
   stage: build-images-and-terraform
   image: docker:stable
   services:
