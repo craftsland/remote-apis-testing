@@ -1,16 +1,16 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: build-abseil
+  name: build-gnuhello
   namespace: buildgrid
 spec:
   template:
     metadata:
-      name: build-abseil
+      name: build-gnuhello
     spec:
       containers:
-      - name: build-abseil
-        image: remoteapistesting/recc-build:latest
+      - name: build-gnuhello
+        image: remoteapistesting/recc-build:craig-local-test
         command: ["/bin/bash", "-x", "-c"]
         args:
          - wget https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz;
