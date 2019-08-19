@@ -326,8 +326,6 @@ buildgrid-bazel-abseil:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
   script:
     - *re_deployment_and_build_template
-    - kubectl -n $RE_NAME logs $(kubectl -n $RE_NAME get pods | awk '/worker/ {print $1;exit}')
-    - kubectl -n $RE_NAME logs $(kubectl -n $RE_NAME get pods | awk '/buildgrid-stack/ {print $1;exit}')
     - curl -o badges/buildgrid-bazel-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
     - *re_post_build_logging
   after_script:
@@ -356,8 +354,6 @@ buildgrid-buildstream-autotools:
     - sed -i "s|remoteapistesting|$DOCKER_ACCOUNT|g" kubernetes/client/buildstream/buildgrid/build-autotools.yml
   script:
     - *re_deployment_and_build_template
-    - kubectl -n $RE_NAME logs $(kubectl -n $RE_NAME get pods | awk '/worker/ {print $1;exit}')
-    - kubectl -n $RE_NAME logs $(kubectl -n $RE_NAME get pods | awk '/buildgrid-stack/ {print $1;exit}')
     - curl -o badges/buildgrid-buildstream-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
     - *re_post_build_logging
   after_script:
@@ -553,8 +549,6 @@ buildgrid-recc-gnuhello:
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/$JOB_NAME | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
-    - kubectl -n $RE_NAME logs $(kubectl -n $RE_NAME get pods | awk '/worker/ {print $1;exit}')
-    - kubectl -n $RE_NAME logs $(kubectl -n $RE_NAME get pods | awk '/buildgrid-stack/ {print $1;exit}')
     - curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
   after_script:
     - *re_cleanup_template
