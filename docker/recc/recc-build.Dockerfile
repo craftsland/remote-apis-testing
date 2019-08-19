@@ -12,6 +12,7 @@ RUN apt-get update \
        pkg-config \
        autotools-dev \
        autoconf \
+       wget \
     && apt-get clean
 
 RUN git clone https://gitlab.com/bloomberg/recc.git
