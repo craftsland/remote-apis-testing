@@ -545,17 +545,22 @@ buildgrid-recc-gnuhello:
   before_script:
     - *before_badge
     - *before_kubernetes
+    - *before_monitoring
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/recc/buildgrid/build-gnuhello.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/$JOB_NAME | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
+    - *re_post_build_logging
   after_script:
     - *re_cleanup_template
   artifacts:
     name: pages
     paths:
       - badges/
+      - metrics/
+      - logs/
   allow_failure: true
 
 cleanup-terraform-job:
