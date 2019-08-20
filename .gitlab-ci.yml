@@ -15,6 +15,7 @@ stages:
   - monitoring
   - build-with-buildstream
   - build-with-bazel
+  - build-with-recc
   - buildgrid-speedtest
   - buildbarn-speedtest
   - buildfarm-speedtest
@@ -157,6 +158,17 @@ build-buildbarn-storage:
     REPO: https://github.com/buildbarn/bb-storage
     SERVICE: bb_storage
   <<: *build-buildbarn-template
+
+build-docker-recc-buildgrid:
+  stage: build-images-and-terraform
+  image: docker:stable
+  services:
+    - docker:dind
+  script:
+    - docker login -u $DOCKER_USER -p $DOCKER_PASS
+    - (cd docker/recc && docker build -t $DOCKER_ACCOUNT/recc-build:$CI_PIPELINE_ID -t $DOCKER_ACCOUNT/recc-build:latest -f recc-build.Dockerfile .)
+    - docker push $DOCKER_ACCOUNT/recc-build:$CI_PIPELINE_ID
+    - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then docker push $DOCKER_ACCOUNT/recc-build:latest; fi
 
 terraform-infra:
   stage: build-images-and-terraform
@@ -521,6 +533,35 @@ buildgrid-bazel-bazel:
       - master
   allow_failure: true
 
+buildgrid-recc-gnuhello:
+  stage: build-with-recc
+  image: $BASE_IMAGE
+  dependencies:
+    - terraform-infra
+  variables:
+    RE_NAME: buildgrid
+    CLIENT_NAME: recc
+    JOB_NAME: build-gnuhello
+  before_script:
+    - *before_badge
+    - *before_kubernetes
+    - *before_monitoring
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/recc/buildgrid/build-gnuhello.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
+  script:
+    - *re_deployment_and_build_template
+    - "time=$(kubectl -n buildgrid logs --tail=10 jobs/$JOB_NAME | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
+    - *re_post_build_logging
+  after_script:
+    - *re_cleanup_template
+  artifacts:
+    name: pages
+    paths:
+      - badges/
+      - metrics/
+      - logs/
+  allow_failure: true
 
 cleanup-terraform-job:
   stage: cleanup-and-deploy
@@ -559,6 +600,10 @@ pages:
     - |
       if [ ! -f "badges/buildgrid-buildstream-deployed.svg" ]; then
         curl -o badges/buildgrid-buildstream-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
+      fi
+    - |
+      if [ ! -f "badges/buildgrid-recc-deployed.svg" ]; then
+        curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
       fi
     - |
       if [ ! -f "badges/buildbarn-time.svg" ]; then

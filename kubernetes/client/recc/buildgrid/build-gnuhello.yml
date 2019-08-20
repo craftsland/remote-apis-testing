@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: build-gnuhello
+  namespace: buildgrid
+spec:
+  template:
+    metadata:
+      name: build-gnuhello
+    spec:
+      containers:
+      - name: build-gnuhello
+        image: remoteapistesting/recc-build:craig-local-test
+        command: ["/bin/bash", "-x", "-c"]
+        args:
+         - wget https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz;
+           tar xvf hello-2.10.tar.gz;
+           cd hello-2.10;
+           ./configure;
+           export RECC_SERVER=buildgrid-stack:50051;
+           make CC="recc cc";
+           ./hello
+      restartPolicy: Never
+  backoffLimit: 0
