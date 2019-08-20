@@ -186,8 +186,10 @@ terraform-infra:
       until kubectl -n $RE_NAME get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n $RE_NAME get pods; sleep 10; done
       kubectl -n $RE_NAME logs --follow jobs/$JOB_NAME
       kubectl -n $RE_NAME wait --for=condition=complete --timeout=5s job/$JOB_NAME
-      node dev/grafana-snapshot.js kubernetes-compute-resources-namespace-pods $RE_NAME $(date +%s%3N -d -20minutes) $(date +%s%3N -d +20minutes) > metrics/$RE_NAME.txt
-      cp dashboard.pdf metrics/$RE_NAME.pdf
+      node dev/grafana-snapshot.js 85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods $RE_NAME $(date +%s%3N -d -20minutes) $(date +%s%3N -d +20minutes) > metrics/$RE_NAME-cpu.txt
+      cp dashboard.pdf metrics/$RE_NAME-cpu.pdf
+      node dev/grafana-snapshot.js fa49a4706d07a042595b664c87fb33ea/kubernetes-nodes $RE_NAME $(date +%s%3N -d -20minutes) $(date +%s%3N -d +20minutes) > metrics/$RE_NAME-net-disk.txt
+      cp dashboard.pdf metrics/$RE_NAME-net-disk.pdf
       set +x
 
 .re-post-build-logging: &re_post_build_logging |
