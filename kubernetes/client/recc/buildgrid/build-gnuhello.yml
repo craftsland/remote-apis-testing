@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
       - name: build-gnuhello
-        image: remoteapistesting/recc-build:craig-local-test
+        image: remoteapistesting/recc-build:latest
         command: ["/bin/bash", "-x", "-c"]
         args:
          - wget https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz;
