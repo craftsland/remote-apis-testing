@@ -120,6 +120,32 @@ kubectl logs jobs/abseil -n buildbarn
 
 ## Local Testing
 
+### kind
+
+[kind](https://github.com/kubernetes-sigs/kind) allows us to spin up a kubernetes cluster in docker which we can deploy our services to.
+This allows you to test various `kubernetes/` configurations without the need for a cloud provider. You can start up a cluster with:
+
+```
+kind create cluster
+```
+
+Once the cluster is up and running, you can spin up the individual services in `kubernetes/`:
+
+```
+# Spin up the server side services
+$ kubectl kustomize kubernetes/server/overlays/<server>/<client>/ | kubectl create -f -
+
+# Spin up a client job
+$ kubectl create -f kubernetes/client/<client>/<server>/<job>.yml
+
+# See the running pods with
+$ kubectl get pod -n <server>
+
+# View the logs with
+$ kubectl logs --follow -n <server> <POD NAME>
+```
+
+
 ### Minikube
 
 You can test changes to the Kubernetes deployments locally (avoiding the
