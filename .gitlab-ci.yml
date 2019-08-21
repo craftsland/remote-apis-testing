@@ -200,9 +200,9 @@ terraform-infra:
       until kubectl -n $RE_NAME get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n $RE_NAME get pods; sleep 10; done
       kubectl -n $RE_NAME logs --follow jobs/$JOB_NAME
       kubectl -n $RE_NAME wait --for=condition=complete --timeout=5s job/$JOB_NAME
-      node dev/grafana-snapshot.js 85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods $RE_NAME $(date +%s%3N -d -20minutes) $(date +%s%3N -d +20minutes) > metrics/$RE_NAME-cpu.txt
+      node dev/grafana-snapshot.js 85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods $RE_NAME $(date +%s%3N -d -45minutes) $(date +%s%3N -d +45minutes) > metrics/$RE_NAME-cpu.txt
       cp dashboard.pdf metrics/$RE_NAME-cpu.pdf
-      node dev/grafana-snapshot.js fa49a4706d07a042595b664c87fb33ea/kubernetes-nodes $RE_NAME $(date +%s%3N -d -20minutes) $(date +%s%3N -d +20minutes) > metrics/$RE_NAME-net-disk.txt
+      node dev/grafana-snapshot.js fa49a4706d07a042595b664c87fb33ea/kubernetes-nodes $RE_NAME $(date +%s%3N -d -45minutes) $(date +%s%3N -d +45minutes) > metrics/$RE_NAME-net-disk.txt
       cp dashboard.pdf metrics/$RE_NAME-net-disk.pdf
       set +x
 
@@ -384,7 +384,7 @@ buildbarn-bazel-bazel:
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildbarn logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
-    - curl -o badges/buildbarn-time.svg $BADGE_URL/buildbarn_bazel_build-$time-green.svg
+    - curl -o badges/buildbarn-time.svg $BADGE_URL/buildbarn_bazel-$time-green.svg
     - *re_post_build_logging
   after_script:
     - *re_cleanup_template
@@ -419,7 +419,11 @@ buildbarn-bazel-bazel-no-concurrency:
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildbarn logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
-    - curl -o badges/buildbarn-time-concurrency-1.svg $BADGE_URL/buildbarn_bazel_build-$time-green.svg
+    - curl -o badges/buildbarn-concurrency-1-time.svg $BADGE_URL/buildbarn_bazel-$time-green.svg
+    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-cpu.txt
+    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-concurrency-1-cpu.pdf
+    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-concurrency-1-net-disk.txt
+    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-concurrency-1-net-disk.pdf
     - *re_post_build_logging
   after_script:
     - *re_cleanup_template
@@ -451,7 +455,7 @@ buildfarm-bazel-bazel:
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildfarm logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
-    - curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel_build-$time-green.svg
+    - curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel-$time-green.svg
     - *re_post_build_logging
   after_script:
     - *re_cleanup_template
@@ -485,7 +489,11 @@ buildfarm-bazel-bazel-no-concurrency:
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildfarm logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
-    - curl -o badges/buildfarm-time-concurrency-1.svg $BADGE_URL/buildfarm_bazel_build-$time-green.svg
+    - curl -o badges/buildfarm-concurrency-1-time.svg $BADGE_URL/buildfarm_bazel-$time-green.svg
+    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-cpu.txt
+    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-concurrency-1-cpu.pdf
+    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-concurrency-1-net-disk.txt
+    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-concurrency-1-net-disk.pdf
     - *re_post_build_logging
   after_script:
     - *re_cleanup_template
@@ -518,7 +526,7 @@ buildgrid-bazel-bazel:
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
-    - curl -o badges/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-$time-green.svg
+    - curl -o badges/buildgrid-time.svg $BADGE_URL/buildgrid_bazel-$time-green.svg
     - *re_post_build_logging
   after_script:
     - *re_cleanup_template
@@ -579,6 +587,43 @@ cleanup-terraform-job:
     GIT_STRATEGY: none
   when: always
 
+wiki:
+  stage: cleanup-and-deploy
+  image: $BASE_IMAGE
+  before_script:
+    - *before_badge
+    - *before_monitoring
+  script:
+    - git config --global user.email "remoteapitestingci@gmail.com"
+    - git config --global user.name "remoteapitesting CI"
+    - git clone https://remoteapitesting:$ci_wiki_token@gitlab.com/remote-apis-testing/remote-apis-testing.wiki.git
+    - cd remote-apis-testing.wiki
+    - mkdir -p $CI_PIPELINE_ID/metrics && cp ../metrics/* $CI_PIPELINE_ID/metrics/
+    - mkdir -p $CI_PIPELINE_ID/badges && cp ../badges/* $CI_PIPELINE_ID/badges/
+    - PIPE_SYM="|"
+    - DATE_SYM=`date +%d-%m-%y`
+    - PIPELINE_SYM="[Pipeline](https://gitlab.com/remote-apis-testing/remote-apis-testing/pipelines/$CI_PIPELINE_ID)"
+    - WIKI_URL="https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/$CI_PIPELINE_ID"
+    - BR="<br>"
+    - |
+      for server in buildbarn buildfarm buildgrid buildbarn-concurrency-1 buildfarm-concurrency-1 ; do
+        BADGE="![]($WIKI_URL/badges/$server-time.svg)"
+        CPU_PDF="CPU [PDF]($WIKI_URL/metrics/$server-cpu.pdf)"
+        IO_PDF="IO [PDF]($WIKI_URL/metrics/$server-net-disk.pdf)"
+        CPU_DASH_URL=`cat $CI_PIPELINE_ID/metrics/$server-cpu.txt`
+        IO_DASH_URL=`cat $CI_PIPELINE_ID/metrics/$server-net-disk.txt`
+        CPU_DASH="[Dash]($CPU_DASH_URL)"
+        IO_DASH="[Dash]($IO_DASH_URL)"
+        BUILD_TEXT="$BUILD_TEXT$BADGE$BR$CPU_PDF $CPU_DASH$BR$IO_PDF $IO_DASH$PIPE_SYM"
+      done
+    - echo $PIPE_SYM$DATE_SYM$BR$PIPELINE_SYM$PIPE_SYM$BUILD_TEXT >> metrics.md
+    - git add .
+    - git commit -m "update wiki for $CI_PIPELINE_ID"
+    - git push https://remoteapitesting:$ci_wiki_token@gitlab.com/remote-apis-testing/remote-apis-testing.wiki.git
+  only:
+    refs:
+      - master
+
 pages:
   stage: cleanup-and-deploy
   image: $BASE_IMAGE
@@ -614,12 +659,12 @@ pages:
         curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel_build-failed-red.svg
       fi
     - |
-      if [ ! -f "badges/buildbarn-time-concurrency-1.svg" ]; then
-        curl -o badges/buildbarn-time-concurrency-1.svg $BADGE_URL/buildbarn_bazel_build-failed-red.svg
+      if [ ! -f "badges/buildbarn-concurrency-1-time.svg" ]; then
+        curl -o badges/buildbarn-concurrency-1-time.svg $BADGE_URL/buildbarn_bazel_build-failed-red.svg
       fi
     - |
-      if [ ! -f "badges/buildfarm-time-concurrency-1.svg" ]; then
-        curl -o badges/buildfarm-time-concurrency-1.svg $BADGE_URL/buildfarm_bazel_build-failed-red.svg
+      if [ ! -f "badges/buildfarm-concurrency-1-time.svg" ]; then
+        curl -o badges/buildfarm-concurrency-1-time.svg $BADGE_URL/buildfarm_bazel_build-failed-red.svg
       fi
     - |
       if [ ! -f "badges/buildgrid-time.svg" ]; then
