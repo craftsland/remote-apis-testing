@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
       - name: build-autotools
-        image: remoteapistesting/buildstream-master-extra:latest
+        image: buildstream/buildstream:nightly
         command: ["/bin/bash", "-c"]
         args:
          - cp /config/project.conf /buildstream/doc/examples/autotools/project.conf;

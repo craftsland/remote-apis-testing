@@ -97,18 +97,6 @@ build-docker-bazel-buildgrid-wrapper:
     - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then docker push $DOCKER_ACCOUNT/bazel-build-buildgrid:latest; fi
   allow_failure: true
 
-build-docker-buildstream-buildgrid:
-  stage: build-images-and-terraform
-  image: docker:stable
-  services:
-    - docker:dind
-  script:
-    - docker login -u $DOCKER_USER -p $DOCKER_PASS
-    - cd docker
-    - docker build -t $DOCKER_ACCOUNT/buildstream-master-extra:$CI_PIPELINE_ID -t $DOCKER_ACCOUNT/buildstream-master-extra:latest -f buildstream.dockerfile . 
-    - docker push $DOCKER_ACCOUNT/buildstream-master-extra:$CI_PIPELINE_ID
-    - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then docker push $DOCKER_ACCOUNT/buildstream-master-extra:latest; fi
-
 build-buildbarn-remote-execution:
   stage: build-images-and-terraform
   image: $BASE_IMAGE
@@ -350,8 +338,6 @@ buildgrid-buildstream-autotools:
     - *before_badge
     - *before_kubernetes
     - *before_monitoring
-    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/buildstream/buildgrid/build-autotools.yml
-    - sed -i "s|remoteapistesting|$DOCKER_ACCOUNT|g" kubernetes/client/buildstream/buildgrid/build-autotools.yml
   script:
     - *re_deployment_and_build_template
     - curl -o badges/buildgrid-buildstream-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
