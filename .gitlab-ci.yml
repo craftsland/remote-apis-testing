@@ -481,7 +481,7 @@ buildfarm-bazel-bazel-no-concurrency:
     - *before_monitoring
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildfarm/build-bazel.yml
     # Replace configuration value to set concurrency to 1
-    - "sed -i 's|execute_stage_width: 4|execute_stage_width: 1|g' kubernetes/server/base/buildbarn/config-worker.yml"
+    - "sed -i 's|execute_stage_width: 4|execute_stage_width: 1|g' kubernetes/server/base/buildfarm/config-worker.yml"
   script:
     - *re_deployment_and_build_template
     - "time=$(kubectl -n buildfarm logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
