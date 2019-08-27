@@ -13,7 +13,8 @@ spec:
         image: buildstream/buildstream:nightly
         command: ["/bin/bash", "-c"]
         args:
-         - cp /config/project.conf /buildstream/doc/examples/autotools/project.conf;
+         - mkdir -p /buildstream/doc/examples/autotools;
+           cp /config/project.conf /buildstream/doc/examples/autotools/project.conf;
            cd /buildstream/doc/examples/autotools;
            cat project.conf;
            bst --debug --verbose build hello.bst
