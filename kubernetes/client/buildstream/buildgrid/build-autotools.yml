@@ -8,31 +8,38 @@ spec:
     metadata:
       name: build-autotools
     spec:
+      initContainers:
+        - name: pull-repo
+          image: alpine/git
+          args:
+            - clone
+            - --single-branch
+            - --
+            - https://gitlab.com/BuildStream/buildstream.git
+            - /repo
+          volumeMounts:
+            - name: bst-repo
+              mountPath: /repo
       containers:
       - name: build-autotools
         image: buildstream/buildstream:nightly
         command: ["/bin/bash", "-c"]
         args:
-         - cd /autotools;
-           cat project.conf;
+         - cd /project;
+           cat /server-conf/project-server.conf | tee -a project.conf;
            bst --debug --verbose build hello.bst
         volumeMounts:
-          - name: autotools
-            mountPath: /autotools
-          - name: elements
-            mountPath: /autotools/elements
-          - name: base
-            mountPath: /autotools/elements/base
+          - name: bst-repo
+            mountPath: /project
+            subPath: doc/examples/autotools
+          - name: server-conf
+            mountPath: /server-conf
       volumes:
-        - name: autotools
+        - name: bst-repo
+          emptyDir: {}
+        - name: server-conf
           configMap:
-            name: bst-autotools
-        - name: elements
-          configMap:
-            name: bst-elements
-        - name: base
-          configMap:
-            name: bst-base
+            name: bst-server
       restartPolicy: Never
   backoffLimit: 0
 
@@ -40,23 +47,10 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: bst-autotools
+  name: bst-server
   namespace: buildgrid
 data:
-  project.conf: |
-    # Unique project name
-    name: autotools
-
-    # Required BuildStream format version
-    format-version: 9
-
-    # Subdirectory where elements are stored
-    element-path: elements
-
-    # Define some aliases for the tarballs we download
-    aliases:
-      alpine: https://bst-integration-test-images.ams3.cdn.digitaloceanspaces.com/
-      gnu: http://ftpmirror.gnu.org/gnu/automake/
+  project-server.conf: |
 
     remote-execution:
       execution-service:
@@ -65,61 +59,3 @@ data:
         url: http://buildgrid-stack:50051
       action-cache-service:
         url: http://buildgrid-stack:50051
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: bst-elements
-  namespace: buildgrid
-data:
-  base.bst: |
-    kind: stack
-    description: Base stack
-
-    depends:
-      - base/alpine.bst
-  hello.bst: |
-    kind: autotools
-    description: |
-
-        Hello world example from automake
-
-    variables:
-
-      # The hello world example lives in the doc/amhello folder.
-      #
-      # Set the %{command-subdir} variable to that location
-      # and just have the autotools element run its commands there.
-      #
-      command-subdir: doc/amhello
-
-    sources:
-    - kind: tar
-      url: gnu:automake-1.16.tar.gz
-      ref: 80da43bb5665596ee389e6d8b64b4f122ea4b92a685b1dbd813cd1f0e0c2d83f
-
-    depends:
-      - base.bst
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: bst-base
-  namespace: buildgrid
-data:
-  alpine.bst: |
-    kind: import
-    description: |
-
-        Alpine Linux base runtime
-
-    sources:
-    - kind: tar
-
-      # This is a post doctored, trimmed down system image
-      # of the Alpine linux distribution.
-      #
-      url: alpine:integration-tests-base.v1.x86_64.tar.xz
-      ref: 3eb559250ba82b64a68d86d0636a6b127aa5f6d25d3601a79f79214dc9703639
