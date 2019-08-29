@@ -8,42 +8,49 @@ spec:
     metadata:
       name: build-autotools
     spec:
+      initContainers:
+        - name: pull-repo
+          image: alpine/git
+          args:
+            - clone
+            - --single-branch
+            - --
+            - https://gitlab.com/BuildStream/buildstream.git
+            - /repo
+          volumeMounts:
+            - name: bst-repo
+              mountPath: /repo
       containers:
       - name: build-autotools
-        image: remoteapistesting/buildstream-master-extra:latest
+        image: buildstream/buildstream:nightly
         command: ["/bin/bash", "-c"]
         args:
-         - cp /config/project.conf /buildstream/doc/examples/autotools/project.conf;
-           cd /buildstream/doc/examples/autotools;
-           cat project.conf;
+         - cd /project;
+           cat /server-conf/project-server.conf | tee -a project.conf;
            bst --debug --verbose build hello.bst
         volumeMounts:
-          - mountPath: /config
-            name: config
+          - name: bst-repo
+            mountPath: /project
+            subPath: doc/examples/autotools
+          - name: server-conf
+            mountPath: /server-conf
       volumes:
-        - configMap:
-            name: bst-config
-          name: config
+        - name: bst-repo
+          emptyDir: {}
+        - name: server-conf
+          configMap:
+            name: bst-server
       restartPolicy: Never
   backoffLimit: 0
 
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bst-server
+  namespace: buildgrid
 data:
-  project.conf: |
-    # Unique project name
-    name: autotools
-
-    # Required BuildStream format version
-    format-version: 9
-
-    # Subdirectory where elements are stored
-    element-path: elements
-
-    # Define some aliases for the tarballs we download
-    aliases:
-      alpine: https://bst-integration-test-images.ams3.cdn.digitaloceanspaces.com/
-      gnu: http://ftpmirror.gnu.org/gnu/automake/
+  project-server.conf: |
 
     remote-execution:
       execution-service:
@@ -52,8 +59,3 @@ data:
         url: http://buildgrid-stack:50051
       action-cache-service:
         url: http://buildgrid-stack:50051
-
-kind: ConfigMap
-metadata:
-  name: bst-config
-  namespace: buildgrid
