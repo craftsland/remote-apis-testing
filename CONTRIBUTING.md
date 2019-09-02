@@ -53,15 +53,19 @@ If the commit is a non functional documentation change e.g. a change to `README.
 For some good tips, please see [The seven rules of a great Git commit message](https://chris.beams.io/posts/git-commit/#seven-rules)
 
 
-### Cloud Resources
+## Cloud Resources
 
 The CI pipelines spin up a kubernetes cluster on a cloud platform and therefore come
 at a cost. Some qwerks with the pipeline must be considered when working on patches and
 triggering pipelines. Most notably, cancelling a pipeline will cancel the cleanup job and
 therefore leave the kubernetes cluster running. If this does happen, please check [MAINTAINERS.md](MAINTAINERS.md)
-for the contact details of someone who should have administrator access to the cloud services. Maintainers should 
-check for clusters which have not been torn down and manually tear these down after ensuring that they are not 
-in use by any active pipeline. 
+for the contact details of someone who should have administrator access to the cloud services. 
+
+### Maintainer resource cleanup guide
+
+When cleaning up resources which have escaped cleanup through some means, it is crucial to delete several resources. First delete the cluster which can be found on the
+`Services -> Compute -> EKS` page. Secondly, navigate to `Services -> Compute -> EC2` and check `Volumes`, `Load Balancers`, `Auto Scaling Groups` and `Security Groups` for resources which are related to the pipelines which have avoided cleanup. If performing a large cleanup of resources, ensure all pipelines are finished and it is 
+safe to delete all remaining resources.
 
 ## Commit access
 
