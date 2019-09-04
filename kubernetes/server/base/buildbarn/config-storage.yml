@@ -23,7 +23,8 @@ data:
           }
         }
       },
-      "allowAcUpdatesForInstances": ["ubuntu16-04"]
+      "allowAcUpdatesForInstances": ["ubuntu16-04"],
+      "jaeger": {},
     }
 kind: ConfigMap
 metadata:
