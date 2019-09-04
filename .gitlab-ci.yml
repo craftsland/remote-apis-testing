@@ -178,14 +178,14 @@ terraform-infra:
       set -x
       export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
       kubectl kustomize kubernetes/server/overlays/$RE_NAME/$CLIENT_NAME | kubectl create -f -
-      until kubectl -n $RE_NAME get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n $RE_NAME get pods; sleep 10; done
+      ./dev/wait-kubernetes-pods.sh $RE_NAME
       kubectl get all --all-namespaces
       # TODO: See issue #14
       sleep 30
       kubectl --namespace monitoring port-forward svc/grafana 3000 &
       kubectl create -f kubernetes/client/$CLIENT_NAME/$RE_NAME/$JOB_NAME.yml
       kubectl -n $RE_NAME describe jobs/$JOB_NAME
-      until kubectl -n $RE_NAME get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n $RE_NAME get pods; sleep 10; done
+      ./dev/wait-kubernetes-pods.sh $RE_NAME
       kubectl -n $RE_NAME logs --follow jobs/$JOB_NAME
       kubectl -n $RE_NAME wait --for=condition=complete --timeout=5s job/$JOB_NAME
       node dev/grafana-snapshot.js 85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods $RE_NAME $(date +%s%3N -d -45minutes) $(date +%s%3N -d +45minutes) > metrics/$RE_NAME-cpu.txt
@@ -228,7 +228,7 @@ deploy-monitoring:
     - until kubectl get customresourcedefinitions servicemonitors.monitoring.coreos.com ; do date; sleep 1; echo ""; done
     - until kubectl get customresourcedefinitions prometheuses.monitoring.coreos.com ; do date; sleep 1; echo ""; done
     - find kube-prometheus/manifests/ -type f ! -name '0prometheus-operator-*CustomResourceDefinition.yaml' -exec kubectl apply -f {} \;
-    - until kubectl -n monitoring get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n monitoring get pods; sleep 10; done
+    - ./dev/wait-kubernetes-pods.sh monitoring
     - kubectl get all --all-namespaces
     - set +x
 
