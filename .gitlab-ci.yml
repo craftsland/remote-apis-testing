@@ -174,7 +174,7 @@ terraform-infra:
     untracked: true
     expire_in: 1 week
 
-.re-deployment-and-build-template: &re_deployment_and_build_template |
+.re-deploy-server-template: &re_deploy_server |
       set -x
       export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
       kubectl kustomize kubernetes/server/overlays/$RE_NAME/$CLIENT_NAME | kubectl create -f -
@@ -183,6 +183,10 @@ terraform-infra:
       # TODO: See issue #14
       sleep 30
       kubectl --namespace monitoring port-forward svc/grafana 3000 &
+      set +x
+
+.re-run-job: &re_run_job |
+      set -x
       kubectl create -f kubernetes/client/$CLIENT_NAME/$RE_NAME/$JOB_NAME.yml
       kubectl -n $RE_NAME describe jobs/$JOB_NAME
       ./dev/wait-kubernetes-pods.sh $RE_NAME
@@ -255,7 +259,8 @@ buildbarn-bazel-abseil:
     - *before_buildbarn_builds
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildbarn/build-abseil.yml
   script:
-    - *re_deployment_and_build_template
+    - *re_deploy_server
+    - *re_run_job
     - curl -o badges/buildbarn-bazel-deployed.svg $BADGE_URL/buildbarn-deployed-green.svg
     - *re_post_build_logging
   after_script:
@@ -283,7 +288,8 @@ buildfarm-bazel-abseil:
     - *before_monitoring
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildfarm/build-abseil.yml
   script:
-    - *re_deployment_and_build_template
+    - *re_deploy_server
+    - *re_run_job
     - curl -o badges/buildfarm-bazel-deployed.svg $BADGE_URL/buildfarm-deployed-green.svg
     - *re_post_build_logging
   after_script:
@@ -313,7 +319,8 @@ buildgrid-bazel-abseil:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildgrid/build-abseil.yml
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
   script:
-    - *re_deployment_and_build_template
+    - *re_deploy_server
+    - *re_run_job
     - curl -o badges/buildgrid-bazel-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
     - *re_post_build_logging
   after_script:
@@ -339,7 +346,8 @@ buildgrid-buildstream-autotools:
     - *before_kubernetes
     - *before_monitoring
   script:
-    - *re_deployment_and_build_template
+    - *re_deploy_server
+    - *re_run_job
     - curl -o badges/buildgrid-buildstream-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
     - *re_post_build_logging
   after_script:
@@ -368,7 +376,8 @@ buildbarn-bazel-bazel:
     - *before_buildbarn_builds
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildbarn/build-bazel.yml
   script:
-    - *re_deployment_and_build_template
+    - *re_deploy_server
+    - *re_run_job
     - "time=$(kubectl -n buildbarn logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildbarn-time.svg $BADGE_URL/buildbarn_bazel-$time-green.svg
     - *re_post_build_logging
@@ -403,7 +412,8 @@ buildbarn-bazel-bazel-no-concurrency:
     # Replace configuration value to set concurrency to 1
     - "sed -i 's|\"concurrency\": 4|\"concurrency\": 1|g' kubernetes/server/base/buildbarn/config-worker.yml"
   script:
-    - *re_deployment_and_build_template
+    - *re_deploy_server
+    - *re_run_job
     - "time=$(kubectl -n buildbarn logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildbarn-concurrency-1-time.svg $BADGE_URL/buildbarn_bazel-$time-green.svg
     - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-cpu.txt
@@ -439,7 +449,8 @@ buildfarm-bazel-bazel:
     - *before_monitoring
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildfarm/build-bazel.yml
   script:
-    - *re_deployment_and_build_template
+    - *re_deploy_server
+    - *re_run_job
     - "time=$(kubectl -n buildfarm logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel-$time-green.svg
     - *re_post_build_logging
@@ -473,7 +484,8 @@ buildfarm-bazel-bazel-no-concurrency:
     # Replace configuration value to set concurrency to 1
     - "sed -i 's|execute_stage_width: 4|execute_stage_width: 1|g' kubernetes/server/base/buildfarm/config-worker.yml"
   script:
-    - *re_deployment_and_build_template
+    - *re_deploy_server
+    - *re_run_job
     - "time=$(kubectl -n buildfarm logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildfarm-concurrency-1-time.svg $BADGE_URL/buildfarm_bazel-$time-green.svg
     - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-cpu.txt
@@ -510,7 +522,8 @@ buildgrid-bazel-bazel:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildgrid/build-bazel.yml
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
   script:
-    - *re_deployment_and_build_template
+    - *re_deploy_server
+    - *re_run_job
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildgrid-time.svg $BADGE_URL/buildgrid_bazel-$time-green.svg
     - *re_post_build_logging
@@ -543,7 +556,8 @@ buildgrid-recc-gnuhello:
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/recc/buildgrid/build-gnuhello.yml
     - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
   script:
-    - *re_deployment_and_build_template
+    - *re_deploy_server
+    - *re_run_job
     - "time=$(kubectl -n buildgrid logs --tail=10 jobs/$JOB_NAME | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
     - curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
     - *re_post_build_logging
