@@ -11,3 +11,6 @@ resources:
 - frontend.yaml
 - worker-ubuntu16-04.yaml
 - config-scheduler.yml
+- trace-monitoring.yaml
+- jaeger-cassandra.yaml
+- jaeger-configuration.yaml

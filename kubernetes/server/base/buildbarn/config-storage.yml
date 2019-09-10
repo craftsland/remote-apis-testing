@@ -24,7 +24,9 @@ data:
         }
       },
       "allowAcUpdatesForInstances": ["ubuntu16-04"],
-      "jaeger": {},
+      "jaeger": {
+        "collector_endpoint": "http://jaeger-collector:14268/api/traces"
+      }
     }
 kind: ConfigMap
 metadata:
