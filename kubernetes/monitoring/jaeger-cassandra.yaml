@@ -5,7 +5,7 @@ items:
   kind: Service
   metadata:
     name: cassandra
-    namespace: buildbarn
+    namespace: jaeger
     labels:
       app: cassandra
       app.kubernetes.io/name: cassandra
@@ -32,7 +32,7 @@ items:
   kind: StatefulSet
   metadata:
     name: cassandra
-    namespace: buildbarn
+    namespace: jaeger
     labels:
       app: cassandra
       app.kubernetes.io/name: cassandra
@@ -104,7 +104,7 @@ items:
   kind: Job
   metadata:
     name: jaeger-cassandra-schema-job
-    namespace: buildbarn
+    namespace: jaeger
     labels:
       app: cassandra-schema
       app.kubernetes.io/name: cassandra-schema

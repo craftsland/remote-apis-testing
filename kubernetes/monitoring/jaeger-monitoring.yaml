@@ -5,7 +5,7 @@ items:
   kind: Service
   metadata:
     name: jaeger-collector
-    namespace: buildbarn
+    namespace: jaeger
     labels:
       app: jaeger
       app.kubernetes.io/name: jaeger
@@ -28,7 +28,7 @@ items:
   kind: Deployment
   metadata:
     name: jaeger-collector
-    namespace: buildbarn
+    namespace: jaeger
     labels:
       app: jaeger
       app.kubernetes.io/name: jaeger
@@ -81,7 +81,7 @@ items:
   kind: Service
   metadata:
     name: jaeger-query
-    namespace: buildbarn
+    namespace: jaeger
     labels:
       app: jaeger
       app.kubernetes.io/name: jaeger
@@ -100,7 +100,7 @@ items:
   kind: Deployment
   metadata:
     name: jaeger-query
-    namespace: buildbarn
+    namespace: jaeger
     labels:
       app: jaeger
       app.kubernetes.io/name: jaeger

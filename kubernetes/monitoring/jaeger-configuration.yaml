@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: jaeger-configuration
-  namespace: buildbarn
+  namespace: jaeger
   labels:
     app: jaeger
     app.kubernetes.io/name: jaeger
