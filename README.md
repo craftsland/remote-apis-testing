@@ -28,7 +28,7 @@ See project [Roadmap](https://gitlab.com/remote-apis-testing/remote-apis-testing
 
 |             | BuildGrid                  | Buildfarm            | Buildbarn            |
 |-------------|----------------------------|----------------------|----------------------|
-| Bazel       | TBA                        | TBA                  | TBA                  |
+| Bazel       | TBA                        | TBA                  | OK                   |
 | BuildStream | TBA                        | TBA                  | TBA                  |
 | RECC        | TBA                        | TBA                  | TBA                  |
 | Goma        | TBA                        | TBA                  | TBA                  |
