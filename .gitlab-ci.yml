@@ -236,6 +236,27 @@ deploy-monitoring:
     - kubectl get all --all-namespaces
     - set +x
 
+deploy-jaeger:
+  stage: monitoring
+  image: $BASE_IMAGE
+  dependencies:
+    - terraform-infra
+  before_script:
+    - *before_kubernetes
+    - *before_monitoring
+  script:
+    - set -x
+    - export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
+    - kubectl create namespace jaeger
+    - kubectl create -f kubernetes/monitoring/jaeger-configuration.yaml
+    - kubectl create -f kubernetes/monitoring/jaeger-cassandra.yaml
+    - until kubectl -n jaeger get pods --field-selector=status.phase==Succeeded 2>&1 | grep -q "jaeger-cassandra-schema-job"; do kubectl -n jaeger get pods; sleep 10; done
+    - kubectl -n jaeger delete job jaeger-cassandra-schema-job
+    - kubectl create -f kubernetes/monitoring/jaeger-monitoring.yaml
+    - until kubectl -n jaeger get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n jaeger get pods; sleep 10; done
+    - kubectl get all --all-namespaces
+    - set +x
+
 .before-buildbarn-builds: &before_buildbarn_builds |
       for service in frontend scheduler-ubuntu16-04 storage worker-ubuntu16-04; do
         sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildbarn/${service}.yaml
