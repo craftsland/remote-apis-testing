@@ -24,6 +24,18 @@ See project [Roadmap](https://gitlab.com/remote-apis-testing/remote-apis-testing
 
 ## Status
 
+### Remote Cache (only)
+
+|             | BuildGrid                  | Buildfarm            | Buildbarn            |
+|-------------|----------------------------|----------------------|----------------------|
+| Bazel       | TBA                        | TBA                  | OK                   |
+| BuildStream | TBA                        | TBA                  | TBA                  |
+| RECC        | TBA                        | TBA                  | TBA                  |
+| Goma        | TBA                        | TBA                  | TBA                  |
+
+
+### Remote Execution
+
 This shows the status of client implementations against server implementations in a set of tests.
 
 |             | BuildGrid                  | Buildfarm            | Buildbarn            |
@@ -40,7 +52,7 @@ This shows the status of client implementations against server implementations i
 [recc-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-recc-deployed.svg
 
 
-## Timing
+#### Timing
 
 This shows a build of Bazel(project) with Bazel(client) to produce end to end build times.
 
