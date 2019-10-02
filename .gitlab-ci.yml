@@ -284,6 +284,7 @@ buildbarn-bazel-abseil:
     - *re_run_job
     - curl -o badges/buildbarn-bazel-deployed.svg $BADGE_URL/buildbarn-deployed-green.svg
     - *re_post_build_logging
+    - dev/save-traces.sh
   after_script:
     - *re_cleanup_template
   artifacts:
@@ -292,6 +293,7 @@ buildbarn-bazel-abseil:
       - badges/
       - metrics/
       - logs/
+      - traces/
   allow_failure: true
 
 buildfarm-bazel-abseil:
