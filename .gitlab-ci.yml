@@ -557,7 +557,6 @@ buildgrid-recc-gnuhello:
   script:
     - *re_deploy_server
     - *re_run_job
-    - "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
     - curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
     - *re_post_build_logging
   after_script:
