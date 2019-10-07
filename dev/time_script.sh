@@ -9,7 +9,6 @@ then
   case $2 in
     bazel)
       time=$(kubectl -n $1 logs --tail=10 jobs/$3 | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')
-      ;;
       echo $time
       ;;
     *)
