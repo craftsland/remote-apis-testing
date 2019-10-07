@@ -450,7 +450,7 @@ buildfarm-bazel-bazel:
   script:
     - *re_deploy_server
     - *re_run_job
-    - "time=$(kubectl -n buildfarm logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
     - curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel-$time-green.svg
     - *re_post_build_logging
   after_script:
@@ -485,7 +485,7 @@ buildfarm-bazel-bazel-no-concurrency:
   script:
     - *re_deploy_server
     - *re_run_job
-    - "time=$(kubectl -n buildfarm logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
     - curl -o badges/buildfarm-concurrency-1-time.svg $BADGE_URL/buildfarm_bazel-$time-green.svg
     - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-cpu.txt
     - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-concurrency-1-cpu.pdf
@@ -523,7 +523,7 @@ buildgrid-bazel-bazel:
   script:
     - *re_deploy_server
     - *re_run_job
-    - "time=$(kubectl -n buildgrid logs --tail=10 jobs/build-bazel | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
     - curl -o badges/buildgrid-time.svg $BADGE_URL/buildgrid_bazel-$time-green.svg
     - *re_post_build_logging
   after_script:
@@ -557,7 +557,7 @@ buildgrid-recc-gnuhello:
   script:
     - *re_deploy_server
     - *re_run_job
-    - "time=$(kubectl -n buildgrid logs --tail=10 jobs/$JOB_NAME | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }')"
+    - "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
     - curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
     - *re_post_build_logging
   after_script:
