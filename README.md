@@ -1,28 +1,15 @@
-## Remote Execution API Test Suite
+# Remote Execution API Test Suite
 
-This project provides a test suite designed to be an automated and independent 'acid test' for the [Remote Execution API](https://github.com/bazelbuild/remote-apis) clients and server implementations. You can find us on slack, feel free to come and chat: please use this [invite link](http://tiny.cc/tihy5y) to join our channel. We welcome contributions, please see our [contributing guide](CONTRIBUTING.md).
+This project provides a test suite designed to be an automated and independent 'acid test' for the [Remote Execution API](https://github.com/bazelbuild/remote-apis) clients and server implementations. You can find us in #remote-apis-testing on [BuildTeam Slack](https://join.slack.com/t/buildteamworld/shared_invite/enQtMzkxNzE0MDMyMDY1LTJiMDg4OWI4MWEwMDAxNGEyYjA3Zjk5ZDQwN2MwNWVkM2NlZTIxOWYxNGJmYTAzYmFlMWUwYjhmNWFkZGU0YTQ), feel free to come and chat: please use this [invite link](http://tiny.cc/tihy5y) to join our channel. 
 
-Initial targets include:
-* [Bazel](https://bazel.build/)
-* [Buildbarn](https://github.com/buildbarn)
-* [Buildfarm](https://github.com/bazelbuild/bazel-buildfarm)
-* [BuildGrid](https://gitlab.com/BuildGrid/buildgrid)
+The initial goal of the project was to produce a compatibility matrix which showed the status of which projects worked with which others. We began by building the [Abseil](https://github.com/abseil) library, with the latest version of [Bazel](https://github.com/bazelbuild/bazel), against the latest versions of Buildbarn, Buildfarm and BuildGrid. We've since added [BuildStream](https://gitlab.com/BuildStream/buildstream) and [RECC](https://gitlab.com/bloomberg/recc), and would like to add more - if you know of another build tool we could add to the tests, please let us know ! 
 
-Potential additional targets are:
-* [RECC](https://gitlab.com/bloomberg/recc)
-* [BuildStream](https://gitlab.com/BuildStream/buildstream)
-* [Goma](https://chromium.googlesource.com/infra/goma/server/#)
+This initial target was achieved using Gitlab CI, Terraform and Kubernetes with AWS. The pipelines run once a week on Saturdays and also every time a branch is merged to master (this will happen via an approved merge request). After this, we started to capture performance metrics: end-to-end build times, CPU and memory usage. See the [metrics](https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/Metrics) page on the wiki.
 
-The initial aim is to test the latest version of Bazel against the latest versions of Buildbarn, Buildfarm and BuildGrid on a continuous basis, producing a compatibility matrix
-
-The initial test will be builds of [Abseil](https://github.com/abseil) and [Bazel](https://github.com/bazelbuild/bazel). This will be achieved using Gitlab CI, Terraform and Kubernetes with AWS, running once a week on Saturdays and every time a branch is merged to master (this will happen via an approved merge request).
-
-As a later step, we may want to develop more granular testing of the API, running through all of the gRPC calls and assessing them against the protocol defined in the API. 
-
-See project [Roadmap](https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/roadmap) for more details.
+We welcome all contributions, please see our [contributing guide](CONTRIBUTING.md), and to check out what our future plans are, please see the project [Roadmap](https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/roadmap). 
 
 
-## Status
+#### Compatibility Matrix
 
 This shows the status of client implementations against server implementations in a set of tests.
 
@@ -40,9 +27,9 @@ This shows the status of client implementations against server implementations i
 [recc-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-recc-deployed.svg
 
 
-## Timing
+#### Basic Performance Testing
 
-This shows a build of Bazel(project) with Bazel(client) to produce end to end build times.
+This shows a build of Bazel(project) with Bazel(client) to produce end-to-end build times.
 
 |                                          | CAS       | No. Workers | Concurrency per worker |
 |------------------------------------------|-----------|-------------|------------------------|
@@ -58,8 +45,14 @@ This shows a build of Bazel(project) with Bazel(client) to produce end to end bu
 [bazel-buildfarm-time-no-concurrency]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-concurrency-1-time.svg
 [bazel-buildbarn-time-no-concurrency]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-concurrency-1-time.svg
 
+#### Granular Performance Metrics
 
-### Terraform
+Please see the [metrics](https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/Metrics) page on the wiki.
+
+
+## Pipeline Set-up
+
+#### Terraform
 
 Terraform deployments can be found in the `terraform/` folder.
 
