@@ -14,6 +14,6 @@ spec:
         command:
          - /bin/bash
          - -c
-         - /bin/bazel-build-wrapper https://github.com/bazelbuild/bazel 0.26.1 --sandbox_debug --incompatible_new_actions_api=false --incompatible_no_support_tools_in_action_inputs=false --remote_executor=grpc://buildgrid-stack:50051 --remote_instance_name= //src:bazel
+         - /bin/bazel-build-wrapper https://github.com/bazelbuild/bazel 1.1.0 --sandbox_debug --incompatible_new_actions_api=false --incompatible_no_support_tools_in_action_inputs=false --remote_executor=grpc://buildgrid-stack:50051 --remote_instance_name= //src:bazel
       restartPolicy: Never
   backoffLimit: 0
