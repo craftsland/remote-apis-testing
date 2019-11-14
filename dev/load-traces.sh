@@ -15,7 +15,7 @@ else
 
         kubectl -n jaeger delete job jaeger-cassandra-schema-job
 
-        kubectl create -f "$2"/jaeger-monitoring.yaml
+        kubectl create -f "$2"/jaeger-query.yaml
 
         until kubectl -n jaeger get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n jaeger get pods; sleep 10; done
 

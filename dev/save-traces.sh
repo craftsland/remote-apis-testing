@@ -10,5 +10,5 @@ do
         kubectl exec -n jaeger svc/cassandra -- cqlsh -e "copy jaeger_v1_dc1.$TABLE to STDOUT with NULL='<null>'" > traces/${TABLE}.csv
 
         echo "Truncating $TABLE table"
-        kubectl exec -n jaeger svc/cassandra -i -- cqlsh -e "truncate jaeger_v1_dc1.$TABLE" < ${TABLE}.csv
+        #kubectl exec -n jaeger svc/cassandra -i -- cqlsh -e "truncate jaeger_v1_dc1.$TABLE" < traces/${TABLE}.csv
 done
