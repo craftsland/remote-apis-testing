@@ -22,6 +22,7 @@ stages:
   - buildbarn-speedtest-no-concurrency
   - buildfarm-speedtest-no-concurrency
   - cleanup-and-deploy
+  - wiki
 
 .before-badge-template: &before_badge |
   apt-get update && apt install -yq curl
@@ -586,7 +587,7 @@ cleanup-terraform-job:
   when: always
 
 wiki:
-  stage: cleanup-and-deploy
+  stage: wiki
   image: $BASE_IMAGE
   before_script:
     - *before_badge
@@ -640,52 +641,14 @@ pages:
   before_script:
     - *before_badge
   script:
-    - |
-      if [ ! -f "badges/buildbarn-bazel-deployed.svg" ]; then
-        curl -o badges/buildbarn-bazel-deployed.svg $BADGE_URL/buildbarn-failed-red.svg
-      fi
-    - |
-      if [ ! -f "badges/buildfarm-bazel-deployed.svg" ]; then
-        curl -o badges/buildfarm-bazel-deployed.svg $BADGE_URL/buildfarm-failed-red.svg
-      fi
-    - |
-      if [ ! -f "badges/buildgrid-bazel-deployed.svg" ]; then
-        curl -o badges/buildgrid-bazel-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
-      fi
-    - |
-      if [ ! -f "badges/buildgrid-buildstream-deployed.svg" ]; then
-        curl -o badges/buildgrid-buildstream-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
-      fi
-    - |
-      if [ ! -f "badges/buildgrid-recc-deployed.svg" ]; then
-        curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-failed-red.svg
-      fi
-    - |
-      if [ ! -f "badges/buildbarn-time.svg" ]; then
-        curl -o badges/buildbarn-time.svg $BADGE_URL/buildbarn_bazel_build-failed-red.svg
-      fi
-    - |
-      if [ ! -f "badges/buildfarm-time.svg" ]; then
-        curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel_build-failed-red.svg
-      fi
-    - |
-      if [ ! -f "badges/buildbarn-concurrency-1-time.svg" ]; then
-        curl -o badges/buildbarn-concurrency-1-time.svg $BADGE_URL/buildbarn_bazel_build-failed-red.svg
-      fi
-    - |
-      if [ ! -f "badges/buildfarm-concurrency-1-time.svg" ]; then
-        curl -o badges/buildfarm-concurrency-1-time.svg $BADGE_URL/buildfarm_bazel_build-failed-red.svg
-      fi
-    - |
-      if [ ! -f "badges/buildgrid-time.svg" ]; then
-        curl -o badges/buildgrid-time.svg $BADGE_URL/buildgrid_bazel_build-failed-red.svg
-      fi
+    - ./dev/badge_script.sh $BADGE_URL
     - mkdir public
     - cp badges/* public/
   artifacts:
     name: pages
     paths:
     - public/
+    - badges/
   when: always
   # NOTE: Never enable this job in WIP branches!!
   only:
