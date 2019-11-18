@@ -14,7 +14,9 @@ stages:
   - build-images-and-terraform
   - monitoring
   - build-with-buildstream
-  - build-with-bazel
+  - buildbarn-build-with-bazel
+  - buildfarm-build-with-bazel
+  - buildgrid-build-with-bazel
   - build-with-recc
   - buildgrid-speedtest
   - buildbarn-speedtest
@@ -265,7 +267,7 @@ deploy-jaeger:
 
 
 buildbarn-bazel-abseil:
-  stage: build-with-bazel
+  stage: buildbarn-build-with-bazel
   image: $BASE_IMAGE
   variables:
     RE_NAME: buildbarn
@@ -297,7 +299,7 @@ buildbarn-bazel-abseil:
   allow_failure: true
 
 buildfarm-bazel-abseil:
-  stage: build-with-bazel
+  stage: buildfarm-build-with-bazel
   image: $BASE_IMAGE
   variables:
     RE_NAME: buildfarm
@@ -327,7 +329,7 @@ buildfarm-bazel-abseil:
   allow_failure: true
 
 buildgrid-bazel-abseil:
-  stage: build-with-bazel
+  stage: buildgrid-build-with-bazel
   image: $BASE_IMAGE
   dependencies:
     - terraform-infra
