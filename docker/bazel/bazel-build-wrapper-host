@@ -8,15 +8,12 @@ bazel_args="${@:3}"
 bazel_target="${@: -1}"
 
 echo "## bazelrc file:"
-cat bazelrc-host
+cat bazelrc
 echo "## end of bazelrc\n"
 
 git clone $git_repo repo
 cd repo
 git checkout $git_ref
-
-# Rename bazel_toolchains if present
-sed -i -e 's/"bazel_toolchains"/"bazel_toolchains_old"/' WORKSPACE
 
 echo "## WORKSPACE file:"
 cat WORKSPACE

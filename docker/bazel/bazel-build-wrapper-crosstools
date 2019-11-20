@@ -15,10 +15,17 @@ git clone $git_repo repo
 cd repo
 git checkout $git_ref
 
+sed -i 's/\(zip -qd $@\)/chmod +w $@ \&\& \1/' third_party/BUILD
+
 # Rename bazel_toolchains if present
-sed -i -e 's/"bazel_toolchains"/"bazel_toolchains_old"/' WORKSPACE
-# Append toolchain to the workspace
-cat /src/workspace >> WORKSPACE
+if grep "bazel_toolchains" WORKSPACE; then
+  sed -i -e 's/"bazel_toolchains"/"bazel_toolchains_old"/' WORKSPACE
+  ## Append toolchain to the workspace
+  export WORKSPACEFILE=$(printf "%q" "$(cat /src/workspace)" | sed -e s/\'//g |sed -e 's/\$//')
+  sed -ine "/^load(\"@bazel_toolchains/i ${WORKSPACEFILE}\n" WORKSPACE
+else
+  cat /src/workspace >> WORKSPACE
+fi
 
 echo "## WORKSPACE file:"
 cat WORKSPACE
