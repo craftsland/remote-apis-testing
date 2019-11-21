@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: jaeger-collector
+    namespace: jaeger
+    labels:
+      app: jaeger
+      app.kubernetes.io/name: jaeger
+      app.kubernetes.io/component: collector
+  spec:
+    ports:
+    - name: jaeger-collector-tchannel
+      port: 14267
+      protocol: TCP
+      targetPort: 14267
+    - name: jaeger-collector-http
+      port: 14268
+      protocol: TCP
+      targetPort: 14268
+    selector:
+      app.kubernetes.io/name: jaeger
+      app.kubernetes.io/component: collector
+    type: ClusterIP
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    name: jaeger-collector
+    namespace: jaeger
+    labels:
+      app: jaeger
+      app.kubernetes.io/name: jaeger
+      app.kubernetes.io/component: collector
+  spec:
+    replicas: 1
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          app: jaeger
+          app.kubernetes.io/name: jaeger
+          app.kubernetes.io/component: collector
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "14268"
+      spec:
+        containers:
+        - image: jaegertracing/jaeger-collector
+          name: jaeger-collector
+          args:
+            - "--config-file=/conf/collector.yaml"
+          ports:
+          - containerPort: 14267
+            protocol: TCP
+          - containerPort: 14268
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: "/"
+              port: 14269
+          volumeMounts:
+            - name: jaeger-configuration-volume
+              mountPath: /conf
+          env:
+            - name: SPAN_STORAGE_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: jaeger-configuration
+                  key: span-storage-type
+        volumes:
+          - configMap:
+              name: jaeger-configuration
+              items:
+                - key: collector
+                  path: collector.yaml
+            name: jaeger-configuration-volume
