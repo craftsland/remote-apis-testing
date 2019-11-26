@@ -656,7 +656,7 @@ wiki:
         fi
         BUILD_TEXT="$BUILD_TEXT$BADGE$BR$CPU_PDF $CPU_DASH$BR$IO_PDF $IO_DASH$PIPE_SYM"
       done
-    - echo $PIPE_SYM$DATE_SYM$BR$PIPELINE_SYM$PIPE_SYM$BUILD_TEXT >> metrics.md
+    - sed -i "/-|$/a$PIPE_SYM$DATE_SYM$BR$PIPELINE_SYM$PIPE_SYM$BUILD_TEXT" metrics.md
     - git add .
     - git commit -m "update wiki for $CI_PIPELINE_ID"
     - git push https://remoteapitesting:$ci_wiki_token@gitlab.com/remote-apis-testing/remote-apis-testing.wiki.git
