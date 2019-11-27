@@ -43,10 +43,26 @@ do
   fi
 done
 
+# Incremental times
+for SERVER in
+do
+  if [ ! -f "badges/${SERVER}-incremental-time.svg" ]; then
+    curl -o badges/${SERVER}-incremental-time.svg $BADGE_URL/${SERVER}_bazel-failed-red.svg
+  fi
+done
+
 # Concurrency-1 times
 for SERVER in buildbarn buildfarm
 do
   if [ ! -f "badges/${SERVER}-concurrency-1-time.svg" ]; then
     curl -o badges/${SERVER}-concurrency-1-time.svg $BADGE_URL/${SERVER}_bazel-failed-red.svg
+  fi
+done
+
+# Incremental concurrency-1 times
+for SERVER in
+do
+  if [ ! -f "badges/${SERVER}-concurrency-1-incremental-time.svg" ]; then
+    curl -o badges/${SERVER}-concurrency-1-incremental-time.svg $BADGE_URL/${SERVER}_bazel-failed-red.svg
   fi
 done

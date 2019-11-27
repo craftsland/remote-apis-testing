@@ -189,19 +189,41 @@ terraform-infra:
 
 .re-run-job: &re_run_job |
       set -x
+      export START_TIME=$(date +%s%3N)
       kubectl create -f kubernetes/client/$CLIENT_NAME/$RE_NAME/$JOB_NAME.yml
       kubectl -n $RE_NAME describe jobs/$JOB_NAME
       ./dev/wait-kubernetes-pods.sh $RE_NAME
       kubectl -n $RE_NAME logs --follow jobs/$JOB_NAME
       kubectl -n $RE_NAME wait --for=condition=complete --timeout=5s job/$JOB_NAME
-      node dev/grafana-snapshot.js 85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods $RE_NAME $(date +%s%3N -d -45minutes) $(date +%s%3N -d +45minutes) > metrics/$RE_NAME-cpu.txt
-      cp dashboard.pdf metrics/$RE_NAME-cpu.pdf
-      node dev/grafana-snapshot.js fa49a4706d07a042595b664c87fb33ea/kubernetes-nodes $RE_NAME $(date +%s%3N -d -45minutes) $(date +%s%3N -d +45minutes) > metrics/$RE_NAME-net-disk.txt
-      cp dashboard.pdf metrics/$RE_NAME-net-disk.pdf
+      export END_TIME=$(date +%s%3N)
+      node dev/grafana-snapshot.js 85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods $RE_NAME $START_TIME $END_TIME > metrics/$JOB_NAME-cpu.txt
+      cp dashboard.pdf metrics/$JOB_NAME-cpu.pdf
+      node dev/grafana-snapshot.js fa49a4706d07a042595b664c87fb33ea/kubernetes-nodes $RE_NAME $START_TIME $END_TIME > metrics/$JOB_NAME-net-disk.txt
+      cp dashboard.pdf metrics/$JOB_NAME-net-disk.pdf
+      set +x
+
+.time-bazel-job: &re_time_bazel_job |
+      export "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
+      curl -o badges/${RE_NAME}${BADGE_SUFFIX:-}-time.svg ${BADGE_URL}/${RE_NAME}_${CLIENT_NAME}${BADGE_SUFFIX:-}-${time}-green.svg
+
+.re-prepare-incremental-job: &re_prepare_incremental_job |
+      set -x
+      export INC_JOB_NAME=$JOB_NAME-incremental
+      export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
+      # Delete previous job
+      kubectl delete -n $RE_NAME jobs.batch $JOB_NAME
+      kubectl --namespace monitoring port-forward svc/grafana 3000 &
+      # Copy and alter job resource file for different bazel version and job name
+      cp kubernetes/client/$CLIENT_NAME/$RE_NAME/$JOB_NAME.yml kubernetes/client/$CLIENT_NAME/$RE_NAME/$INC_JOB_NAME.yml
+      sed -i "s|1.1.0|1.2.0|g" kubernetes/client/$CLIENT_NAME/$RE_NAME/$INC_JOB_NAME.yml
+      sed -i "s|$JOB_NAME|$INC_JOB_NAME|g" kubernetes/client/$CLIENT_NAME/$RE_NAME/$INC_JOB_NAME.yml
+      # Set JOB_NAME for re_run_job internals
+      export JOB_NAME=$INC_JOB_NAME
       set +x
 
 .re-post-build-logging: &re_post_build_logging |
       mkdir logs
+      export KUBECONFIG=$PWD/terraform/kubeconfig_k8-cluster-$CI_PIPELINE_ID
       for POD in $(kubectl get pods --namespace $RE_NAME -o name)
       do
         kubectl logs -n $RE_NAME --all-containers $POD > logs/$(echo $POD | sed "s|pod/||g")_log.txt;
@@ -285,9 +307,9 @@ buildbarn-bazel-abseil:
     - *re_deploy_server
     - *re_run_job
     - curl -o badges/buildbarn-bazel-deployed.svg $BADGE_URL/buildbarn-deployed-green.svg
-    - *re_post_build_logging
     - dev/save-traces.sh
   after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -316,8 +338,8 @@ buildfarm-bazel-abseil:
     - *re_deploy_server
     - *re_run_job
     - curl -o badges/buildfarm-bazel-deployed.svg $BADGE_URL/buildfarm-deployed-green.svg
-    - *re_post_build_logging
   after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -347,8 +369,8 @@ buildgrid-bazel-abseil:
     - *re_deploy_server
     - *re_run_job
     - curl -o badges/buildgrid-bazel-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
-    - *re_post_build_logging
   after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -374,8 +396,8 @@ buildgrid-buildstream-autotools:
     - *re_deploy_server
     - *re_run_job
     - curl -o badges/buildgrid-buildstream-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
-    - *re_post_build_logging
   after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -403,11 +425,10 @@ buildbarn-bazel-bazel:
   script:
     - *re_deploy_server
     - *re_run_job
-    - "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
-    - curl -o badges/buildbarn-time.svg $BADGE_URL/buildbarn_bazel-$time-green.svg
-    - *re_post_build_logging
+    - *re_time_bazel_job
     - dev/save-traces.sh
   after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -430,6 +451,7 @@ buildbarn-bazel-bazel-no-concurrency:
     RE_NAME: buildbarn
     CLIENT_NAME: bazel
     JOB_NAME: build-bazel
+    BADGE_SUFFIX: -concurrency-1
   before_script:
     - *before_badge
     - *before_kubernetes
@@ -441,15 +463,14 @@ buildbarn-bazel-bazel-no-concurrency:
   script:
     - *re_deploy_server
     - *re_run_job
-    - "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
-    - curl -o badges/buildbarn-concurrency-1-time.svg $BADGE_URL/buildbarn_bazel-$time-green.svg
-    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-cpu.txt
-    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-concurrency-1-cpu.pdf
-    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-concurrency-1-net-disk.txt
-    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-concurrency-1-net-disk.pdf
-    - *re_post_build_logging
+    - *re_time_bazel_job
+    - mv metrics/$JOB_NAME-cpu.txt metrics/$JOB_NAME-concurrency-1-cpu.txt
+    - mv metrics/$JOB_NAME-cpu.pdf metrics/$JOB_NAME-concurrency-1-cpu.pdf
+    - mv metrics/$JOB_NAME-net-disk.txt metrics/$JOB_NAME-concurrency-1-net-disk.txt
+    - mv metrics/$JOB_NAME-net-disk.pdf metrics/$JOB_NAME-concurrency-1-net-disk.pdf
     - dev/save-traces.sh
   after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -480,10 +501,9 @@ buildfarm-bazel-bazel:
   script:
     - *re_deploy_server
     - *re_run_job
-    - "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
-    - curl -o badges/buildfarm-time.svg $BADGE_URL/buildfarm_bazel-$time-green.svg
-    - *re_post_build_logging
+    - *re_time_bazel_job
   after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -505,6 +525,7 @@ buildfarm-bazel-bazel-no-concurrency:
     RE_NAME: buildfarm
     CLIENT_NAME: bazel
     JOB_NAME: build-bazel
+    BADGE_SUFFIX: -concurrency-1
   before_script:
     - *before_badge
     - *before_kubernetes
@@ -515,14 +536,13 @@ buildfarm-bazel-bazel-no-concurrency:
   script:
     - *re_deploy_server
     - *re_run_job
-    - "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
-    - curl -o badges/buildfarm-concurrency-1-time.svg $BADGE_URL/buildfarm_bazel-$time-green.svg
-    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-cpu.txt
-    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-concurrency-1-cpu.pdf
-    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-concurrency-1-net-disk.txt
-    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-concurrency-1-net-disk.pdf
-    - *re_post_build_logging
+    - *re_time_bazel_job
+    - mv metrics/$JOB_NAME-cpu.txt metrics/$JOB_NAME-concurrency-1-cpu.txt
+    - mv metrics/$JOB_NAME-cpu.pdf metrics/$JOB_NAME-concurrency-1-cpu.pdf
+    - mv metrics/$JOB_NAME-net-disk.txt metrics/$JOB_NAME-concurrency-1-net-disk.txt
+    - mv metrics/$JOB_NAME-net-disk.pdf metrics/$JOB_NAME-concurrency-1-net-disk.pdf
   after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -553,10 +573,9 @@ buildgrid-bazel-bazel:
   script:
     - *re_deploy_server
     - *re_run_job
-    - "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
-    - curl -o badges/buildgrid-time.svg $BADGE_URL/buildgrid_bazel-$time-green.svg
-    - *re_post_build_logging
+    - *re_time_bazel_job
   after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -588,8 +607,8 @@ buildgrid-recc-gnuhello:
     - *re_deploy_server
     - *re_run_job
     - curl -o badges/buildgrid-recc-deployed.svg $BADGE_URL/buildgrid-deployed-green.svg
-    - *re_post_build_logging
   after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
