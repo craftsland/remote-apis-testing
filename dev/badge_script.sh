@@ -47,7 +47,7 @@ done
 for SERVER in buildbarn
 do
   if [ ! -f "badges/${SERVER}-incremental-time.svg" ]; then
-    curl -o badges/${SERVER}-incremental-time.svg $BADGE_URL/${SERVER}_bazel-failed-red.svg
+    curl -o badges/${SERVER}_incremental-time.svg $BADGE_URL/${SERVER}_bazel-failed-red.svg
   fi
 done
 
@@ -63,6 +63,6 @@ done
 for SERVER in buildbarn
 do
   if [ ! -f "badges/${SERVER}-concurrency-1-incremental-time.svg" ]; then
-    curl -o badges/${SERVER}-concurrency-1-incremental-time.svg $BADGE_URL/${SERVER}_bazel-failed-red.svg
+    curl -o badges/${SERVER}_concurrency_1_incremental-time.svg $BADGE_URL/${SERVER}_bazel-failed-red.svg
   fi
 done

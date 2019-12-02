@@ -31,19 +31,23 @@ This shows the status of client implementations against server implementations i
 
 This shows a build of Bazel(project) with Bazel(client) to produce end-to-end build times.
 
-|                                          | CAS       | No. Workers | Concurrency per worker |
-|------------------------------------------|-----------|-------------|------------------------|
-| ![][bazel-buildgrid-time]                | In memory | 1           | 1                      |
-| ![][bazel-buildfarm-time-no-concurrency] | In memory | 1           | 1                      |
-| ![][bazel-buildfarm-time]                | In memory | 1           | 4                      |
-| ![][bazel-buildbarn-time-no-concurrency] | In memory | 1           | 1                      |
-| ![][bazel-buildbarn-time]                | In memory | 1           | 4                      |
+|                                                       | CAS       | No. Workers | Concurrency per worker |
+|-------------------------------------------------------|-----------|-------------|------------------------|
+| ![][bazel-buildgrid-time]                             | In memory | 1           | 1                      |
+| ![][bazel-buildfarm-time-no-concurrency]              | In memory | 1           | 1                      |
+| ![][bazel-buildfarm-time]                             | In memory | 1           | 4                      |
+| ![][bazel-buildbarn-time-no-concurrency]              | In memory | 1           | 1                      |
+| ![][bazel-buildbarn-time-no-concurrency-incremental]  | In memory | 1           | 1                      |
+| ![][bazel-buildbarn-time]                             | In memory | 1           | 4                      |
+| ![][bazel-buildbarn-time-incremental]                 | In memory | 1           | 4                      |
 
 [bazel-buildgrid-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-time.svg
 [bazel-buildfarm-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-time.svg
 [bazel-buildbarn-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-time.svg
-[bazel-buildfarm-time-no-concurrency]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-concurrency-1-time.svg
-[bazel-buildbarn-time-no-concurrency]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-concurrency-1-time.svg
+[bazel-buildfarm-time-no-concurrency]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm_concurrency_1-time.svg
+[bazel-buildbarn-time-no-concurrency]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn_concurrency_1-time.svg
+[bazel-buildbarn-time-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn_incremental-time.svg
+[bazel-buildbarn-time-no-concurrency-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn_concurrency_1_incremental-time.svg
 
 ### Granular Performance Metrics
 
