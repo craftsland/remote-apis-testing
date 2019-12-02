@@ -198,10 +198,10 @@ terraform-infra:
       kubectl -n $RE_NAME logs --follow jobs/$JOB_NAME
       kubectl -n $RE_NAME wait --for=condition=complete --timeout=5s job/$JOB_NAME
       export END_TIME=$(date +%s%3N)
-      node dev/grafana-snapshot.js 85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods $RE_NAME $START_TIME $END_TIME > metrics/$JOB_NAME-cpu.txt
-      cp dashboard.pdf metrics/$JOB_NAME-cpu.pdf
-      node dev/grafana-snapshot.js fa49a4706d07a042595b664c87fb33ea/kubernetes-nodes $RE_NAME $START_TIME $END_TIME > metrics/$JOB_NAME-net-disk.txt
-      cp dashboard.pdf metrics/$JOB_NAME-net-disk.pdf
+      node dev/grafana-snapshot.js 85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods $RE_NAME $START_TIME $END_TIME > metrics/$RE_NAME-cpu.txt
+      cp dashboard.pdf metrics/$RE_NAME-cpu.pdf
+      node dev/grafana-snapshot.js fa49a4706d07a042595b664c87fb33ea/kubernetes-nodes $RE_NAME $START_TIME $END_TIME > metrics/$RE_NAME-net-disk.txt
+      cp dashboard.pdf metrics/$RE_NAME-net-disk.pdf
       set +x
 
 .time-bazel-job: &re_time_bazel_job |
@@ -452,7 +452,7 @@ buildbarn-bazel-bazel-incremental:
     RE_NAME: buildbarn
     CLIENT_NAME: bazel
     JOB_NAME: build-bazel
-    BADGE_SUFFIX: -incremental
+    BADGE_SUFFIX: _incremental
   before_script:
     - *before_badge
     - *before_kubernetes
@@ -463,6 +463,10 @@ buildbarn-bazel-bazel-incremental:
     - *re_prepare_incremental_job
     - *re_run_job
     - *re_time_bazel_job
+    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-incremental-cpu.txt
+    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-incremental-cpu.pdf
+    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-incremental-net-disk.txt
+    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-incremental-net-disk.pdf
     - dev/save-traces.sh
   after_script:
     - *re_post_build_logging
@@ -488,7 +492,7 @@ buildbarn-bazel-bazel-no-concurrency:
     RE_NAME: buildbarn
     CLIENT_NAME: bazel
     JOB_NAME: build-bazel
-    BADGE_SUFFIX: -concurrency-1
+    BADGE_SUFFIX: _concurrency_1
   before_script:
     - *before_badge
     - *before_kubernetes
@@ -501,10 +505,10 @@ buildbarn-bazel-bazel-no-concurrency:
     - *re_deploy_server
     - *re_run_job
     - *re_time_bazel_job
-    - mv metrics/$JOB_NAME-cpu.txt metrics/$JOB_NAME-concurrency-1-cpu.txt
-    - mv metrics/$JOB_NAME-cpu.pdf metrics/$JOB_NAME-concurrency-1-cpu.pdf
-    - mv metrics/$JOB_NAME-net-disk.txt metrics/$JOB_NAME-concurrency-1-net-disk.txt
-    - mv metrics/$JOB_NAME-net-disk.pdf metrics/$JOB_NAME-concurrency-1-net-disk.pdf
+    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-cpu.txt
+    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-concurrency-1-cpu.pdf
+    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-concurrency-1-net-disk.txt
+    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-concurrency-1-net-disk.pdf
     - dev/save-traces.sh
   after_script:
     - *re_post_build_logging
@@ -529,7 +533,7 @@ buildbarn-bazel-bazel-no-concurrency-incremental:
     RE_NAME: buildbarn
     CLIENT_NAME: bazel
     JOB_NAME: build-bazel
-    BADGE_SUFFIX: -concurrency-1-incremental
+    BADGE_SUFFIX: _concurrency_1_incremental
   before_script:
     - *before_badge
     - *before_kubernetes
@@ -542,10 +546,10 @@ buildbarn-bazel-bazel-no-concurrency-incremental:
     - *re_prepare_incremental_job
     - *re_run_job
     - *re_time_bazel_job
-    - mv metrics/$JOB_NAME-cpu.txt metrics/$JOB_NAME-concurrency-1-cpu.txt
-    - mv metrics/$JOB_NAME-cpu.pdf metrics/$JOB_NAME-concurrency-1-cpu.pdf
-    - mv metrics/$JOB_NAME-net-disk.txt metrics/$JOB_NAME-concurrency-1-net-disk.txt
-    - mv metrics/$JOB_NAME-net-disk.pdf metrics/$JOB_NAME-concurrency-1-net-disk.pdf
+    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-incremental-cpu.txt
+    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-concurrency-1-incremental-cpu.pdf
+    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-concurrency-1-incremental-net-disk.txt
+    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-concurrency-1-incremental-net-disk.pdf
     - dev/save-traces.sh
   after_script:
     - *re_post_build_logging
@@ -603,7 +607,7 @@ buildfarm-bazel-bazel-no-concurrency:
     RE_NAME: buildfarm
     CLIENT_NAME: bazel
     JOB_NAME: build-bazel
-    BADGE_SUFFIX: -concurrency-1
+    BADGE_SUFFIX: _concurrency_1
   before_script:
     - *before_badge
     - *before_kubernetes
@@ -615,10 +619,10 @@ buildfarm-bazel-bazel-no-concurrency:
     - *re_deploy_server
     - *re_run_job
     - *re_time_bazel_job
-    - mv metrics/$JOB_NAME-cpu.txt metrics/$JOB_NAME-concurrency-1-cpu.txt
-    - mv metrics/$JOB_NAME-cpu.pdf metrics/$JOB_NAME-concurrency-1-cpu.pdf
-    - mv metrics/$JOB_NAME-net-disk.txt metrics/$JOB_NAME-concurrency-1-net-disk.txt
-    - mv metrics/$JOB_NAME-net-disk.pdf metrics/$JOB_NAME-concurrency-1-net-disk.pdf
+    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-cpu.txt
+    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-concurrency-1-cpu.pdf
+    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-concurrency-1-net-disk.txt
+    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-concurrency-1-net-disk.pdf
   after_script:
     - *re_post_build_logging
     - *re_cleanup_template
@@ -731,8 +735,8 @@ wiki:
     - WIKI_URL="https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/$CI_PIPELINE_ID"
     - BR="<br>"
     - |
-      for server in buildbarn buildfarm buildgrid buildbarn-concurrency-1 buildfarm-concurrency-1 ; do
-        BADGE="![]($WIKI_URL/badges/$server-time.svg)"
+      for server in buildbarn buildfarm buildgrid buildbarn-concurrency-1 buildfarm-concurrency-1 buildbarn-incremental buildbarn-concurrency-1-incremental; do
+        BADGE="![]($WIKI_URL/badges/$(tr - _ <<< $server)-time.svg)"
         CPU_PDF="CPU [PDF]($WIKI_URL/metrics/$server-cpu.pdf)"
         IO_PDF="IO [PDF]($WIKI_URL/metrics/$server-net-disk.pdf)"
         if [ -f $CI_PIPELINE_ID/metrics/$server-cpu.txt ]; then
