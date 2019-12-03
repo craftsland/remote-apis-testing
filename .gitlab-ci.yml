@@ -206,7 +206,7 @@ terraform-infra:
 
 .time-bazel-job: &re_time_bazel_job |
       export "time=$(./dev/time_script.sh $RE_NAME $CLIENT_NAME $JOB_NAME)"
-      curl -o badges/${RE_NAME}${BADGE_SUFFIX:-}-time.svg ${BADGE_URL}/${RE_NAME}_${CLIENT_NAME}${BADGE_SUFFIX:-}-${time}-green.svg
+      curl -o badges/${RE_NAME}${BADGE_SUFFIX:-}-time.svg ${BADGE_URL}/${RE_NAME}_${CLIENT_NAME}-${time}-green.svg
 
 .re-prepare-incremental-job: &re_prepare_incremental_job |
       set -x
