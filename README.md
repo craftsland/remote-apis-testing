@@ -31,15 +31,15 @@ This shows the status of client implementations against server implementations i
 
 This shows a build of Bazel(project) with Bazel(client) to produce end-to-end build times.
 
-|                                                       | CAS       | No. Workers | Concurrency per worker |
-|-------------------------------------------------------|-----------|-------------|------------------------|
+|                                                       | CAS       | No. Workers | Concurrency per worker | Incremental? |
+|-------------------------------------------------------|-----------|-------------|------------------------|--------------|
 | ![][bazel-buildgrid-time]                             | In memory | 1           | 1                      |
 | ![][bazel-buildfarm-time-no-concurrency]              | In memory | 1           | 1                      |
 | ![][bazel-buildfarm-time]                             | In memory | 1           | 4                      |
 | ![][bazel-buildbarn-time-no-concurrency]              | In memory | 1           | 1                      |
-| ![][bazel-buildbarn-time-no-concurrency-incremental]  | In memory | 1           | 1                      |
+| ![][bazel-buildbarn-time-no-concurrency-incremental]  | In memory | 1           | 1                      | Yes
 | ![][bazel-buildbarn-time]                             | In memory | 1           | 4                      |
-| ![][bazel-buildbarn-time-incremental]                 | In memory | 1           | 4                      |
+| ![][bazel-buildbarn-time-incremental]                 | In memory | 1           | 4                      | Yes
 
 [bazel-buildgrid-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-time.svg
 [bazel-buildfarm-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-time.svg
