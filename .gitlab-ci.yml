@@ -22,9 +22,11 @@ stages:
   - buildbarn-speedtest
   - buildbarn-speedtest-incremental
   - buildfarm-speedtest
+  - buildfarm-speedtest-incremental
   - buildbarn-speedtest-no-concurrency
   - buildbarn-speedtest-no-concurrency-incremental
   - buildfarm-speedtest-no-concurrency
+  - buildfarm-speedtest-no-concurrency-incremental
   - cleanup-and-deploy
   - wiki
 
@@ -586,6 +588,42 @@ buildfarm-bazel-bazel:
     - *re_time_bazel_job
   after_script:
     - *re_post_build_logging
+  artifacts:
+    name: pages
+    paths:
+      - badges/
+      - metrics/
+      - logs/
+  only:
+    refs:
+      - master
+  allow_failure: true
+
+buildfarm-bazel-bazel-incremental:
+  stage: buildfarm-speedtest-incremental
+  image: $BASE_IMAGE
+  dependencies:
+    - terraform-infra
+  variables:
+    RE_NAME: buildfarm
+    CLIENT_NAME: bazel
+    JOB_NAME: build-bazel
+    BADGE_SUFFIX: _incremental
+  before_script:
+    - *before_badge
+    - *before_kubernetes
+    - *before_monitoring
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildfarm/build-bazel.yml
+  script:
+    - *re_prepare_incremental_job
+    - *re_run_job
+    - *re_time_bazel_job
+    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-incremental-cpu.txt
+    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-incremental-cpu.pdf
+    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-incremental-net-disk.txt
+    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-incremental-net-disk.pdf
+  after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -623,6 +661,44 @@ buildfarm-bazel-bazel-no-concurrency:
     - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-concurrency-1-cpu.pdf
     - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-concurrency-1-net-disk.txt
     - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-concurrency-1-net-disk.pdf
+  after_script:
+    - *re_post_build_logging
+  artifacts:
+    name: pages
+    paths:
+      - badges/
+      - metrics/
+      - logs/
+  only:
+    refs:
+      - master
+  allow_failure: true
+
+buildfarm-bazel-bazel-no-concurrency-incremental:
+  stage: buildfarm-speedtest-no-concurrency-incremental
+  image: $BASE_IMAGE
+  dependencies:
+    - terraform-infra
+  variables:
+    RE_NAME: buildfarm
+    CLIENT_NAME: bazel
+    JOB_NAME: build-bazel
+    BADGE_SUFFIX: _concurrency_1_incremental
+  before_script:
+    - *before_badge
+    - *before_kubernetes
+    - *before_monitoring
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildfarm/build-bazel.yml
+    # Replace configuration value to set concurrency to 1
+    - "sed -i 's|execute_stage_width: 4|execute_stage_width: 1|g' kubernetes/server/base/buildfarm/config-worker.yml"
+  script:
+    - *re_prepare_incremental_job
+    - *re_run_job
+    - *re_time_bazel_job
+    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-concurrency-1-incremental-cpu.txt
+    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-concurrency-1-incremental-cpu.pdf
+    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-concurrency-1-incremental-net-disk.txt
+    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-concurrency-1-incremental-net-disk.pdf
   after_script:
     - *re_post_build_logging
     - *re_cleanup_template
