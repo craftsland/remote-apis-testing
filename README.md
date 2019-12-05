@@ -35,7 +35,9 @@ This shows a build of Bazel(project) with Bazel(client) to produce end-to-end bu
 |-------------------------------------------------------|-----------|-------------|------------------------|--------------|
 | ![][bazel-buildgrid-time]                             | In memory | 1           | 1                      |
 | ![][bazel-buildfarm-time-no-concurrency]              | In memory | 1           | 1                      |
+| ![][bazel-buildfarm-time-no-concurrency-incremental]  | In memory | 1           | 1                      | Yes
 | ![][bazel-buildfarm-time]                             | In memory | 1           | 4                      |
+| ![][bazel-buildfarm-time-incremental]                 | In memory | 1           | 4                      | Yes
 | ![][bazel-buildbarn-time-no-concurrency]              | In memory | 1           | 1                      |
 | ![][bazel-buildbarn-time-no-concurrency-incremental]  | In memory | 1           | 1                      | Yes
 | ![][bazel-buildbarn-time]                             | In memory | 1           | 4                      |
@@ -48,6 +50,8 @@ This shows a build of Bazel(project) with Bazel(client) to produce end-to-end bu
 [bazel-buildbarn-time-no-concurrency]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn_concurrency_1-time.svg
 [bazel-buildbarn-time-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn_incremental-time.svg
 [bazel-buildbarn-time-no-concurrency-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn_concurrency_1_incremental-time.svg
+[bazel-buildfarm-time-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm_incremental-time.svg
+[bazel-buildfarm-time-no-concurrency-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm_concurrency_1_incremental-time.svg
 
 ### Granular Performance Metrics
 
