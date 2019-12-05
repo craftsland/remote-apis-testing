@@ -811,7 +811,7 @@ wiki:
     - WIKI_URL="https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/$CI_PIPELINE_ID"
     - BR="<br>"
     - |
-      for server in buildbarn buildfarm buildgrid buildbarn-concurrency-1 buildfarm-concurrency-1 buildbarn-incremental buildbarn-concurrency-1-incremental; do
+      for server in buildbarn buildfarm buildgrid buildbarn-concurrency-1 buildfarm-concurrency-1 buildbarn-incremental buildbarn-concurrency-1-incremental buildfarm-incremental buildfarm-concurrency-1-incremental; do
         BADGE="![]($WIKI_URL/badges/$(tr - _ <<< $server)-time.svg)"
         CPU_PDF="CPU [PDF]($WIKI_URL/metrics/$server-cpu.pdf)"
         IO_PDF="IO [PDF]($WIKI_URL/metrics/$server-net-disk.pdf)"
