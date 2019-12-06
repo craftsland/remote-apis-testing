@@ -28,8 +28,8 @@ This project uses [Jaeger] to collect and access traces.
     end
 ```
 
-A `jaeger-agent` is added to the pod of each applciations producing traces.  
-Each `jaeger-agent` then send the traces to the `jaeger-collector` which will queue the them and apply the sampling policies before storing it in a __Cassandra__ databse.  
+A `jaeger-agent` is added to the pod of each applications producing traces.  
+Each `jaeger-agent` then send the traces to the `jaeger-collector` which will queue the them and apply the sampling policies before storing it in a __Cassandra__ database.  
 Finally the traces can be accessed via a web interface created by `jaeger-query`.
 
 This recommended configuration works fine when used in an environment expected to be continuously up where traces will add up in the database and `jaeger-query` is externally available.  
@@ -37,7 +37,7 @@ However as for this project the __Kubernetes__  is only kept running during the 
 
 ### Gathering Traces
 
-This step is executed during the CI pipeline for each job producing traces. the objective of this step is to collect the traces produced by the applications of this step and persist them as `CSV` files in a `job artifact`.  
+This step is executed during the CI pipeline for each job producing traces. The objective of this step is to collect the traces produced by the applications of this step and persist them as `CSV` files in a `job artifact`.  
 The following elements of the recommended setup are used in this step:
 
 + jaeger-collector
@@ -48,26 +48,33 @@ The following elements of the recommended setup are used in this step:
 
 + application
 
-the traces are collected and stored as recommended however once the job is done a shell script is executed to collect all the tables from the __Cassandra__ database as `CSV` files in the `traces` folder.
+The traces are collected and stored as recommended however once the job is done a shell script is executed to collect all the tables from the __Cassandra__ database as `CSV` files in the `traces` folder.
 
 ### Viewing Traces
 
-Accessing the the traces is made by running the required elements locally and populating the database with the corresponding `CSV` files.  
-In order to do it th following elements will be run locally:
+You can view the traces for a given job with the `load-traces` script located in the `dev` folder. Before using this script make sure to have access to a __Kubernetes__ cluster and a folder containing all the `CSV` files produced by the job.  
 
-+ jaeger-query
+> You can learn how to setup a __Kubernetes__ cluster in the [environment setup](environment-setup.md) document
+> You can find the traces for a given job in the job's artifact in the `traces` folder
 
-+ cassandra
+Once you have gather all the required elements; considering you are at the root of the project and the `CSV` files are in a folder named `traces`, you can run the script using the following command:
 
-To get all this running on your system follow those steps:
+```
+dev/load-traces.sh traces kubernetes/monitoring/
+```
 
-+ Download the folder holding the traces you are after
+Now that you have all the required components running and ready you can find the path to jaeger-query with:
 
-+ Execute the script providing the name of the folder containing the traces
+```
+kubectl -n jaeger get services
+```
 
-+ Do `kubectl -n jaeger get services`
+If the ip for jaeger-query service is pending use this command to port-forward jaeger-query to port 16686, this will allow you to access the webpage at `localhost:16686`:
 
-+ Open jaeger-query in your browser
+```
+kubectl -n jaeger port-forward service/jaeger-query 16686:16686
+```
+
 
 
 [Jaeger]: https://www.jaegertracing.io
