@@ -1,10 +1,10 @@
 # Cluster setup
 
 > Before starting a cluster you need a test environment up and running either locally or in AWS.  
-> You can leanr how to do this in the [Environment setup][environment setup] section.
+> You can learn how to do this in the [Environment setup][environment setup] section.
 
 The different kubernetes configuration files are all located under `kubernetes/`  
-They are sepearated in three groups:
+They are sepearated in three main groups:
 
 + [server](#Server)
 
@@ -53,7 +53,7 @@ $ kubectl -n <server> logs --follow job/<job>
 
 ### Jaeger
 
-To Do
+You can find more information about Jaeger and how to use it [here](traces.md)
 
 [environment setup]: environment-setup.md
 [buildfarm]: https://github.com/bazelbuild/bazel-buildfarm
