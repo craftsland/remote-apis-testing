@@ -44,7 +44,7 @@ do
 done
 
 # Incremental times
-for SERVER in buildbarn buildfarm
+for SERVER in buildbarn buildfarm buildgrid
 do
   if [ ! -f "badges/${SERVER}_incremental-time.svg" ]; then
     curl -o badges/${SERVER}_incremental-time.svg $BADGE_URL/${SERVER}_bazel-failed-red.svg

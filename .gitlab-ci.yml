@@ -19,6 +19,7 @@ stages:
   - buildgrid-build-with-bazel
   - build-with-recc
   - buildgrid-speedtest
+  - buildgrid-speedtest-incremental
   - buildbarn-speedtest
   - buildbarn-speedtest-incremental
   - buildfarm-speedtest
@@ -351,7 +352,6 @@ buildfarm-bazel-abseil:
       - badges/
       - metrics/
       - logs/
-
   allow_failure: true
 
 buildgrid-bazel-abseil:
@@ -734,6 +734,43 @@ buildgrid-bazel-bazel:
     - *re_time_bazel_job
   after_script:
     - *re_post_build_logging
+  artifacts:
+    name: pages
+    paths:
+      - badges/
+      - metrics/
+      - logs/
+  only:
+    refs:
+      - master
+  allow_failure: true
+
+buildgrid-bazel-bazel-incremental:
+  stage: buildgrid-speedtest-incremental
+  image: $BASE_IMAGE
+  dependencies:
+    - terraform-infra
+  variables:
+    RE_NAME: buildgrid
+    CLIENT_NAME: bazel
+    JOB_NAME: build-bazel
+    BADGE_SUFFIX: _incremental
+  before_script:
+    - *before_badge
+    - *before_kubernetes
+    - *before_monitoring
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/bazel/buildgrid/build-bazel.yml
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/server/base/buildgrid/buildbox-worker.yml
+  script:
+    - *re_prepare_incremental_job
+    - *re_run_job
+    - *re_time_bazel_job
+    - mv metrics/$RE_NAME-cpu.txt metrics/$RE_NAME-incremental-cpu.txt
+    - mv metrics/$RE_NAME-cpu.pdf metrics/$RE_NAME-incremental-cpu.pdf
+    - mv metrics/$RE_NAME-net-disk.txt metrics/$RE_NAME-incremental-net-disk.txt
+    - mv metrics/$RE_NAME-net-disk.pdf metrics/$RE_NAME-incremental-net-disk.pdf
+  after_script:
+    - *re_post_build_logging
     - *re_cleanup_template
   artifacts:
     name: pages
@@ -811,7 +848,7 @@ wiki:
     - WIKI_URL="https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/$CI_PIPELINE_ID"
     - BR="<br>"
     - |
-      for server in buildbarn buildfarm buildgrid buildbarn-concurrency-1 buildfarm-concurrency-1 buildbarn-incremental buildbarn-concurrency-1-incremental buildfarm-incremental buildfarm-concurrency-1-incremental; do
+      for server in buildbarn buildfarm buildgrid buildbarn-concurrency-1 buildfarm-concurrency-1 buildbarn-incremental buildbarn-concurrency-1-incremental buildfarm-incremental buildfarm-concurrency-1-incremental buildgrid-incremental; do
         BADGE="![]($WIKI_URL/badges/$(tr - _ <<< $server)-time.svg)"
         CPU_PDF="CPU [PDF]($WIKI_URL/metrics/$server-cpu.pdf)"
         IO_PDF="IO [PDF]($WIKI_URL/metrics/$server-net-disk.pdf)"

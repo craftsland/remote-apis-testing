@@ -34,6 +34,7 @@ This shows a build of Bazel(project) with Bazel(client) to produce end-to-end bu
 |                                                       | CAS       | No. Workers | Concurrency per worker | Incremental? |
 |-------------------------------------------------------|-----------|-------------|------------------------|--------------|
 | ![][bazel-buildgrid-time]                             | In memory | 1           | 1                      |
+| ![][bazel-buildgrid-time-incremental]                 | In memory | 1           | 1                      | Yes
 | ![][bazel-buildfarm-time-no-concurrency]              | In memory | 1           | 1                      |
 | ![][bazel-buildfarm-time-no-concurrency-incremental]  | In memory | 1           | 1                      | Yes
 | ![][bazel-buildfarm-time]                             | In memory | 1           | 4                      |
@@ -44,6 +45,7 @@ This shows a build of Bazel(project) with Bazel(client) to produce end-to-end bu
 | ![][bazel-buildbarn-time-incremental]                 | In memory | 1           | 4                      | Yes
 
 [bazel-buildgrid-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-time.svg
+[bazel-buildgrid-time-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid_incremental-time.svg
 [bazel-buildfarm-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-time.svg
 [bazel-buildbarn-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-time.svg
 [bazel-buildfarm-time-no-concurrency]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm_concurrency_1-time.svg
