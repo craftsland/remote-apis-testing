@@ -220,7 +220,7 @@ terraform-infra:
       kubectl --namespace monitoring port-forward svc/grafana 3000 &
       # Copy and alter job resource file for different bazel version and job name
       cp kubernetes/client/$CLIENT_NAME/$RE_NAME/$JOB_NAME.yml kubernetes/client/$CLIENT_NAME/$RE_NAME/$INC_JOB_NAME.yml
-      sed -i "s|1.1.0|1.2.0|g" kubernetes/client/$CLIENT_NAME/$RE_NAME/$INC_JOB_NAME.yml
+      sed -i "s|1\.1\.0|1\.2\.0|g" kubernetes/client/$CLIENT_NAME/$RE_NAME/$INC_JOB_NAME.yml
       sed -i "s|$JOB_NAME|$INC_JOB_NAME|g" kubernetes/client/$CLIENT_NAME/$RE_NAME/$INC_JOB_NAME.yml
       # Set JOB_NAME for re_run_job internals
       export JOB_NAME=$INC_JOB_NAME
