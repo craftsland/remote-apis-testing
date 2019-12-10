@@ -842,35 +842,15 @@ wiki:
     - cd remote-apis-testing.wiki
     - mkdir -p $CI_PIPELINE_ID/metrics && cp ../metrics/* $CI_PIPELINE_ID/metrics/
     - mkdir -p $CI_PIPELINE_ID/badges && cp ../badges/* $CI_PIPELINE_ID/badges/
-    - PIPE_SYM="|"
-    - DATE_SYM=`date +%d-%m-%y`
-    - PIPELINE_SYM="[Pipeline](https://gitlab.com/remote-apis-testing/remote-apis-testing/pipelines/$CI_PIPELINE_ID)"
-    - WIKI_URL="https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/$CI_PIPELINE_ID"
-    - BR="<br>"
+    - export PIPE_SYM="|"
+    - export DATE_SYM=`date +%d-%m-%y`
+    - export PIPELINE_SYM="[Pipeline](https://gitlab.com/remote-apis-testing/remote-apis-testing/pipelines/$CI_PIPELINE_ID)"
+    - export WIKI_URL="https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/$CI_PIPELINE_ID"
+    - export BR="<br>"
     - |
-      for server in buildbarn buildfarm buildgrid buildbarn-concurrency-1 buildfarm-concurrency-1 buildbarn-incremental buildbarn-concurrency-1-incremental buildfarm-incremental buildfarm-concurrency-1-incremental buildgrid-incremental; do
-        BADGE="![]($WIKI_URL/badges/$(tr - _ <<< $server)-time.svg)"
-        CPU_PDF="CPU [PDF]($WIKI_URL/metrics/$server-cpu.pdf)"
-        IO_PDF="IO [PDF]($WIKI_URL/metrics/$server-net-disk.pdf)"
-        if [ -f $CI_PIPELINE_ID/metrics/$server-cpu.txt ]; then
-          CPU_DASH_URL=`cat $CI_PIPELINE_ID/metrics/$server-cpu.txt`
-        fi
-        if [ -f $CI_PIPELINE_ID/metrics/$server-net-disk.txt ]; then
-          IO_DASH_URL=`cat $CI_PIPELINE_ID/metrics/$server-net-disk.txt`
-        fi
-        if [ ! -z $CPU_DASH_URL ]; then
-          CPU_DASH="[Dash]($CPU_DASH_URL)"
-        else
-          CPU_DASH="N/A"
-        fi
-        if [ ! -z $IO_DASH_URL ]; then
-          IO_DASH="[Dash]($IO_DASH_URL)"
-        else
-          IO_DASH="N/A"
-        fi
-        BUILD_TEXT="$BUILD_TEXT$BADGE$BR$CPU_PDF $CPU_DASH$BR$IO_PDF $IO_DASH$PIPE_SYM"
-      done
-    - sed -i "/-|$/a$PIPE_SYM$DATE_SYM$BR$PIPELINE_SYM$PIPE_SYM$BUILD_TEXT" metrics.md
+      ../dev/update-metrics-page.sh buildbarn
+      ../dev/update-metrics-page.sh buildfarm
+      ../dev/update-metrics-page.sh buildgrid
     - git add .
     - git commit -m "update wiki for $CI_PIPELINE_ID"
     - git push https://remoteapitesting:$ci_wiki_token@gitlab.com/remote-apis-testing/remote-apis-testing.wiki.git
