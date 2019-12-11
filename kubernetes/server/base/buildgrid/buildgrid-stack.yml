@@ -59,12 +59,14 @@ data:
         storages:
           - !lru-storage &main-storage
             # 4GB is known to be enough for caching a full bazel build
+            # See docs on incremental builds for more info
             size: 4GB
 
         services:
           - !action-cache &main-action
             storage: *main-storage
             # 8192 is known to be enough for caching a full bazel build
+            # See docs on incremental builds for more info
             max-cached-refs: 8192
             allow-updates: true
             cache-failed-actions: true
