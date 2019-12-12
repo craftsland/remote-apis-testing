@@ -832,6 +832,9 @@ cleanup-terraform-job:
 wiki:
   stage: wiki
   image: $BASE_IMAGE
+  needs: 
+    - job: pages
+      artifacts: true
   before_script:
     - *before_badge
     - *before_monitoring
