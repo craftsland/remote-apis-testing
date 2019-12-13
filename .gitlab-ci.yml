@@ -875,6 +875,7 @@ pages:
     paths:
     - public/
     - badges/
+    - metrics/
   when: always
   # NOTE: Never enable this job in WIP branches!!
   only:
