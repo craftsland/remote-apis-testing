@@ -23,7 +23,7 @@ data "aws_subnet_ids" "all" {
 
 module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "3.0.1"
+  version = "3.2.0"
 
   name        = "example"
   description = "Security group for example usage with EC2 instance"
