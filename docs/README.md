@@ -8,4 +8,5 @@ This folder gathers technical documentation of the project.
 + Metrics
   + [Jaeger tracing](traces.md)
   + [Fluent-bit](fluent-bit.md)
++ [About incremental builds](incremental.md)
 + [Known issues and workarounds](workaround.md)
