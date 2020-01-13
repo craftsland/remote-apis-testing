@@ -48,7 +48,7 @@ stages:
     mkdir -p metrics
 
 .before-terraform-builds: &before_terraform |
-    apt update && apt install -yq wget unzip
+    apt update && apt install -yq wget unzip git
     wget -O terraform.zip $TERRAFORM_URL
     unzip terraform.zip -d /bin
     terraform --version
