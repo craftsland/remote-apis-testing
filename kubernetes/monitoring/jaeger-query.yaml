@@ -20,7 +20,7 @@ items:
       app.kubernetes.io/name: jaeger
       app.kubernetes.io/component: query
     type: LoadBalancer
-- apiVersion: extensions/v1beta1
+- apiVersion: apps/v1
   kind: Deployment
   metadata:
     name: jaeger-query
@@ -33,6 +33,11 @@ items:
     replicas: 1
     strategy:
       type: Recreate
+    selector:
+      matchLabels:
+        app: jaeger
+        app.kubernetes.io/name: jaeger
+        app.kubernetes.io/component: query
     template:
       metadata:
         labels:

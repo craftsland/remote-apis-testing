@@ -3,7 +3,12 @@ kind: Deployment
 metadata:
   name: worker
   namespace: buildgrid
+  labels:
+    app: worker
 spec:
+  selector:
+    matchLabels:
+      app: worker
   template:
     spec:
       containers:
