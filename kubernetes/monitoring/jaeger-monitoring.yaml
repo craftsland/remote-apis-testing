@@ -24,7 +24,7 @@ items:
       app.kubernetes.io/name: jaeger
       app.kubernetes.io/component: collector
     type: ClusterIP
-- apiVersion: extensions/v1beta1
+- apiVersion: apps/v1
   kind: Deployment
   metadata:
     name: jaeger-collector
@@ -37,6 +37,11 @@ items:
     replicas: 1
     strategy:
       type: Recreate
+    selector:
+      matchLabels:
+        app: jaeger
+        app.kubernetes.io/name: jaeger
+        app.kubernetes.io/component: collector
     template:
       metadata:
         labels:
