@@ -3,11 +3,11 @@ resources:
 - browser.yml
 - config-browser.yml
 - config-storage.yml
-- scheduler-ubuntu16-04.yaml
+- scheduler-ubuntu16-04.yml
 - config-frontend.yml
 - config-worker.yml
-- storage.yaml
+- storage.yml
 - config-runner.yml
-- frontend.yaml
-- worker-ubuntu16-04.yaml
+- frontend.yml
+- worker-ubuntu16-04.yml
 - config-scheduler.yml
