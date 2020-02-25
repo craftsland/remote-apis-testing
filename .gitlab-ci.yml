@@ -6,6 +6,7 @@ variables:
     AWS_IAM_URL: https://amazon-eks.s3-us-west-2.amazonaws.com/1.12.7/2019-03-27/bin/linux/amd64/aws-iam-authenticator
     BADGE_URL: https://img.shields.io/badge
     KUBE_PROMETHEUS_SHA: a536114bf3e0e4c8f19a555685e95fb5c11e4ec8
+    RECC_SHA: 466c374900de3339fc9056318160629f3199e753
 
 # May help with future badge making:
 # cat foo.log | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }'
@@ -161,7 +162,9 @@ build-docker-recc-buildgrid:
     - docker:dind
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASS
-    - (cd docker/recc && docker build -t $DOCKER_ACCOUNT/recc-build:$CI_PIPELINE_ID -t $DOCKER_ACCOUNT/recc-build:latest -f recc-build.Dockerfile .)
+    - apk add git
+    - git clone https://gitlab.com/bloomberg/recc.git docker/recc
+    - (cd docker/recc && git checkout $RECC_SHA && docker build -t $DOCKER_ACCOUNT/recc-build:$CI_PIPELINE_ID -t $DOCKER_ACCOUNT/recc-build:latest -f Dockerfile .)
     - docker push $DOCKER_ACCOUNT/recc-build:$CI_PIPELINE_ID
     - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then docker push $DOCKER_ACCOUNT/recc-build:latest; fi
 

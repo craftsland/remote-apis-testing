@@ -13,7 +13,8 @@ spec:
         image: remoteapistesting/recc-build:latest
         command: ["/bin/bash", "-x", "-c"]
         args:
-         - wget https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz;
+         - apt update && apt install -y wget;
+           wget https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz;
            tar xvf hello-2.10.tar.gz;
            cd hello-2.10;
            ./configure;
