@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
       - name: build-bazel
-        image: remoteapistesting/bazel-build:latest
+        image: remoteapistesting/bazel-build-buildbarn:latest
         command:
          - /bin/bash
          - -c

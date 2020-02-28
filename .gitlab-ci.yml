@@ -38,7 +38,7 @@ stages:
 
 .before-bazel-builds: &before_bazel_builds
   - mkdir -p ~/.docker
-  - "echo {\\\"auths\\\": {\\\"index.docker.io\\\": {\\\"auth\\\": \\\"`echo -n $DOCKER_USER:$DOCKER_PASS | base64`\\\"}}} > ~/.docker/config.json"
+  - "echo {\\\"auths\\\": {\\\"https://index.docker.io/v1/\\\": {\\\"auth\\\": \\\"`echo -n $DOCKER_USER:$DOCKER_PASS | base64`\\\"}}} > ~/.docker/config.json"
   - apt update && apt install -yq pkg-config zip g++ zlib1g-dev unzip python curl git wget
   - wget "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh"
   - chmod +x "bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh"
@@ -80,6 +80,18 @@ build-docker-bazel-build-wrapper:
     - (cd docker/bazel && docker build -t $DOCKER_ACCOUNT/bazel-build:$CI_PIPELINE_ID -t $DOCKER_ACCOUNT/bazel-build:latest -f bazel-build.Dockerfile .)
     - docker push $DOCKER_ACCOUNT/bazel-build:$CI_PIPELINE_ID
     - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then docker push $DOCKER_ACCOUNT/bazel-build:latest; fi
+
+build-docker-bazel-buildbarn-wrapper:
+  stage: build-images-and-terraform
+  image: docker:stable
+  services:
+    - docker:dind
+  script:
+    - sed -i "s|0.28.1|$BAZEL_VERSION|g" docker/bazel/bazel-build-buildbarn.Dockerfile
+    - docker login -u $DOCKER_USER -p $DOCKER_PASS
+    - (cd docker/bazel && docker build -t $DOCKER_ACCOUNT/bazel-build-buildbarn:$CI_PIPELINE_ID -t $DOCKER_ACCOUNT/bazel-build-buildbarn:latest -f bazel-build-buildbarn.Dockerfile .)
+    - docker push $DOCKER_ACCOUNT/bazel-build-buildbarn:$CI_PIPELINE_ID
+    - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then docker push $DOCKER_ACCOUNT/bazel-build-buildbarn:latest; fi
 
 build-docker-buildgrid:
   stage: build-images-and-terraform

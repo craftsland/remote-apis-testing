@@ -1,6 +1,7 @@
 resources:
 - bb-namespace.yml
 - browser.yml
+- config-common.yml
 - config-browser.yml
 - config-storage.yml
 - scheduler-ubuntu16-04.yml
