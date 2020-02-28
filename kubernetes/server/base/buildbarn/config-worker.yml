@@ -1,23 +1,42 @@
 apiVersion: v1
 data:
-  worker.json: |
+  worker-ubuntu16-04.jsonnet: |
+    local common = import 'common.libsonnet';
+
     {
-      "blobstore": {
-        "contentAddressableStorage": {
-          "grpc": {
-            "endpoint": "storage-0.storage:8980"
-          }
-        },
-        "actionCache": {
-          "grpc": {
-            "endpoint": "storage-0.storage:8980"
-          }
-        }
+      blobstore: common.blobstore,
+      browserUrl: common.browserUrl,
+      maximumMessageSizeBytes: common.maximumMessageSizeBytes,
+      scheduler: { address: 'scheduler:8983' },
+      httpListenAddress: ':7983',
+      maximumMemoryCachedDirectories: 1000,
+      localBuildDirectory: {
+        buildDirectoryPath: '/worker/build',
+        cacheDirectoryPath: '/worker/cache',
+        maximumCacheFileCount: 10000,
+        maximumCacheSizeBytes: 1024 * 1024 * 1024,
+        cacheReplacementPolicy: 'LEAST_RECENTLY_USED',
       },
-      "concurrency": 4,
-      "schedulerAddress": "scheduler-ubuntu16-04:8981"
+      instanceName: 'ubuntu16-04',
+      runners: [{
+        endpoint: { address: 'unix:///worker/runner' },
+        concurrency: 4,
+        platform: {
+          properties: [
+            { name: 'OSFamily', value: 'Linux' },
+            { name: 'container-image', value: 'docker://marketplace.gcr.io/google/rbe-ubuntu16-04@sha256:87e1bb4a47ade8ad4db467a2339bd0081fcf485ec02bcfc3b30309280b38d14b' },
+          ],
+        },
+        defaultExecutionTimeout: '1800s',
+        maximumExecutionTimeout: '3600s',
+        workerId: {
+          'pod': std.extVar("POD_NAME"),
+          'node': std.extVar("NODE_NAME")
+        },
+      }],
     }
+
 kind: ConfigMap
 metadata:
-  name: worker
+  name: worker-ubuntu16-04
   namespace: buildbarn
