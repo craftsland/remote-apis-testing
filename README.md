@@ -17,7 +17,7 @@ This shows the status of client implementations against server implementations i
 |-------------|----------------------------|----------------------|----------------------|
 | Bazel       | ![][bazel-buildgrid]       | ![][bazel-buildfarm] | ![][bazel-buildbarn] |
 | BuildStream | ![][buildstream-buildgrid] | Not compatible       | Not compatible       |
-| RECC        | ![][recc-buildgrid]        | TBA                  | TBA                  |
+| RECC        | ![][recc-buildgrid]        | TBA                  | ![][recc-buildbarn]  |
 | Goma        | TBA                        | TBA                  | TBA                  |
 
 [bazel-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-bazel-deployed.svg
@@ -25,6 +25,7 @@ This shows the status of client implementations against server implementations i
 [bazel-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-bazel-deployed.svg
 [buildstream-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-buildstream-deployed.svg
 [recc-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-recc-deployed.svg
+[recc-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-recc-deployed.svg
 
 
 ### Basic Performance Testing

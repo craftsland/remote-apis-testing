@@ -19,6 +19,7 @@ stages:
   - buildfarm-build-with-bazel
   - buildgrid-build-with-bazel
   - build-with-recc
+  - buildbarn-build-with-recc
   - buildgrid-speedtest
   - buildgrid-speedtest-incremental
   - buildbarn-speedtest
@@ -826,6 +827,38 @@ buildgrid-recc-gnuhello:
       - badges/
       - metrics/
       - logs/
+  allow_failure: true
+
+buildbarn-recc-gnuhello:
+  stage: buildbarn-build-with-recc
+  image: $BASE_IMAGE
+  dependencies:
+    - terraform-infra
+  variables:
+    RE_NAME: buildbarn
+    CLIENT_NAME: recc
+    JOB_NAME: build-gnuhello
+  before_script:
+    - *before_badge
+    - *before_kubernetes
+    - *before_monitoring
+    - *before_buildbarn_builds
+    - sed -i "s|:latest|:$CI_PIPELINE_ID|g" kubernetes/client/recc/buildbarn/build-gnuhello.yml
+  script:
+    - *re_deploy_server
+    - *re_run_job
+    - curl -o badges/buildbarn-recc-deployed.svg $BADGE_URL/buildbarn-deployed-green.svg
+    - dev/save-traces.sh
+  after_script:
+    - *re_post_build_logging
+    - *re_cleanup_template
+  artifacts:
+    name: pages
+    paths:
+      - badges/
+      - metrics/
+      - logs/
+      - traces/
   allow_failure: true
 
 cleanup-terraform-job:
