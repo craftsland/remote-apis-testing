@@ -30,7 +30,7 @@ done
 
 # recc
 CLIENT=recc
-for SERVER in buildgrid
+for SERVER in buildgrid buildbarn
 do
   get_badge
 done
