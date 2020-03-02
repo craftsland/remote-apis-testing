@@ -7,15 +7,15 @@ then
 else
         kubectl create namespace jaeger
 
-        kubectl create -f "$2"/jaeger-configuration.yaml
+        kubectl create -f "$2"/jaeger-configuration.yml
 
-        kubectl create -f "$2"/jaeger-cassandra.yaml
+        kubectl create -f "$2"/jaeger-cassandra.yml
 
         until kubectl -n jaeger get pods --field-selector=status.phase==Succeeded 2>&1 | grep -q "jaeger-cassandra-schema-job"; do kubectl -n jaeger get pods; sleep 10; done
 
         kubectl -n jaeger delete job jaeger-cassandra-schema-job
 
-        kubectl create -f "$2"/jaeger-query.yaml
+        kubectl create -f "$2"/jaeger-query.yml
 
         until kubectl -n jaeger get pods --field-selector=status.phase!=Running 2>&1 | grep -q "No resources found."; do kubectl -n jaeger get pods; sleep 10; done
 
