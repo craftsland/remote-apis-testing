@@ -11,7 +11,7 @@ services:
     - 7980:7980
     - 8980:8980
     volumes:
-    - ./config:/config
+    - ./buildbarn_config:/config
 
   storage-0:
     image: buildbarn/bb-storage:20200520T103928Z-32c5ba0
@@ -22,7 +22,7 @@ services:
     ports:
     - 7981:7981
     volumes:
-    - ./config:/config
+    - ./buildbarn_config:/config
     - ./storage-ac-0:/storage-ac
     - ./storage-cas-0:/storage-cas
 
@@ -35,7 +35,7 @@ services:
     ports:
     - 17981:7981
     volumes:
-    - ./config:/config
+    - ./buildbarn_config:/config
     - ./storage-ac-1:/storage-ac
     - ./storage-cas-1:/storage-cas
 
@@ -50,7 +50,7 @@ services:
     ports:
     - 7982:7982
     volumes:
-    - ./config:/config
+    - ./buildbarn_config:/config
 
 
   browser:
@@ -60,29 +60,31 @@ services:
     ports:
     - 7984:7984
     volumes:
-    - ./config:/config
+    - ./buildbarn_config:/config
 
 
-  worker-ubuntu16-04:
+  worker:
     image: buildbarn/bb-worker:20200528T061211Z-4dfbe5b
     command:
-    - /config/worker-ubuntu16-04.jsonnet
+    - /config/worker.jsonnet
     ports:
     - 7986:7986
     volumes:
-    - ./config:/config
-    - ./worker-ubuntu16-04:/worker
+    - ./buildbarn_config:/config
+    - ./worker:/worker
 
 
-  runner-ubuntu16-04:
-    image: l.gcr.io/google/rbe-ubuntu16-04@sha256:b516a2d69537cb40a7c6a7d92d0008abb29fba8725243772bdaf2c83f1be2272
+  runner:
+    build:
+      context: build_env
+    image: bb-runner:latest
     command:
     - sh
     - -c
-    - while ! test -f /bb/installed; do sleep 1; done; exec /bb/tini -v -g -- /bb/bb_runner /config/runner-ubuntu16-04.jsonnet
+    - while ! test -f /bb/installed; do sleep 1; done; exec /bb/tini -v -g -- /bb/bb_runner /config/runner.jsonnet
     volumes:
-    - ./worker-ubuntu16-04:/worker
-    - ./config:/config
+    - ./worker:/worker
+    - ./buildbarn_config:/config
     - ./bb:/bb
     depends_on:
     - runner-installer

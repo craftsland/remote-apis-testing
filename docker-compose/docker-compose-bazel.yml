@@ -1,11 +1,13 @@
 version: '3'
 services:
-  bazel-client:
-    image: l.gcr.io/google/rbe-ubuntu16-04@sha256:b516a2d69537cb40a7c6a7d92d0008abb29fba8725243772bdaf2c83f1be2272
+  client:
+    build:
+      context: build_env
+    image: bazel-client:latest
     command:
     - sh
     - -c
-    - wget -O bazel-installer.sh https://github.com/bazelbuild/bazel/releases/download/3.1.0/bazel-3.1.0-installer-linux-x86_64.sh && chmod +x bazel-installer.sh && ./bazel-installer.sh && /usr/local/bin/bazel build --remote_instance_name=remote-execution --remote_default_exec_properties=OSFamily=Linux --remote_default_exec_properties=container-image=docker://marketplace.gcr.io/google/rbe-ubuntu16-04@sha256:b516a2d69537cb40a7c6a7d92d0008abb29fba8725243772bdaf2c83f1be2272 --remote_executor=grpc://frontend:8980 --action_env=FOO=1234 --verbose_failures @abseil-hello//:hello_main
+    - apt-get update && apt-get install -y wget unzip && wget -O bazel-installer.sh https://github.com/bazelbuild/bazel/releases/download/3.1.0/bazel-3.1.0-installer-linux-x86_64.sh && chmod +x bazel-installer.sh && ./bazel-installer.sh && /usr/local/bin/bazel build --remote_instance_name=remote-execution --remote_default_exec_properties=OSFamily=Linux --remote_executor=grpc://frontend:8980 --action_env=FOO=1234 --verbose_failures @abseil-hello//:hello_main
     volumes:
     - ./WORKSPACE:/WORKSPACE
 

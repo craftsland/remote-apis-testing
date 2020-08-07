@@ -1,32 +1,28 @@
-variables:
-    BASE_IMAGE: ubuntu:18.04
-    BAZEL_VERSION: 2.0.0
-    TERRAFORM_VERSION: 0.12.20
-    TERRAFORM_URL: https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-    AWS_IAM_URL: https://amazon-eks.s3-us-west-2.amazonaws.com/1.12.7/2019-03-27/bin/linux/amd64/aws-iam-authenticator
-    BADGE_URL: https://img.shields.io/badge
-    KUBE_PROMETHEUS_SHA: a536114bf3e0e4c8f19a555685e95fb5c11e4ec8
-    RECC_SHA: 466c374900de3339fc9056318160629f3199e753
-
-# May help with future badge making:
-# cat foo.log | sed -n -e s/,//g -e '/^INFO: Elapsed time:/p' | awk '{ print $4 }'
-
 stages:
     - test
-    
-test_buildbarn_bazel: 
+
+.test_template: &test
   stage: test
   before_script:
     - apk add --update curl && rm -rf /var/cache/apk/*
     - apk add py-pip
-    - apk add python3-dev libffi-dev openssl-dev gcc libc-dev make
+    - apk add python3-dev libffi-dev openssl-dev gcc libc-dev make bash
     - pip install docker-compose
   script:
     - cd docker-compose
-    - ./run.sh
+    - ./run.sh -s $SERVER -c $CLIENT
   image: docker:stable
   services:
     - docker:dind
-  
 
-   
+test_buildbarn_bazel:
+  <<: *test
+  variables:
+    SERVER: docker-compose-buildbarn.yml
+    CLIENT: docker-compose-bazel.yml
+
+test_buildfarm_bazel:
+  <<: *test
+  variables:
+    SERVER: docker-compose-buildfarm.yml
+    CLIENT: docker-compose-bazel.yml
