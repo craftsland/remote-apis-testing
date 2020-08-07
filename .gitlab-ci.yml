@@ -26,3 +26,9 @@ test_buildfarm_bazel:
   variables:
     SERVER: docker-compose-buildfarm.yml
     CLIENT: docker-compose-bazel.yml
+
+test_buildgrid_bazel:
+  <<: *test
+  variables:
+    SERVER: docker-compose-buildgrid.yml
+    CLIENT: docker-compose-bazel.yml
