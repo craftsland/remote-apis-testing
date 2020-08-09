@@ -1,11 +1,12 @@
 # The contents of this file are covered by APACHE License Version 2.
 # See licenses/APACHEV2-LICENSE.txt for more information.
 
-version: '3'
+version: '3.4'
 services:
   frontend:
     build:
-      context: buildgrid
+      context: docker
+      target: buildgrid
       args:
         BUILDGRID_VERSION: 0.0.4
     command:
@@ -32,7 +33,8 @@ services:
 
   worker:
     build:
-      context: buildgrid/buildbox
+      context: docker
+      target: buildbox
       args:
         BUILDBOX_VERSION: 0.0.13
     image: buildbox:latest

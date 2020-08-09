@@ -1,7 +1,7 @@
 # The contents of this file are covered by APACHE License Version 2.
 # See licenses/APACHEV2-LICENSE.txt for more information.
 
-version: '3'
+version: '3.4'
 services: 
   frontend:
     image: buildbarn/bb-storage:20200520T103928Z-32c5ba0
@@ -76,7 +76,8 @@ services:
 
   runner:
     build:
-      context: build_env
+      context: docker
+      target: build_env
     image: bb-runner:latest
     command:
     - sh
