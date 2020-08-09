@@ -7,6 +7,47 @@ FROM ubuntu:20.04 AS build_env
 
 RUN apt-get update && apt-get install -y build-essential libyaml-dev
 
+# Goma client
+
+FROM build_env as goma_client
+
+ARG GOMA_CLIENT_GIT_SHA
+
+RUN apt-get update && apt-get install -y git wget python3
+
+RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools
+WORKDIR depot_tools
+RUN ./cipd install infra/goma/client/linux-amd64  	git_revision:$GOMA_CLIENT_GIT_SHA -root ../goma
+
+RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN apt-get install -y lsof
+
+RUN useradd -m goma --uid=1000
+USER goma
+WORKDIR /tmp
+
+# Goma server
+
+FROM golang:1.14.7 as goma_server
+
+ARG GOMA_SERVER_VERSION
+
+COPY goma_server_patches.patch /goma_server_patches.patch
+RUN apt-get update && apt-get install -y git
+RUN git clone --branch $GOMA_SERVER_VERSION https://chromium.googlesource.com/infra/goma/server
+WORKDIR server
+
+ARG APPLY_GOMA_SERVER_PATCHES
+RUN sh -c "if $APPLY_GOMA_SERVER_PATCHES; then \ 
+	git config user.email root@root \ 
+	&& git config user.name root \
+	&& git am /goma_server_patches.patch; \
+	fi" 
+WORKDIR cmd/remoteexec_proxy
+RUN go build
+
+ENTRYPOINT [ "./remoteexec_proxy" ]
+
 FROM build_env as bazel
 
 ARG BAZEL_VERSION
