@@ -2,82 +2,59 @@
 
 This project provides a test suite designed to be an automated and independent 'acid test' for the [Remote Execution API](https://github.com/bazelbuild/remote-apis) clients and server implementations. You can find us in #remote-apis-testing on [BuildTeam Slack](https://join.slack.com/t/buildteamworld/shared_invite/enQtMzkxNzE0MDMyMDY1LTJiMDg4OWI4MWEwMDAxNGEyYjA3Zjk5ZDQwN2MwNWVkM2NlZTIxOWYxNGJmYTAzYmFlMWUwYjhmNWFkZGU0YTQ), feel free to come and chat, we're very friendly :)
 
-The initial goal of the project was to produce a compatibility matrix showing the status of which RE-API compliant projects worked with which others. We began by building the [Abseil](https://github.com/abseil) library, with the latest version of [Bazel](https://github.com/bazelbuild/bazel), against the latest versions of [Buildbarn](https://github.com/buildbarn), [Buildfarm](https://github.com/bazelbuild/bazel-buildfarm) and [BuildGrid](https://gitlab.com/BuildGrid/buildgrid). We've since added [BuildStream](https://gitlab.com/BuildStream/buildstream) and [RECC](https://gitlab.com/bloomberg/recc), and would like to add more - if you know of another build tool we could add to the tests, please let us know ! 
+We provide a set of docker-compose deployments for client and server implementations. These will run readily on your local machine or on CI. Therefore, these deployments
+are also useful for trying out new clients or servers in the REAPI ecosystem, although we must warn that NONE of these are production ready!
 
-This initial target was achieved using [Gitlab's CI pipelines](https://docs.gitlab.com/ee/ci/pipelines.html), [Terraform](https://www.terraform.io/) and [Kubernetes](https://kubernetes.io/) with [AWS](https://aws.amazon.com/). The pipelines run once a week on Saturdays and also every time a branch is merged to master (this will happen via an approved merge request). After this, we started to capture performance metrics: end-to-end build times, CPU and memory usage. See the [metrics](https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/Metrics) page on the wiki. For full details of the pipelines, please see this [blog post](https://www.codethink.co.uk/articles/2019/testing-bazels-remote-execution-api/).
-
-We welcome all contributions, please see our [contributing guide](CONTRIBUTING.md), and to check out what our future plans are, please see the project [Roadmap](https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/roadmap). 
-
+We welcome all contributions, please see our [contributing guide](CONTRIBUTING.md)
 
 ### Compatibility Matrix
 
-This shows the status of client implementations against server implementations in a set of tests.
+This shows the status of client implementations against server implementations.
+
+Clients will run a short build task against server implementations. If the client job is successful, then this is
+denoted as a success. Otherwise, the job is marked as a failure.
+
+If you would like to add a new client or server on to this list, you can find instructions at [CONTRIBUTING.md](CONTRIBUTING.md#adding-new-client-and-server-implementations)
+
+#### Client jobs
+
+- Bazel: Building [abseil-hello](https://github.com/abseil/abseil-hello/tree/master/bazel-hello)
+- Goma & Recc: Building [libcyaml](https://github.com/tlsa/libcyaml)
 
 |             | BuildGrid                  | Buildfarm            | Buildbarn            |
 |-------------|----------------------------|----------------------|----------------------|
 | Bazel       | ![][bazel-buildgrid]       | ![][bazel-buildfarm] | ![][bazel-buildbarn] |
-| BuildStream | ![][buildstream-buildgrid] | Not compatible       | Not compatible       |
-| RECC        | ![][recc-buildgrid]        | TBA                  | ![][recc-buildbarn]  |
-| Goma        | TBA                        | TBA                  | TBA                  |
+| BuildStream | TBA*                       | TBA*                 | TBA*                 |
+| RECC        | ![][recc-buildgrid]        | ![][recc-buildfarm]  | ![][recc-buildbarn]  |
+| Goma        | ![][goma-buildgrid]        | ![][goma-buildfarm]  | ![][goma-buildbarn]  |
+| Pants       | TBA                        | TBA                  | TBA                  |
+| Please      | TBA                        | TBA                  | TBA                  |
+
+*We plan to add support for testing the [Remote-asset API](https://github.com/bazelbuild/remote-apis/commit/2846a67ac8feb5001e9f704b66f5acc1e90f1ade)
+which development versions of BuildStream support. At this point, we will test for BuildStream compatability for the Remote Execution API and the Remote Asset API.
 
 [bazel-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-bazel-deployed.svg
 [bazel-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-bazel-deployed.svg
 [bazel-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-bazel-deployed.svg
-[buildstream-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-buildstream-deployed.svg
 [recc-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-recc-deployed.svg
+[recc-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-recc-deployed.svg
 [recc-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-recc-deployed.svg
+[goma-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-goma-deployed.svg
+[goma-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-goma-deployed.svg
+[goma-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-goma-deployed.svg
 
+### Running tests
 
-### Basic Performance Testing
+You will require
 
-#### Full Build Speed Test
+- Docker engine (>= 18.09 with Buildkit installed)
+- Docker compose (>=1.25.1)
 
-This shows a build of Bazel(project) with Bazel(client) to produce end-to-end build times.
+To run:
 
-All builds are preformed with in memory CAS.
+```
+cd docker-compose
+./run.sh -s <SERVER_DOCKER_COMPOSE_FILE> -c <CLIENT_DOCKER_COMPOSE_FILE>
+```
 
-Client Version: Bazel 1.1.0 - Project Version: Bazel 1.1.0
-
-|                                                       | No. Workers | Concurrency per worker |
-|-------------------------------------------------------|-------------|------------------------|
-| ![][bazel-buildgrid-time]                             | 1           | 1                      |
-| ![][bazel-buildfarm-time-no-concurrency]              | 1           | 1                      |
-| ![][bazel-buildfarm-time]                             | 1           | 4                      |
-| ![][bazel-buildbarn-time-no-concurrency]              | 1           | 1                      |
-| ![][bazel-buildbarn-time]                             | 1           | 4                      |
-
-#### Incremental Build Speed Test
-This shows the time taken to build a newer version of Bazel(project) with Bazel(client)
-using the cache generated by first building the previous version.
-
-The version of Bazel being used **_to_** build is never changed,
-only the version which **_is_** built.
-
-Client Version: Bazel 1.1.0 - Project Versions: Bazel 1.1.0 -> 1.2.0
-
-|                                                       | No. Workers | Concurrency per worker |
-|-------------------------------------------------------|-------------|------------------------|
-| ![][bazel-buildgrid-time-incremental]                 | 1           | 1                      |
-| ![][bazel-buildfarm-time-no-concurrency-incremental]  | 1           | 1                      |
-| ![][bazel-buildfarm-time-incremental]                 | 1           | 4                      |
-| ![][bazel-buildbarn-time-no-concurrency-incremental]  | 1           | 1                      |
-| ![][bazel-buildbarn-time-incremental]                 | 1           | 4                      |
-
-[bazel-buildgrid-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-time.svg
-[bazel-buildgrid-time-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid_incremental-time.svg
-[bazel-buildfarm-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-time.svg
-[bazel-buildbarn-time]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-time.svg
-[bazel-buildfarm-time-no-concurrency]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm_concurrency_1-time.svg
-[bazel-buildbarn-time-no-concurrency]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn_concurrency_1-time.svg
-[bazel-buildbarn-time-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn_incremental-time.svg
-[bazel-buildbarn-time-no-concurrency-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn_concurrency_1_incremental-time.svg
-[bazel-buildfarm-time-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm_incremental-time.svg
-[bazel-buildfarm-time-no-concurrency-incremental]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm_concurrency_1_incremental-time.svg
-
-### Granular Performance Metrics
-
-Please see the [metrics](https://gitlab.com/remote-apis-testing/remote-apis-testing/wikis/Metrics) page on the wiki.
-
-### Documentation
-
-You can find more documentation under the [docs](docs/) folder
+The exit code for the script will correspond to the return code for the client container.
