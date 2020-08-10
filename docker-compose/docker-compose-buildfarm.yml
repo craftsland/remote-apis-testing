@@ -1,0 +1,35 @@
+# The contents of this file are covered by APACHE License Version 2.
+# See licenses/APACHEV2-LICENSE.txt for more information.
+
+version: '3.4'
+services:
+  frontend:
+    build:
+      context: docker
+      target: buildfarm
+      args:
+        BUILDFARM_VERSION: 1.0.0
+        BUILDFARM_DAEMON: buildfarm-server
+        BUILDFARM_CONFIG: /config/server.config
+    image: buildfarm_server:latest
+    ports:
+    - 8980:8980
+    volumes:
+    - ./buildfarm_config:/config
+  
+  worker:
+    build:
+      context: docker
+      target: buildfarm
+      args:
+        BUILDFARM_VERSION: 1.0.0
+        BUILDFARM_DAEMON: buildfarm-operationqueue-worker
+        BUILDFARM_CONFIG: /config/worker.config
+    image: buildfarm_worker:latest
+    volumes:
+    - ./buildfarm_config:/config
+    - ./worker:/tmp/worker
+    depends_on:
+    - frontend
+
+
