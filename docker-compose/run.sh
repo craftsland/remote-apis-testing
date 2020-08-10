@@ -30,6 +30,10 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# Enable buildroot for building images via docker-compose
+export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
+
 docker-compose -f $SERVER build
 docker-compose -f $SERVER up -d
 docker-compose -f $SERVER logs --follow &

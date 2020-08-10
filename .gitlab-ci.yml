@@ -15,6 +15,8 @@ stages:
   services:
     - docker:dind
 
+### Bazel client
+
 test_buildbarn_bazel:
   <<: *test
   variables:
@@ -26,3 +28,29 @@ test_buildfarm_bazel:
   variables:
     SERVER: docker-compose-buildfarm.yml
     CLIENT: docker-compose-bazel.yml
+
+test_buildgrid_bazel:
+  <<: *test
+  variables:
+    SERVER: docker-compose-buildgrid.yml
+    CLIENT: docker-compose-bazel.yml
+
+### Goma client
+
+test_buildbarn_goma:
+  <<: *test
+  variables:
+    SERVER: docker-compose-buildbarn.yml
+    CLIENT: docker-compose-goma.yml
+
+test_buildfarm_goma:
+  <<: *test
+  variables:
+    SERVER: docker-compose-buildfarm.yml
+    CLIENT: docker-compose-goma.yml
+
+test_buildgrid_goma:
+  <<: *test
+  variables:
+    SERVER: docker-compose-buildgrid.yml
+    CLIENT: docker-compose-goma.yml
