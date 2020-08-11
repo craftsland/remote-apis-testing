@@ -3,26 +3,40 @@
 Some guidelines for people wanting to contribute. Also please always feel free
 to speak to us, we're very friendly :-)
 
-We welcome contributions in the form of bug fixes or additions. Please note that
-developer access is restricted and must be requested due to the cloud resources
-used in the CI. See [MAINTAINERS.md](MAINTAINERS.md) for contact information of those who can
-assist you in gaining the privileges for your contributions.
+We welcome contributions in the form of bug fixes or additions. The author of any patch is expected 
+to take ownership of that code and is to support it for a reasonable time-frame. This means addressing 
+any unforeseen side effects and quirks the feature may have introduced.
 
-The author of any patch is expected to take ownership of that code and is to
-support it for a reasonable time-frame. This means addressing any unforeseen
-side effects and quirks the feature may have introduced.
+## Adding new client and server implementations
 
-## Modifying .gitlab-ci.yml
+Client and server implementations must adhere to the following standards to be compatible with
+the test suite:
 
-Modifications to .gitlab-ci.yml are expected to maintain a similar structure
-and naming convention across jobs and stages. Clients are generally grouped
-into stages building against each server implementation with the exception of
-speedtests (building the bazel project) where each speedtest gets its own stage.
-This is to prevent multiple jobs running alongside the job and potentially
-hindering performance.
+- The remote instance name passed is called `remote-execution`
+- The platform property passed to the REAPI server is a single key-value pair `OSFamily=Linux`
+- The client connects to the server via a single unauthenticated endpoint called `frontend` at port `8980`
+- Client implementations *must* have a docker-compose service name called `client`
+- The server implementation *must* contain a docker-compose service called `frontend` that the client connects to, and it
+*must* expose a port at `8980` that the client connects to.
+- Client and worker implementations *must* have the following build environment
+  - It is built using the `ubuntu20.04` base image
+  - The `build-essential` and `libyaml-dev` packages are installed.
 
-Badges are stored in `badges/` until the `pages` job runs (only on master)
-and moves the contents to `public/` and making them available via gitlab pages.
+When constructing tests:
+
+- All client behaviour which allows for fallback to local execution should be disabled.
+
+- The gitlab shared runners used have only a single 1vCPU. Therefore, it is recommended 
+not to pick a client build job that is too large. Please see the [README](README.md#client-jobs) 
+for examples.
+
+It is recommended:
+
+- To provide distributions of your client/server implementations as images on a 
+publicly accessible container registry.
+   - If this is not possible, remote-apis-testing has several examples of containers 
+being built using multistage docker builds, with a common build environment 
+constructed from ubuntu 20.04
 
 ## Patch submissions
 
@@ -36,10 +50,6 @@ Some good practice for patch submission:
 - Merge requests that are not yet ready for review should be prefixed with the
   ``WIP:`` identifier.
 - Submitted branches should not contain a history of work done.
-- Unit tests should be a separate commit.
-
-Please see [kubernetes/README.md](kubernetes/README.md) for a reference on adding new server/client
-implementation kubernetes configurations.
 
 ### Commit messages
 
@@ -52,29 +62,9 @@ If the commit is a non functional documentation change e.g. a change to `README.
 
 For some good tips, please see [The seven rules of a great Git commit message](https://chris.beams.io/posts/git-commit/#seven-rules)
 
-
-## Cloud Resources
-
-The CI pipelines spin up a kubernetes cluster on a cloud platform and therefore come
-at a cost. Some qwerks with the pipeline must be considered when working on patches and
-triggering pipelines. Most notably, cancelling a pipeline will cancel the cleanup job and
-therefore leave the kubernetes cluster running. If this does happen, please check [MAINTAINERS.md](MAINTAINERS.md)
-for the contact details of someone who should have administrator access to the cloud services. 
-
-### Maintainer resource cleanup guide
-
-When cleaning up resources which have escaped cleanup through some means, it is crucial to delete several resources. First delete the cluster which can be found on the
-`Services -> Compute -> EKS` page. Secondly, navigate to `Services -> Compute -> EC2` and check `Volumes`, `Load Balancers`, `Auto Scaling Groups` and `Security Groups` for resources which are related to the pipelines which have avoided cleanup. If performing a large cleanup of resources, ensure all pipelines are finished and it is 
-safe to delete all remaining resources.
-
 ## Commit access
 
 We'll give merge rights to anyone who's landed a patch - just ask us on slack to 
 amend Gitlab permissions. We don't have a policy for bad actors, and don't expect
 to need to have one :) 
 
-## Project Maintainence
-
-It should be noted that the project currently pins the version of bazel used to build job targets,
-the version number is set and can be modified within the [.gitlab-ci.yml](.gitlab-ci.yml) `variables:` field. This 
-can be updated on release of a new bazel version and merged to master upon success of the build jobs.

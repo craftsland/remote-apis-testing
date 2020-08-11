@@ -1,3 +1,0 @@
-build --experimental_strict_action_env
-build --strategy=Closure=remote
-build --strategy=Javac=remote

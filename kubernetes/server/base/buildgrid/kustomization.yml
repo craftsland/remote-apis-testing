@@ -1,4 +1,0 @@
-resources:
-- bg-namespace.yml
-- buildgrid-stack.yml
-- buildbox-worker.yml
