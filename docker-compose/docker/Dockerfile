@@ -180,3 +180,26 @@ RUN python3 -m pip install --requirement requirements/requirements.db.txt
 RUN python3 -m pip install --editable .
 
 ENTRYPOINT ["bgd", "server"]
+
+## Building recc
+
+FROM buildbox as recc
+
+ARG RECC_VERSION
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    libssl-dev \
+    make \
+    pkg-config \
+    && apt-get clean 
+
+RUN git clone --depth=1 --branch $RECC_VERSION https://gitlab.com/bloomberg/recc.git /recc
+
+WORKDIR /recc
+
+RUN mkdir build && cd build && \
+        cmake -DBUILD_TESTING=OFF "${EXTRA_CMAKE_FLAGS}" .. && make 
+
+ENTRYPOINT []
