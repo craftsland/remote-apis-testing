@@ -1,5 +1,6 @@
 stages:
     - test
+    - deploy
 
 .test_template: &test
   stage: test
@@ -10,67 +11,88 @@ stages:
     - pip install docker-compose
   script:
     - cd docker-compose
-    - ./run.sh -s $SERVER -c $CLIENT
+    - export COLOR="success" STATUS="success"
+    - ./run.sh -s docker-compose-$SERVER.yml -c docker-compose-$CLIENT.yml || export COLOR="critical" STATUS="failed"
+    - mkdir -p badges
+    - curl -o badges/${SERVER}-${CLIENT}-deployed.svg https://img.shields.io/badge/${SERVER}_${CLIENT}-${STATUS}_${CI_COMMIT_SHORT_SHA}-${COLOR}.svg
   image: docker:stable
   services:
     - docker:dind
+  artifacts:
+    name: pages
+    paths:
+      - docker-compose/badges/
+
 
 ### Bazel client
 
 test_buildbarn_bazel:
   <<: *test
   variables:
-    SERVER: docker-compose-buildbarn.yml
-    CLIENT: docker-compose-bazel.yml
+    SERVER: buildbarn
+    CLIENT: bazel
 
 test_buildfarm_bazel:
   <<: *test
   variables:
-    SERVER: docker-compose-buildfarm.yml
-    CLIENT: docker-compose-bazel.yml
+    SERVER: buildfarm
+    CLIENT: bazel
 
 test_buildgrid_bazel:
   <<: *test
   variables:
-    SERVER: docker-compose-buildgrid.yml
-    CLIENT: docker-compose-bazel.yml
+    SERVER: buildgrid
+    CLIENT: bazel
 
 ### Goma client
 
 test_buildbarn_goma:
   <<: *test
   variables:
-    SERVER: docker-compose-buildbarn.yml
-    CLIENT: docker-compose-goma.yml
+    SERVER: buildbarn
+    CLIENT: goma
 
 test_buildfarm_goma:
   <<: *test
   variables:
-    SERVER: docker-compose-buildfarm.yml
-    CLIENT: docker-compose-goma.yml
+    SERVER: buildfarm
+    CLIENT: goma
 
 test_buildgrid_goma:
   <<: *test
   variables:
-    SERVER: docker-compose-buildgrid.yml
-    CLIENT: docker-compose-goma.yml
+    SERVER: buildgrid
+    CLIENT: goma
 
 ### Recc client
 
 test_buildbarn_recc:
   <<: *test
   variables:
-    SERVER: docker-compose-buildbarn.yml
-    CLIENT: docker-compose-recc.yml
+    SERVER: buildbarn
+    CLIENT: recc
 
 test_buildfarm_recc:
   <<: *test
   variables:
-    SERVER: docker-compose-buildfarm.yml
-    CLIENT: docker-compose-recc.yml
+    SERVER: buildfarm
+    CLIENT: recc
 
 test_buildgrid_recc:
   <<: *test
   variables:
-    SERVER: docker-compose-buildgrid.yml
-    CLIENT: docker-compose-recc.yml    
+    SERVER: buildgrid
+    CLIENT: recc
+
+pages:
+  stage: deploy
+  script:
+    - mkdir public
+    - cp docker-compose/badges/* public/
+  artifacts:
+    name: pages
+    paths:
+    - public/
+    - docker-compose/badges/
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'reapi-revamp'
