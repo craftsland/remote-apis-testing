@@ -54,3 +54,23 @@ test_buildgrid_goma:
   variables:
     SERVER: docker-compose-buildgrid.yml
     CLIENT: docker-compose-goma.yml
+
+### Recc client
+
+test_buildbarn_recc:
+  <<: *test
+  variables:
+    SERVER: docker-compose-buildbarn.yml
+    CLIENT: docker-compose-recc.yml
+
+test_buildfarm_recc:
+  <<: *test
+  variables:
+    SERVER: docker-compose-buildfarm.yml
+    CLIENT: docker-compose-recc.yml
+
+test_buildgrid_recc:
+  <<: *test
+  variables:
+    SERVER: docker-compose-buildgrid.yml
+    CLIENT: docker-compose-recc.yml    
