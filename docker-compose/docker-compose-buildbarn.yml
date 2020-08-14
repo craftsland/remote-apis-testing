@@ -1,0 +1,99 @@
+# The contents of this file are covered by APACHE License Version 2.
+# See licenses/APACHEV2-LICENSE.txt for more information.
+
+version: '3.4'
+services: 
+  frontend:
+    image: buildbarn/bb-storage:20200520T103928Z-32c5ba0
+    command:
+    - /config/frontend.jsonnet
+    ports:
+    - 7980:7980
+    - 8980:8980
+    volumes:
+    - ./buildbarn_config:/config
+
+  storage-0:
+    image: buildbarn/bb-storage:20200520T103928Z-32c5ba0
+    command:
+    - /config/storage.jsonnet
+    expose:
+    - 8981
+    ports:
+    - 7981:7981
+    volumes:
+    - ./buildbarn_config:/config
+    - ./storage-ac-0:/storage-ac
+    - ./storage-cas-0:/storage-cas
+
+  storage-1:
+    image: buildbarn/bb-storage:20200520T103928Z-32c5ba0
+    command:
+    - /config/storage.jsonnet
+    expose:
+    - 8981
+    ports:
+    - 17981:7981
+    volumes:
+    - ./buildbarn_config:/config
+    - ./storage-ac-1:/storage-ac
+    - ./storage-cas-1:/storage-cas
+
+
+  scheduler:
+    image: buildbarn/bb-scheduler:20200528T061211Z-4dfbe5b
+    command:
+    - /config/scheduler.jsonnet
+    expose:
+    - 8982
+    - 8983
+    ports:
+    - 7982:7982
+    volumes:
+    - ./buildbarn_config:/config
+
+
+  browser:
+    image: buildbarn/bb-browser:20200514T172056Z-1c2932b
+    command:
+    - /config/browser.jsonnet
+    ports:
+    - 7984:7984
+    volumes:
+    - ./buildbarn_config:/config
+
+
+  worker:
+    image: buildbarn/bb-worker:20200528T061211Z-4dfbe5b
+    command:
+    - /config/worker.jsonnet
+    ports:
+    - 7986:7986
+    volumes:
+    - ./buildbarn_config:/config
+    - ./worker:/worker
+
+
+  runner:
+    build:
+      context: docker
+      target: build_env
+    image: bb-runner:latest
+    command:
+    - sh
+    - -c
+    - while ! test -f /bb/installed; do sleep 1; done; exec /bb/tini -v -g -- /bb/bb_runner /config/runner.jsonnet
+    volumes:
+    - ./worker:/worker
+    - ./buildbarn_config:/config
+    - ./bb:/bb
+    depends_on:
+    - runner-installer
+
+
+  runner-installer:
+    image: buildbarn/bb-runner-installer:20200528T061211Z-4dfbe5b
+    volumes:
+    - ./bb:/bb    
+
+
