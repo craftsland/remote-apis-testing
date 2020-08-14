@@ -1,5 +1,5 @@
 # The contents of this file are covered by APACHE License Version 2.
-# See licenses/APACHEV2-LICENSE.txt for more information.
+# Modifications were made to this file for remote-apis-testing compatability
 
 version: '3.4'
 services:
