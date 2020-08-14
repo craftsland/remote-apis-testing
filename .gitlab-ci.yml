@@ -95,4 +95,4 @@ pages:
     - public/
     - docker-compose/badges/
   rules:
-    - if: $CI_COMMIT_BRANCH == 'reapi-revamp'
+    - if: $CI_COMMIT_BRANCH == 'master'
