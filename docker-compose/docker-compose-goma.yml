@@ -10,6 +10,7 @@ services:
     environment: 
     - GOMA_ARBITRARY_TOOLCHAIN_SUPPORT=true
     - GOMA_USE_LOCAL=false
+    - GOMA_FALLBACK=false
     - GOMA_USE_SSL=false
     - GOMACTL_SKIP_AUTH=true
     - GOMA_SERVER_HOST=server
