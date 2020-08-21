@@ -7,12 +7,16 @@
 
 set -eu
 
-while getopts ":s:c:" opt; do
+# Initialize optional args
+ASSET=""
+
+while getopts ":s:c:a:" opt; do
   case ${opt} in
     s ) SERVER="$OPTARG";;
     c ) CLIENT="$OPTARG";;
+    a ) ASSET="$OPTARG";;
     : ) echo "Missing argument for -$OPTARG" && exit 1;;
-    \?) echo "./run.sh -s [server] -c [client]" && exit 1;;
+    \?) echo "./run.sh -s [server] -c [client] -a [asset server]" && exit 1;;
   esac
 done
 
@@ -24,8 +28,9 @@ mkdir -m 0700 "${worker}/cache"
 
 cleanup() {
     EXIT_STATUS=$?
-    docker-compose -f $SERVER down 
-    docker-compose -f $CLIENT down 
+    # Removing $SERVER with orphans will ensure all other
+    # services deployed afterwards are removed.
+    docker-compose -f $SERVER down --remove-orphans
     exit $EXIT_STATUS
 }
 trap cleanup EXIT
@@ -38,7 +43,11 @@ docker-compose -f $SERVER build
 docker-compose -f $SERVER up -d
 docker-compose -f $SERVER logs --follow &
 
+if [[ "$ASSET" != "" ]]; then
+  docker-compose -f $ASSET build
+  docker-compose -f $ASSET up -d
+  docker-compose -f $ASSET logs --follow &
+fi
+
 docker-compose -f $CLIENT build
 docker-compose -f $CLIENT up --exit-code-from client
-
-
