@@ -18,6 +18,8 @@ the test suite:
 - Client implementations *must* have a docker-compose service name called `client`
 - The server implementation *must* contain a docker-compose service called `frontend` that the client connects to, and it
 *must* expose a port at `8980` that the client connects to.
+- A remote asset server implementation *must* contain a docker-compose service called `asset` that the client connects to, and it
+*must* expose a port at `8979` that the client connects to.
 - Client and worker implementations *must* have the following build environment
   - It is built using the `ubuntu20.04` base image
   - The `build-essential` and `libyaml-dev` packages are installed.
