@@ -7,22 +7,36 @@
 
 set -eu
 
+HELP="""./run.sh - A remote-apis-testing wrapper script
+  -s [server]: A path to a docker-compose file which will be spun up to represent the server deployment.
+  -c [client]: A path to a docker-compose file which will be spun up to represent the client deployment.
+  -a [asset server]: A path to a docker-compose file which will be spun up to represent the asset server deployment.
+
+  -p: Will perform a cleanup of the storage-* directories prior to starting tests. Requires privilege.
+"""
+
 # Initialize optional args
 ASSET=""
+CLEAN=""
 
-while getopts ":s:c:a:" opt; do
+while getopts ":s:c:a:p" opt; do
   case ${opt} in
     s ) SERVER="$OPTARG";;
     c ) CLIENT="$OPTARG";;
     a ) ASSET="$OPTARG";;
+    p ) CLEAN="TRUE";;
     : ) echo "Missing argument for -$OPTARG" && exit 1;;
-    \?) echo "./run.sh -s [server] -c [client] -a [asset server]" && exit 1;;
+    \?) echo "$HELP" && exit 1;;
   esac
 done
 
 worker="worker"
 
 rm -rf worker
+if [[ "$CLEAN" != "" ]]; then
+  echo "Performing optional clean"
+  rm -rf storage-*
+fi
 mkdir -m 0777 "${worker}" "${worker}/build"
 mkdir -m 0700 "${worker}/cache"
 
