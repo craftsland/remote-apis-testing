@@ -37,8 +37,8 @@ test_buildbarn_bazel_asset_hub:
   <<: *test
   variables:
     SERVER: buildbarn
-    CLIENT: bazel-remote-downloader
-    ASSET: asset-hub
+    CLIENT: bazel_remote_downloader
+    ASSET: asset_hub
 
 test_buildfarm_bazel:
   <<: *test
@@ -50,8 +50,8 @@ test_buildfarm_bazel_asset_hub:
   <<: *test
   variables:
     SERVER: buildfarm
-    CLIENT: bazel-remote-downloader
-    ASSET: asset-hub
+    CLIENT: bazel_remote_downloader
+    ASSET: asset_hub
 
 test_buildgrid_bazel:
   <<: *test
@@ -63,8 +63,8 @@ test_buildgrid_bazel_asset_hub:
   <<: *test
   variables:
     SERVER: buildgrid
-    CLIENT: bazel-remote-downloader
-    ASSET: asset-hub
+    CLIENT: bazel_remote_downloader
+    ASSET: asset_hub
 
 ### Goma client
 

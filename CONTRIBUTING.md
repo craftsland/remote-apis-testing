@@ -12,6 +12,7 @@ any unforeseen side effects and quirks the feature may have introduced.
 Client and server implementations must adhere to the following standards to be compatible with
 the test suite:
 
+- Client/Server/Asset names **must** not include `-`, instead use `_` to split multiple words.
 - The remote instance name passed is called `remote-execution`
 - The platform property passed to the REAPI server is a single key-value pair `OSFamily=Linux`
 - The client connects to the server via a single unauthenticated endpoint called `frontend` at port `8980`
