@@ -21,21 +21,22 @@ If you would like to add a new client or server on to this list, you can find in
 - Bazel: Building [abseil-hello](https://github.com/abseil/abseil-hello/tree/master/bazel-hello)
 - Goma & Recc: Building [libcyaml](https://github.com/tlsa/libcyaml)
 
-|             | BuildGrid                  | Buildfarm            | Buildbarn            |
-|-------------|----------------------------|----------------------|----------------------|
-| Bazel       | ![][bazel-buildgrid]       | ![][bazel-buildfarm] | ![][bazel-buildbarn] |
-| BuildStream | TBA*                       | TBA*                 | TBA*                 |
-| RECC        | ![][recc-buildgrid]        | ![][recc-buildfarm]  | ![][recc-buildbarn]  |
-| Goma        | ![][goma-buildgrid]        | ![][goma-buildfarm]  | ![][goma-buildbarn]  |
-| Pants       | TBA                        | TBA                  | TBA                  |
-| Please      | TBA                        | TBA                  | TBA                  |
-
-*We plan to add support for testing the [Remote-asset API](https://github.com/bazelbuild/remote-apis/commit/2846a67ac8feb5001e9f704b66f5acc1e90f1ade)
-which development versions of BuildStream support. At this point, we will test for BuildStream compatability for the Remote Execution API and the Remote Asset API.
+|                   | BuildGrid                      | Buildfarm                      | Buildbarn                      |
+| ----------------- | ------------------------------ | ------------------------------ | ------------------------------ |
+| Bazel             | ![][bazel-buildgrid]           | ![][bazel-buildfarm]           | ![][bazel-buildbarn]           |
+| Bazel + asset-hub | ![][bazel-buildgrid-asset-hub] | ![][bazel-buildfarm-asset-hub] | ![][bazel-buildbarn-asset-hub] |
+| BuildStream       | TBA                            | TBA                            | TBA                            |
+| RECC              | ![][recc-buildgrid]            | ![][recc-buildfarm]            | ![][recc-buildbarn]            |
+| Goma              | ![][goma-buildgrid]            | ![][goma-buildfarm]            | ![][goma-buildbarn]            |
+| Pants             | TBA                            | TBA                            | TBA                            |
+| Please            | TBA                            | TBA                            | TBA                            |
 
 [bazel-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-bazel-deployed.svg
+[bazel-buildgrid-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-bazel-asset-hub-deployed.svg
 [bazel-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-bazel-deployed.svg
+[bazel-buildfarm-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-bazel-asset-hub-deployed.svg
 [bazel-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-bazel-deployed.svg
+[bazel-buildbarn-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-bazel-asset-hub-deployed.svg
 [recc-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-recc-deployed.svg
 [recc-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-recc-deployed.svg
 [recc-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-recc-deployed.svg

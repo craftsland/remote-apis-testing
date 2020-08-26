@@ -12,9 +12,10 @@ stages:
   script:
     - cd docker-compose
     - export COLOR="success" STATUS="success"
-    - ./run.sh -s docker-compose-$SERVER.yml -c docker-compose-$CLIENT.yml || export COLOR="critical" STATUS="failed"
+    - if [ -z "$ASSET" ]; then ASSET_ARG=""; else export ASSET_ARG="-a docker-compose-$ASSET.yml"; fi
+    - ./run.sh -s docker-compose-$SERVER.yml -c docker-compose-$CLIENT.yml $ASSET_ARG  || export COLOR="critical" STATUS="failed"
     - mkdir -p badges
-    - curl -o badges/${SERVER}-${CLIENT}-deployed.svg https://img.shields.io/badge/${SERVER}_${CLIENT}-${STATUS}_${CI_COMMIT_SHORT_SHA}-${COLOR}.svg
+    - curl -o badges/${SERVER}-${CLIENT}${ASSET:+-$ASSET}-deployed.svg https://img.shields.io/badge/${SERVER}_${CLIENT}${ASSET:+_$ASSET}-${STATUS}_${CI_COMMIT_SHORT_SHA}-${COLOR}.svg
   image: docker:stable
   services:
     - docker:dind
@@ -32,17 +33,38 @@ test_buildbarn_bazel:
     SERVER: buildbarn
     CLIENT: bazel
 
+test_buildbarn_bazel_asset_hub:
+  <<: *test
+  variables:
+    SERVER: buildbarn
+    CLIENT: bazel-remote-downloader
+    ASSET: asset-hub
+
 test_buildfarm_bazel:
   <<: *test
   variables:
     SERVER: buildfarm
     CLIENT: bazel
 
+test_buildfarm_bazel_asset_hub:
+  <<: *test
+  variables:
+    SERVER: buildfarm
+    CLIENT: bazel-remote-downloader
+    ASSET: asset-hub
+
 test_buildgrid_bazel:
   <<: *test
   variables:
     SERVER: buildgrid
     CLIENT: bazel
+
+test_buildgrid_bazel_asset_hub:
+  <<: *test
+  variables:
+    SERVER: buildgrid
+    CLIENT: bazel-remote-downloader
+    ASSET: asset-hub
 
 ### Goma client
 
