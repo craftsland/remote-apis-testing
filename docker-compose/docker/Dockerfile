@@ -46,11 +46,11 @@ RUN git clone --branch $GOMA_SERVER_VERSION https://chromium.googlesource.com/in
 WORKDIR server
 
 ARG APPLY_GOMA_SERVER_PATCHES
-RUN sh -c "if $APPLY_GOMA_SERVER_PATCHES; then \ 
-	git config user.email root@root \ 
+RUN sh -c "if $APPLY_GOMA_SERVER_PATCHES; then \
+	git config user.email root@root \
 	&& git config user.name root \
 	&& git am /goma_server_patches.patch; \
-	fi" 
+	fi"
 WORKDIR cmd/remoteexec_proxy
 RUN go build
 
@@ -60,9 +60,9 @@ FROM build_env as bazel
 
 ARG BAZEL_VERSION
 
-RUN apt-get update && apt-get install -y wget unzip 
-RUN wget -O bazel-installer.sh https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh 
-RUN chmod +x bazel-installer.sh 
+RUN apt-get update && apt-get install -y wget unzip
+RUN wget -O bazel-installer.sh https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
+RUN chmod +x bazel-installer.sh
 RUN ./bazel-installer.sh
 
 # Building of buildfarm images (worker and server)
@@ -185,14 +185,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     make \
     pkg-config \
-    && apt-get clean 
+    && apt-get clean
 
 RUN git clone --depth=1 --branch $RECC_VERSION https://gitlab.com/bloomberg/recc.git /recc
 
 WORKDIR /recc
 
 RUN mkdir build && cd build && \
-        cmake -DBUILD_TESTING=OFF "${EXTRA_CMAKE_FLAGS}" .. && make 
+        cmake -DBUILD_TESTING=OFF "${EXTRA_CMAKE_FLAGS}" .. && make
 
 ENTRYPOINT []
 
