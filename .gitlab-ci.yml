@@ -31,6 +31,10 @@ stages:
 
 ### Bazel client
 
+.remote_downloader_template: &bazel_remote_downloader
+  variables: &bazel_remote_downloader_vars
+    BAZEL_ARGS: "--remote_cache=grpc://frontend:8980 --experimental_remote_downloader=grpc://asset:8979"
+
 test_buildbarn_bazel:
   <<: *test
   variables:
@@ -40,8 +44,9 @@ test_buildbarn_bazel:
 test_buildbarn_bazel_asset_hub:
   <<: *test
   variables:
+    <<: *bazel_remote_downloader_vars
     SERVER: buildbarn
-    CLIENT: bazel_remote_downloader
+    CLIENT: bazel
     ASSET: asset_hub
 
 test_buildfarm_bazel:
@@ -53,9 +58,11 @@ test_buildfarm_bazel:
 test_buildfarm_bazel_asset_hub:
   <<: *test
   variables:
+    <<: *bazel_remote_downloader_vars
     SERVER: buildfarm
-    CLIENT: bazel_remote_downloader
+    CLIENT: bazel
     ASSET: asset_hub
+
 
 test_buildgrid_bazel:
   <<: *test
@@ -66,8 +73,9 @@ test_buildgrid_bazel:
 test_buildgrid_bazel_asset_hub:
   <<: *test
   variables:
+    <<: *bazel_remote_downloader_vars
     SERVER: buildgrid
-    CLIENT: bazel_remote_downloader
+    CLIENT: bazel
     ASSET: asset_hub
 
 ### Goma client
