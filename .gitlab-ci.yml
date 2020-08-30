@@ -153,6 +153,28 @@ test_buildgrid_recc:
     CLIENT: recc
 
 #
+# Pants client
+#
+
+test_buildbarn_pants:
+  extends: .test_template
+  variables:
+    SERVER: buildbarn
+    CLIENT: pants
+
+test_buildfarm_pants:
+  extends: .test_template
+  variables:
+    SERVER: buildfarm
+    CLIENT: pants
+
+test_buildgrid_pants:
+  extends: .test_template
+  variables:
+    SERVER: buildgrid
+    CLIENT: pants
+
+#
 # Pages
 #
 
