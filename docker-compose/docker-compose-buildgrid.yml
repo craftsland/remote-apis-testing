@@ -4,16 +4,12 @@
 version: '3.4'
 services:
   frontend:
-    build:
-      context: docker
-      target: buildgrid
-      args:
-        BUILDGRID_VERSION: 0.0.4
     command:
+    - server
     - start
     - -vvv
     - /config/server.config
-    image: buildgrid:latest
+    image: registry.gitlab.com/buildgrid/buildgrid/buildgrid:2bbb33df #0.0.5
     restart: on-failure
     ports:
     - 8980:8980
