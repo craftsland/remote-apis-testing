@@ -1,0 +1,33 @@
+{{ with .Site.Data.jobs }}
+{{ $jobs := . }}
+{{ $clients := slice }}
+{{ $servers := slice }}
+{{ range $k, $v := $jobs}}
+    {{ $versions := split $k "+" }}
+    {{ $clients = $clients | append (index $versions 0)}}
+    {{ $servers = $servers | append (index $versions 1)}}
+{{ end }}
+<table id="matrix">
+    <tr>
+        <th></th>
+        {{ range $server := uniq $servers }}
+            <th><span>{{$server}}</span></th>
+        {{ end }}
+    </tr>
+    {{ range $i, $client := uniq $clients }}
+    <tr>
+        <td>{{$client}}</td>
+        {{ range $j, $server := uniq $servers }}
+            {{ $key := printf "%s+%s" $client $server }}
+            {{ if (isset $jobs $key) }}
+                <td class="{{ cond (index $jobs $key).pass "good" "bad" }}" />
+            {{ else }}
+                <td />
+            {{ end }}
+        {{ end }}
+    </tr>
+    {{end}}
+</table>
+{{else}}
+<p style="opacity: 0.6;">No Data Available</p>
+{{end}}
