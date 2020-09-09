@@ -30,15 +30,15 @@ while getopts ":s:c:a:p" opt; do
   esac
 done
 
-worker="worker"
+# Local directory mounted as a volume for the worker
+WORKER="worker"
+rm -rf $WORKER
+mkdir -m 0777 -p $WORKER/{build,cache,remote-execution}
 
-rm -rf worker
 if [[ "$CLEAN" != "" ]]; then
   echo "Performing optional clean"
   rm -rf storage-*
 fi
-mkdir -m 0777 "${worker}" "${worker}/build"
-mkdir -m 0700 "${worker}/cache"
 
 cleanup() {
     EXIT_STATUS=$?
