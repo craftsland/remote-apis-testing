@@ -93,7 +93,19 @@ services:
 
   runner-installer:
     image: buildbarn/bb-runner-installer:20200528T061211Z-4dfbe5b
+    entrypoint: []
+    # This prevents ETXTBSY errors that result from attempting to run
+    # installed executables before they have been fully copied.
+    command: >
+      sh
+      -c
+      "mkdir tmp_bb &&
+      /install /bb/tmp_bb &&
+      mv tmp_bb/tini /bb &&
+      mv tmp_bb/bb_runner /bb &&
+      mv tmp_bb/installed /bb"
+    working_dir: /bb
     volumes:
-    - ./bb:/bb    
+    - ./bb:/bb
 
 

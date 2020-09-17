@@ -31,7 +31,12 @@ done
 
 # Local directory mounted as a volume for the worker
 WORKER="worker"
-rm -rf $WORKER
+
+# bb is a directory created by buildbarn deployments and should be removed
+# at the start of every buildbarn deployment to prevent ETXTBSY errors from occurring.
+# If -p is set this effectively gives a clean environment akin to CI runs.
+rm -rf $WORKER bb
+
 mkdir -m 0777 -p $WORKER/{build,cache,remote-execution}
 
 if [[ "$CLEAN" != "" ]]; then
