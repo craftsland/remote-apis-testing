@@ -32,11 +32,13 @@ services:
       context: docker
       target: buildbox
       args:
-        BUILDBOX_VERSION: 0.0.13
+        BUILDBOX_COMMON_VERSION: 0.0.38
+        BUILDBOX_WORKER_VERSION: 0.0.38
+        BUILDBOX_HOST_TOOLS_SHA: f953eb90e743e21a68a8027e721471a65670d30c
     image: buildbox:latest
     restart: on-failure
     command:
-    - --buildbox-run=buildbox-run-hosttools
+    - --buildbox-run=/usr/local/bin/buildbox-run-hosttools
     - --bots-remote=http://frontend:8980
     - --cas-remote=http://frontend:8980
     - --instance=remote-execution

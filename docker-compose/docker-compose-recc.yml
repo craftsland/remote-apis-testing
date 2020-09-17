@@ -6,7 +6,9 @@ services:
       target: recc
       args:  
         RECC_VERSION: 0.0.38
-        BUILDBOX_VERSION: 0.0.38
+        BUILDBOX_COMMON_VERSION: 0.0.38
+        BUILDBOX_WORKER_VERSION: 0.0.38
+        BUILDBOX_HOST_TOOLS_SHA: f953eb90e743e21a68a8027e721471a65670d30c
     image: recc:latest 
     environment: 
     - RECC_SERVER=frontend:8980

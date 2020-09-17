@@ -108,8 +108,9 @@ FROM build_env as buildbox
 
 WORKDIR /tmp
 
-ARG BUILDBOX_VERSION
-ARG BUILDBOX_HOST_TOOLS_SHA=3f4c2172cf2d5e969ab4ba57b3ed660d5eaedd18
+ARG BUILDBOX_COMMON_VERSION
+ARG BUILDBOX_WORKER_VERSION
+ARG BUILDBOX_HOST_TOOLS_SHA
 
 ## for apt to be noninteractive
 ENV DEBIAN_FRONTEND noninteractive
@@ -137,7 +138,7 @@ RUN \
 	apt-get clean
 
 RUN \
-	git clone --depth=1 --branch $BUILDBOX_VERSION \
+	git clone --depth=1 --branch $BUILDBOX_COMMON_VERSION \
 		https://gitlab.com/BuildGrid/buildbox/buildbox-common.git \
 		/tmp/buildbox-common \
 	&& \
@@ -149,9 +150,10 @@ RUN \
 	rm -rf /tmp/buildbox-common
 
 RUN \
-	git clone --shallow-since=2020-06-19 \
-		https://gitlab.com/BuildGrid/buildbox/buildbox-run-hosttools.git \
-		/tmp/buildbox-run-hosttools && cd /tmp/buildbox-run-hosttools && git checkout 3f4c2172cf2d5e969ab4ba57b3ed660d5eaedd18 && cd - \
+	git clone https://gitlab.com/BuildGrid/buildbox/buildbox-run-hosttools.git \
+		/tmp/buildbox-run-hosttools \
+	&& \
+	git --git-dir /tmp/buildbox-run-hosttools/.git checkout $BUILDBOX_HOST_TOOLS_SHA \
 	&& \
 	cmake -B /tmp/buildbox-run-hosttools/build /tmp/buildbox-run-hosttools \
 		-DBUILD_TESTING=OFF \
@@ -161,7 +163,7 @@ RUN \
 	rm -rf /tmp/buildbox-run-hosttools
 
 RUN \
-	git clone --depth=1 --branch $BUILDBOX_VERSION \
+	git clone --depth=1 --branch $BUILDBOX_WORKER_VERSION \
 		https://gitlab.com/BuildGrid/buildbox/buildbox-worker.git \
 		/tmp/buildbox-worker \
 	&& \
