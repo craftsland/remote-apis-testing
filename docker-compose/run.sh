@@ -1,9 +1,8 @@
+#!/usr/bin/env bash
 # The contents of this file are covered by APACHE License Version 2.
 # See licenses/APACHEV2-LICENSE.txt for more information.
 #
 # Runs docker-compose files for server and client REAPI implementations
-
-#!/usr/bin/env bash
 
 set -eu
 
