@@ -138,7 +138,7 @@ RUN \
 	rm -rf /tmp/buildbox-common
 
 RUN \
-	git clone --depth=1 \
+	git clone --depth=2 \
 		https://gitlab.com/BuildGrid/buildbox/buildbox-run-hosttools.git \
 		/tmp/buildbox-run-hosttools && cd /tmp/buildbox-run-hosttools && git checkout 3f4c2172cf2d5e969ab4ba57b3ed660d5eaedd18 && cd - \
 	&& \
