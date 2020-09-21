@@ -5,7 +5,8 @@ services:
       context: docker
       target: buildfarm
       args:
-        BUILDFARM_VERSION: 1.0.0
+        BUILDFARM_VERSION: 1.1.0
+        BAZEL_VERSION: 3.3.1 # Version of Bazel required to build Buildfarm
         BUILDFARM_DAEMON: buildfarm-server
         BUILDFARM_CONFIG: /config/server.config
     image: buildfarm_server:latest
@@ -19,7 +20,8 @@ services:
       context: docker
       target: buildfarm
       args:
-        BUILDFARM_VERSION: 1.0.0
+        BUILDFARM_VERSION: 1.1.0
+        BAZEL_VERSION: 3.3.1 # Version of Bazel required to build Buildfarm
         BUILDFARM_DAEMON: buildfarm-operationqueue-worker
         BUILDFARM_CONFIG: /config/worker.config
     image: buildfarm_worker:latest
