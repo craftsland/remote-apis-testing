@@ -11,6 +11,7 @@ HELP="""./run.sh - A remote-apis-testing wrapper script
   -c [client]: A path to a docker-compose file which will be spun up to represent the client deployment.
   -a [asset server]: A path to a docker-compose file which will be spun up to represent the asset server deployment.
   -d [name]: Dumps the data for this run with a given name. This can be later used in the static site and is of the format {client}+{server}.
+  -u [url]: If specified with the -d flag, the provided url is included in the job_url field in the json output.
 
   -p: Will perform a cleanup of the storage-* directories prior to starting tests. Requires privilege.
 """
@@ -19,13 +20,15 @@ HELP="""./run.sh - A remote-apis-testing wrapper script
 ASSET=""
 CLEAN=""
 JOB_NAME=""
+JOB_URL=""
 
-while getopts ":s:c:a:d:p" opt; do
+while getopts ":s:c:a:d:u:p" opt; do
   case ${opt} in
     s ) SERVER="$OPTARG";;
     c ) CLIENT="$OPTARG";;
     a ) ASSET="$OPTARG";;
     d ) JOB_NAME="$OPTARG";;
+    u ) JOB_URL="$OPTARG";;
     p ) CLEAN="TRUE";;
     : ) echo "Missing argument for -$OPTARG" && exit 1;;
     \?) echo "$HELP" && exit 1;;
@@ -54,8 +57,12 @@ cleanup() {
     docker-compose -f $SERVER down --remove-orphans
 
     if [[ "$JOB_NAME" != "" ]]; then
-      pass=$([ "$EXIT_STATUS" == 0 ] && echo "true" || echo "false")
-      echo "{ \"pass\": $pass, \"name\": \"$JOB_NAME\" }"
+      PASS=$([ "$EXIT_STATUS" == 0 ] && echo "true" || echo "false")
+
+      # Add the job url so that the static site can link
+      # to the exact job that created a given result
+      JOB_URL_ARG=$([ "$JOB_URL" != "" ] && echo ", \"job_url\": \"$JOB_URL\"" || echo "")
+      echo "{ \"pass\": $PASS, \"name\": \"$JOB_NAME\"$JOB_URL_ARG }"
     fi
 
     exit $EXIT_STATUS

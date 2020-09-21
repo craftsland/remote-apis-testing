@@ -25,7 +25,7 @@ workflow:
   script:
     - cd docker-compose
     - if [ -z "$ASSET" ]; then ASSET_ARG=""; else export ASSET_ARG="-a docker-compose-$ASSET.yml"; fi
-    - ./run.sh -s docker-compose-$SERVER.yml -c docker-compose-$CLIENT.yml -d $SERVER+$CLIENT $ASSET_ARG > ../results/${SERVER}+${CLIENT}.json
+    - ./run.sh -s docker-compose-$SERVER.yml -c docker-compose-$CLIENT.yml -d $SERVER+$CLIENT $ASSET_ARG -u $CI_JOB_URL > ../results/${SERVER}+${CLIENT}.json
   services:
     - docker:dind
   artifacts:
