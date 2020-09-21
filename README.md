@@ -32,11 +32,11 @@ If you would like to add a new client or server on to this list, you can find in
 | Please            | TBA                            | TBA                            | TBA                            |
 
 [bazel-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-bazel-deployed.svg
-[bazel-buildgrid-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-bazel_remote_downloader-asset_hub-deployed.svg
+[bazel-buildgrid-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-bazel-asset_hub-deployed.svg
 [bazel-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-bazel-deployed.svg
-[bazel-buildfarm-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-bazel_remote_downloader-asset_hub-deployed.svg
+[bazel-buildfarm-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-bazel-asset_hub-deployed.svg
 [bazel-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-bazel-deployed.svg
-[bazel-buildbarn-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-bazel_remote_downloader-asset_hub-deployed.svg
+[bazel-buildbarn-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-bazel-asset_hub-deployed.svg
 [recc-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-recc-deployed.svg
 [recc-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-recc-deployed.svg
 [recc-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-recc-deployed.svg
