@@ -7,6 +7,16 @@ description = "A compatability matrix between implementations of the Remote-Exec
 gitlab = "https://gitlab.com/remote-apis-testing/remote-apis-testing"
 mainSections = ["post"]
 
+[params.pipeline]
+# the pipeline that built this site
+id = ""
+url = ""
+
+[params.commit]
+# the pipeline that built this site
+hash = ""
+url = ""
+
 [menu]
 [[menu.main]]
 identifier = "repository"

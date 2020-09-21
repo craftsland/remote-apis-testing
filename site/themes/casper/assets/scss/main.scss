@@ -650,9 +650,6 @@ body {
   width: auto;
   height: 21px;
 }
-.site-home-header .site-nav-logo {
-  display: none;
-}
 .site-nav-content {
   position: relative;
   align-self: flex-start;
@@ -671,7 +668,8 @@ body {
   margin: 0;
   padding: 0;
 }
-.nav li a {
+
+.nav li > * {
   position: relative;
   display: block;
   padding: 12px;
