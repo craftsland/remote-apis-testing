@@ -10,6 +10,7 @@ HELP="""./run.sh - A remote-apis-testing wrapper script
   -s [server]: A path to a docker-compose file which will be spun up to represent the server deployment.
   -c [client]: A path to a docker-compose file which will be spun up to represent the client deployment.
   -a [asset server]: A path to a docker-compose file which will be spun up to represent the asset server deployment.
+  -d [name]: Dumps the data for this run with a given name. This can be later used in the static site and is of the format {client}+{server}.
 
   -p: Will perform a cleanup of the storage-* directories prior to starting tests. Requires privilege.
 """
@@ -17,12 +18,14 @@ HELP="""./run.sh - A remote-apis-testing wrapper script
 # Initialize optional args
 ASSET=""
 CLEAN=""
+JOB_NAME=""
 
-while getopts ":s:c:a:p" opt; do
+while getopts ":s:c:a:d:p" opt; do
   case ${opt} in
     s ) SERVER="$OPTARG";;
     c ) CLIENT="$OPTARG";;
     a ) ASSET="$OPTARG";;
+    d ) JOB_NAME="$OPTARG";;
     p ) CLEAN="TRUE";;
     : ) echo "Missing argument for -$OPTARG" && exit 1;;
     \?) echo "$HELP" && exit 1;;
@@ -49,6 +52,12 @@ cleanup() {
     # Removing $SERVER with orphans will ensure all other
     # services deployed afterwards are removed.
     docker-compose -f $SERVER down --remove-orphans
+
+    if [[ "$JOB_NAME" != "" ]]; then
+      pass=$([ "$EXIT_STATUS" == 0 ] && echo "true" || echo "false")
+      echo "{ \"pass\": $pass, \"name\": \"$JOB_NAME\" }"
+    fi
+
     exit $EXIT_STATUS
 }
 trap cleanup EXIT
@@ -57,15 +66,17 @@ trap cleanup EXIT
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
-docker-compose -f $SERVER build
-docker-compose -f $SERVER up -d
-docker-compose -f $SERVER logs --follow &
+{
+  docker-compose -f $SERVER build
+  docker-compose -f $SERVER up -d
+  docker-compose -f $SERVER logs --follow &
 
-if [[ "$ASSET" != "" ]]; then
-  docker-compose -f $ASSET build
-  docker-compose -f $ASSET up -d
-  docker-compose -f $ASSET logs --follow &
-fi
+  if [[ "$ASSET" != "" ]]; then
+    docker-compose -f $ASSET build
+    docker-compose -f $ASSET up -d
+    docker-compose -f $ASSET logs --follow &
+  fi
 
-docker-compose -f $CLIENT build
-docker-compose -f $CLIENT up --exit-code-from client
+  docker-compose -f $CLIENT build
+  docker-compose -f $CLIENT up --exit-code-from client
+} 1>&2
