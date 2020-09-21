@@ -11,38 +11,15 @@ We welcome all contributions, please see our [contributing guide](CONTRIBUTING.m
 
 This shows the status of client implementations against server implementations.
 
+- Bazel: Building [abseil-hello](https://github.com/abseil/abseil-hello/tree/master/bazel-hello)
+- Goma & Recc: Building [libcyaml](https://github.com/tlsa/libcyaml)
+
 Clients will run a short build task against server implementations. If the client job is successful, then this is
 denoted as a success. Otherwise, the job is marked as a failure.
 
 If you would like to add a new client or server on to this list, you can find instructions at [CONTRIBUTING.md](CONTRIBUTING.md#adding-new-client-and-server-implementations)
 
-#### Client jobs
-
-- Bazel: Building [abseil-hello](https://github.com/abseil/abseil-hello/tree/master/bazel-hello)
-- Goma & Recc: Building [libcyaml](https://github.com/tlsa/libcyaml)
-
-|                   | BuildGrid                      | Buildfarm                      | Buildbarn                      |
-| ----------------- | ------------------------------ | ------------------------------ | ------------------------------ |
-| Bazel             | ![][bazel-buildgrid]           | ![][bazel-buildfarm]           | ![][bazel-buildbarn]           |
-| Bazel + asset-hub | ![][bazel-buildgrid-asset-hub] | ![][bazel-buildfarm-asset-hub] | ![][bazel-buildbarn-asset-hub] |
-| BuildStream       | TBA                            | TBA                            | TBA                            |
-| RECC              | ![][recc-buildgrid]            | ![][recc-buildfarm]            | ![][recc-buildbarn]            |
-| Goma              | ![][goma-buildgrid]            | ![][goma-buildfarm]            | ![][goma-buildbarn]            |
-| Pants             | TBA                            | TBA                            | TBA                            |
-| Please            | TBA                            | TBA                            | TBA                            |
-
-[bazel-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-bazel-deployed.svg
-[bazel-buildgrid-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-bazel-asset_hub-deployed.svg
-[bazel-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-bazel-deployed.svg
-[bazel-buildfarm-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-bazel-asset_hub-deployed.svg
-[bazel-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-bazel-deployed.svg
-[bazel-buildbarn-asset-hub]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-bazel-asset_hub-deployed.svg
-[recc-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-recc-deployed.svg
-[recc-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-recc-deployed.svg
-[recc-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-recc-deployed.svg
-[goma-buildgrid]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildgrid-goma-deployed.svg
-[goma-buildfarm]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildfarm-goma-deployed.svg
-[goma-buildbarn]: https://remote-apis-testing.gitlab.io/remote-apis-testing/buildbarn-goma-deployed.svg
+The matrix is available here: https://remote-apis-testing.gitlab.io/remote-apis-testing/
 
 ### Running tests
 
