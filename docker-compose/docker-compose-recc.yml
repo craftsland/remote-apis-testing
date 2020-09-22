@@ -5,7 +5,7 @@ services:
       context: docker
       target: recc
       args:  
-        RECC_VERSION: 0.0.31
+        RECC_VERSION: 0.0.32
         BUILDBOX_VERSION: 0.0.13
     image: recc:latest 
     environment: 
