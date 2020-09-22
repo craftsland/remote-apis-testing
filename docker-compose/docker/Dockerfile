@@ -57,7 +57,7 @@ RUN wget -O bazel-installer.sh https://github.com/bazelbuild/bazel/releases/down
 RUN chmod +x bazel-installer.sh 
 RUN ./bazel-installer.sh
 
-# Building of buildfarm images (worker and client)
+# Building of buildfarm images (worker and server)
 
 FROM build_env as buildfarm
 
@@ -75,14 +75,16 @@ RUN echo "tzdata tzdata/Areas select Europe" > /tmp/preseed.txt; \
     apt-get install -y tzdata
 
 RUN apt-get install -y default-jdk
-RUN wget -O bazel-installer.sh https://github.com/bazelbuild/bazel/releases/download/3.3.1/bazel-3.3.1-installer-linux-x86_64.sh && chmod +x bazel-installer.sh && ./bazel-installer.sh
 
-RUN git clone https://github.com/bazelbuild/bazel-buildfarm.git
-WORKDIR bazel-buildfarm
+ARG BAZEL_VERSION
+RUN wget -O bazel-installer.sh https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
+RUN chmod +x bazel-installer.sh
+RUN ./bazel-installer.sh
 
 ARG BUILDFARM_VERSION
-RUN git checkout $BUILDFARM_VERSION
+RUN git clone --depth=1 --branch $BUILDFARM_VERSION https://github.com/bazelbuild/bazel-buildfarm.git /bazel-buildfarm
 
+WORKDIR /bazel-buildfarm
 RUN bazel build //src/main/java/build/buildfarm/...
 
 ARG BUILDFARM_DAEMON
