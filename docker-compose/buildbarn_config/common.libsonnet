@@ -34,6 +34,6 @@
     },
   },
   browserUrl: 'http://localhost:7984',
-  httpListenAddress: ':80',
+  global: { diagnosticsHttpListenAddress: ':80' },
   maximumMessageSizeBytes: 16 * 1024 * 1024,
 }

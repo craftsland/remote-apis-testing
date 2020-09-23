@@ -7,7 +7,7 @@ local common = import 'common.libsonnet';
   blobstore: common.blobstore,
   maximumMessageSizeBytes: common.maximumMessageSizeBytes,
   scheduler: { address: 'scheduler:8983' },
-  httpListenAddress: ':7986',
+  global: { diagnosticsHttpListenAddress: ':7986' },
   maximumMemoryCachedDirectories: 1000,
   instanceName: 'remote-execution',
   buildDirectories: [{
