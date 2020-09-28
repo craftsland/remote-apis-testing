@@ -41,6 +41,7 @@ workflow:
     - mkdir -p site/data results
     - "cat results/*.json | jq -s 'map({(.name|tostring): .}) | add' | tee site/data/jobs.json"
     - cd site && hugo
+    - mv public ../public
   variables:
     HUGO_PARAMS_commit_hash: $CI_COMMIT_SHORT_SHA
     HUGO_PARAMS_commit_url: $CI_PROJECT_URL/-/commit/$CI_COMMIT_SHA
@@ -48,7 +49,7 @@ workflow:
     HUGO_PARAMS_pipeline_url: $CI_PIPELINE_URL
   artifacts:
     paths:
-      - site/public
+      - public
 
 .remote_downloader_template:
   variables:
@@ -163,10 +164,10 @@ pages:review:
   rules:
     - if: '$CI_COMMIT_BRANCH != "master"'
   variables:
-    HUGO_BASEURL: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/site/public/
+    HUGO_BASEURL: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/
   environment:
     name: review/$CI_COMMIT_REF_NAME
-    url: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/site/public/index.html
+    url: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
 
 # build static gitlab page for displaying remote-apis-testing results
 pages:
