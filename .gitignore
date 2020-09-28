@@ -1,3 +1,5 @@
 storage-*
 worker/
 bb/
+site/resources/_gen/
+site/public/

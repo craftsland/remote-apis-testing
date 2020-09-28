@@ -41,6 +41,14 @@ publicly accessible container registry.
 being built using multistage docker builds, with a common build environment
 constructed from ubuntu 20.04
 
+## Static site
+
+This project generates a static site on CI runs. This is done via [hugo](gohugo.io). 
+The `-j` flag is passed to `run.sh` during CI, spitting out json files containing the 
+status of the run. These are then merged into a single object and placed into the sites 
+`data` folder which the hugo theme uses to generate the markup for the compatability matrix.
+The expected format for this is detailed in `site/themes/casper/README.md`.
+
 ## Patch submissions
 
 Branches must be submitted as merge requests on GitLab: approval is required for

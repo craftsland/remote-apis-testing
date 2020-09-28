@@ -2,131 +2,176 @@ stages:
   - test
   - deploy
 
-.test_template: &test
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - when: always
+
+#
+# Templates
+#
+
+.test_template:
   stage: test
+  image: docker:stable
   allow_failure: true
   before_script:
     - apk add --update curl && rm -rf /var/cache/apk/*
     - apk add py-pip
     - apk add python3-dev libffi-dev openssl-dev gcc libc-dev make bash
     - pip install docker-compose
+    - mkdir results
   script:
     - cd docker-compose
-    - echo "export COLOR="critical" STATUS="failed"" > ../result-vars
     - if [ -z "$ASSET" ]; then ASSET_ARG=""; else export ASSET_ARG="-a docker-compose-$ASSET.yml"; fi
-    - ./run.sh -s docker-compose-$SERVER.yml -c docker-compose-$CLIENT.yml $ASSET_ARG
-    - echo "export COLOR="success" STATUS="success"" > ../result-vars
-  after_script:
-    - . ./result-vars
-    - mkdir -p badges
-    - curl -o badges/${SERVER}-${CLIENT}${ASSET:+-$ASSET}-deployed.svg https://img.shields.io/badge/${SERVER}_${CLIENT}${ASSET:+_$ASSET}-${STATUS}_${CI_COMMIT_SHORT_SHA}-${COLOR}.svg
-  image: docker:stable
+    - ./run.sh -s docker-compose-$SERVER.yml -c docker-compose-$CLIENT.yml -d $SERVER+$CLIENT $ASSET_ARG -u $CI_JOB_URL > ../results/${SERVER}+${CLIENT}.json
   services:
     - docker:dind
   artifacts:
-    name: pages
     paths:
-      - badges/
+      - results/
     when: always
 
-### Bazel client
+.pages_template:
+  stage: deploy
+  image: monachus/hugo:v0.74.3
+  script:
+    - apt update && apt install jq -y
+    - mkdir -p site/data results
+    - "cat results/*.json | jq -s 'map({(.name|tostring): .}) | add' | tee site/data/jobs.json"
+    - cd site && hugo
+  variables:
+    HUGO_PARAMS_commit_hash: $CI_COMMIT_SHORT_SHA
+    HUGO_PARAMS_commit_url: $CI_PROJECT_URL/-/commit/$CI_COMMIT_SHA
+    HUGO_PARAMS_pipeline_id: $CI_PIPELINE_ID
+    HUGO_PARAMS_pipeline_url: $CI_PIPELINE_URL
+  artifacts:
+    paths:
+      - site/public
 
-.remote_downloader_template: &bazel_remote_downloader
-  variables: &bazel_remote_downloader_vars
+.remote_downloader_template:
+  variables:
     BAZEL_ARGS: "--remote_cache=grpc://frontend:8980 --experimental_remote_downloader=grpc://asset:8979"
 
-test_buildbarn_bazel:
-  <<: *test
-  variables:
-    SERVER: buildbarn
-    CLIENT: bazel
+#
+# Bazel client
+#
 
-test_buildbarn_bazel_asset_hub:
-  <<: *test
+test_buildbarn_bazel:
+  extends: .test_template
   variables:
-    <<: *bazel_remote_downloader_vars
     SERVER: buildbarn
     CLIENT: bazel
-    ASSET: asset_hub
 
 test_buildfarm_bazel:
-  <<: *test
+  extends: .test_template
   variables:
     SERVER: buildfarm
     CLIENT: bazel
-
-test_buildfarm_bazel_asset_hub:
-  <<: *test
-  variables:
-    <<: *bazel_remote_downloader_vars
-    SERVER: buildfarm
-    CLIENT: bazel
-    ASSET: asset_hub
-
 
 test_buildgrid_bazel:
-  <<: *test
+  extends: .test_template
   variables:
     SERVER: buildgrid
     CLIENT: bazel
 
-test_buildgrid_bazel_asset_hub:
-  <<: *test
+#
+# Bazel client w/ remote asset
+#
+
+test_buildbarn_bazel_asset_hub:
+  extends:
+    - .test_template
+    - .remote_downloader_template
   variables:
-    <<: *bazel_remote_downloader_vars
+    SERVER: buildbarn
+    CLIENT: bazel
+    ASSET: asset_hub
+
+test_buildfarm_bazel_asset_hub:
+  extends:
+    - .test_template
+    - .remote_downloader_template
+  variables:
+    SERVER: buildfarm
+    CLIENT: bazel
+    ASSET: asset_hub
+
+test_buildgrid_bazel_asset_hub:
+  extends:
+    - .test_template
+    - .remote_downloader_template
+  variables:
     SERVER: buildgrid
     CLIENT: bazel
     ASSET: asset_hub
 
-### Goma client
+#
+# Goma client
+#
 
 test_buildbarn_goma:
-  <<: *test
+  extends: .test_template
   variables:
     SERVER: buildbarn
     CLIENT: goma
 
 test_buildfarm_goma:
-  <<: *test
+  extends: .test_template
   variables:
     SERVER: buildfarm
     CLIENT: goma
 
 test_buildgrid_goma:
-  <<: *test
+  extends: .test_template
   variables:
     SERVER: buildgrid
     CLIENT: goma
 
-### Recc client
+#
+# Recc client
+#
 
 test_buildbarn_recc:
-  <<: *test
+  extends: .test_template
   variables:
     SERVER: buildbarn
     CLIENT: recc
 
 test_buildfarm_recc:
-  <<: *test
+  extends: .test_template
   variables:
     SERVER: buildfarm
     CLIENT: recc
 
 test_buildgrid_recc:
-  <<: *test
+  extends: .test_template
   variables:
     SERVER: buildgrid
     CLIENT: recc
 
-pages:
-  stage: deploy
-  script:
-    - mkdir public
-    - cp badges/* public/
-  artifacts:
-    name: pages
-    paths:
-      - public/
-      - badges/
+#
+# Pages
+#
+
+# a stopgap to simulate review apps, allows us to quickly see
+# the status of an MR before merging it
+# see: https://gitlab.com/gitlab-org/gitlab/-/issues/16907#note_214936412
+pages:review:
+  extends: .pages_template
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: '$CI_COMMIT_BRANCH != "master"'
+  variables:
+    HUGO_BASEURL: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/site/public/
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/site/public/index.html
+
+# build static gitlab page for displaying remote-apis-testing results
+pages:
+  extends: .pages_template
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+  variables:
+    HUGO_BASEURL: $CI_PAGES_URL
