@@ -1,0 +1,20 @@
+version: '3.4'
+services:
+  client:
+    build:
+      context: docker
+      target: pants_client
+    image: pants_client:latest
+    environment:
+      PANTS_SHA: "0c54f5d34533af96bb4f2595f22656239a9f4102"
+    command: >
+      sh -c
+        "git clone --branch=2.0-for-remote-apis-testing https://github.com/toolchainlabs/example-python.git && \
+        cd example-python && \
+        ./pants --no-pantsd -ldebug \
+          --remote-execution \
+          --remote-execution-server=frontend:8980 \
+          --remote-store-server=frontend:8980 \
+          --remote-instance-name=remote-execution \
+          --remote-execution-extra-platform-properties=OSFamily=Linux \
+          test helloworld:: "

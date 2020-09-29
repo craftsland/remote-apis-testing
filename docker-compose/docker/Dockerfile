@@ -2,10 +2,18 @@
 # See licenses/APACHEV2-LICENSE.txt for more information.
 
 # Base build environment
+#
+# Note: This image contains both the dependencies needed for building dependent images and
+# also the dependencies required by build actions to be in their environment.
 
 FROM ubuntu:20.04 AS build_env
 
+# Install dependencies for building dependent images.
 RUN apt-get update && apt-get install -y build-essential libyaml-dev
+
+# Install build action dependencies.
+# - Python 3 is used by the Pants client support.
+RUN apt-get install -y python3 python3-distutils
 
 # Goma client
 
@@ -187,3 +195,14 @@ RUN mkdir build && cd build && \
         cmake -DBUILD_TESTING=OFF "${EXTRA_CMAKE_FLAGS}" .. && make 
 
 ENTRYPOINT []
+
+
+# Pants client
+
+FROM build_env as pants_client
+
+# Ensure Python 3.6+ and other Pants dependencies are installed.
+#
+# Note: Pants is installed in the source repository by a wrapper script and not on
+# any system path. Thus, there is no need to install Pants in this image.
+RUN apt-get update && apt-get install -y curl git python3 python3-dev python3-distutils
