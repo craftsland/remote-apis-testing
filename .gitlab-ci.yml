@@ -81,32 +81,32 @@ test_buildgrid_bazel:
 # Bazel client w/ remote asset
 #
 
-test_buildbarn_bazel_asset_hub:
+test_buildbarn_bazel_remote_asset:
   extends:
     - .test_template
     - .remote_downloader_template
   variables:
     SERVER: buildbarn
     CLIENT: bazel
-    ASSET: asset_hub
+    ASSET: remote_asset
 
-test_buildfarm_bazel_asset_hub:
+test_buildfarm_bazel_remote_asset:
   extends:
     - .test_template
     - .remote_downloader_template
   variables:
     SERVER: buildfarm
     CLIENT: bazel
-    ASSET: asset_hub
+    ASSET: remote_asset
 
-test_buildgrid_bazel_asset_hub:
+test_buildgrid_bazel_remote_asset:
   extends:
     - .test_template
     - .remote_downloader_template
   variables:
     SERVER: buildgrid
     CLIENT: bazel
-    ASSET: asset_hub
+    ASSET: remote_asset
 
 #
 # Goma client
