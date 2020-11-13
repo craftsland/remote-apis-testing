@@ -4,7 +4,7 @@
 version: '3.4'
 services: 
   frontend:
-    image: buildbarn/bb-storage:20201104T092644Z-c346ca3
+    image: buildbarn/bb-storage:20201111T150919Z-9ba4a52
     command:
     - /config/frontend.jsonnet
     ports:
@@ -14,7 +14,7 @@ services:
     - ./buildbarn_config:/config
 
   storage-0:
-    image: buildbarn/bb-storage:20201104T092644Z-c346ca3
+    image: buildbarn/bb-storage:20201111T150919Z-9ba4a52
     command:
     - /config/storage.jsonnet
     expose:
@@ -29,7 +29,7 @@ services:
     - ./storage-cas-0/persistent_state:/storage-cas/persistent_state
 
   storage-1:
-    image: buildbarn/bb-storage:20201104T092644Z-c346ca3
+    image: buildbarn/bb-storage:20201111T150919Z-9ba4a52
     command:
     - /config/storage.jsonnet
     expose:
@@ -45,7 +45,7 @@ services:
 
 
   scheduler:
-    image: buildbarn/bb-scheduler:20201104T093400Z-42313d3
+    image: buildbarn/bb-scheduler:20201111T151042Z-67172b7
     command:
     - /config/scheduler.jsonnet
     expose:
@@ -68,7 +68,7 @@ services:
 
 
   worker:
-    image: buildbarn/bb-worker:20201104T093400Z-42313d3
+    image: buildbarn/bb-worker:20201111T151042Z-67172b7
     command:
     - /config/worker.jsonnet
     ports:
@@ -96,7 +96,7 @@ services:
 
 
   runner-installer:
-    image: buildbarn/bb-runner-installer:20201104T093400Z-42313d3
+    image: buildbarn/bb-runner-installer:20201111T151042Z-67172b7
     entrypoint: []
     # This prevents ETXTBSY errors that result from attempting to run
     # installed executables before they have been fully copied.
