@@ -4,7 +4,7 @@
 version: '3.4'
 services: 
   frontend:
-    image: buildbarn/bb-storage:20201111T150919Z-9ba4a52
+    image: &bb-storage buildbarn/bb-storage:20201111T150919Z-9ba4a52
     command:
     - /config/frontend.jsonnet
     ports:
@@ -14,7 +14,7 @@ services:
     - ./buildbarn_config:/config
 
   storage-0:
-    image: buildbarn/bb-storage:20201111T150919Z-9ba4a52
+    image: *bb-storage
     command:
     - /config/storage.jsonnet
     expose:
@@ -29,7 +29,7 @@ services:
     - ./storage-cas-0/persistent_state:/storage-cas/persistent_state
 
   storage-1:
-    image: buildbarn/bb-storage:20201111T150919Z-9ba4a52
+    image: *bb-storage
     command:
     - /config/storage.jsonnet
     expose:
