@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y build-essential libyaml-dev
 
 # Install build action dependencies.
 # - Python 3 is used by the Pants client support.
-RUN apt-get install -y python3 python3-distutils
+RUN apt-get install -y python3 python3-distutils tar unzip
 
 # Goma client
 
