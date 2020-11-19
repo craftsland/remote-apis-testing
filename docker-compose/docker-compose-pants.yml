@@ -5,12 +5,11 @@ services:
       context: docker
       target: pants_client
     image: pants_client:latest
-    environment:
-      PANTS_SHA: "0c54f5d34533af96bb4f2595f22656239a9f4102"
     command: >
       sh -c
-        "git clone --branch=2.0-for-remote-apis-testing https://github.com/toolchainlabs/example-python.git && \
+        "git clone --branch=main https://github.com/pantsbuild/example-python.git && \
         cd example-python && \
+        git checkout c6052498f25a436f2639ccd0bc846cec1a55d7d5 && \
         ./pants --no-pantsd -ldebug \
           --remote-execution \
           --remote-execution-server=frontend:8980 \
