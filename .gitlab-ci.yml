@@ -180,15 +180,38 @@ test_buildgrid_pants:
 # Automated Updates
 #
 
+# Auto update requires that an environment variable be set up in GitLab CI Settings
+# This should both be set up as a 'file' variable (ie when CI runs, the value supplied
+#   in settings will be stored in a temporary file, and the variable will resolve to the
+#   name of the temp file).
+# For security reasons, this variable should be set as "MASKED" and "PROTECTED"
+#
+# BOT_SSH_KEY should contain an rsa private key
+#
+# This should be an up to date credential, granting access to the GitLab account
+#   called "remote-apis-testing-bot". The bot account is currently managed by Codethink,
+#   and is registered with the address "remote-apis-testing-bot@codethink.co.uk".
+#
 auto_update_refs_and_generate_merge_requests:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TASK == "auto-update"'
   image: python
   before_script:
     - pip3 install requests
+    - chmod 600 $BOT_SSH_KEY
+    - git config --global user.name "bot"
+    - git config --global user.email "remote-apis-testing-bot@codethink.co.uk"
+    - git remote set-url origin "git@${CI_SERVER_HOST}:${CI_PROJECT_PATH}.git"
+    - export GIT_SSH_COMMAND="ssh -o 'IdentitiesOnly yes' -o 'StrictHostKeyChecking no' -i $BOT_SSH_KEY"
     - cd auto-updater
   script:
+    - OLD_COMMIT="$(git log -n1 --format=%H)"
     - python3 update_refs_in_docker_compose_yaml.py
+    - NEW_COMMIT="$(git log -n1 --format=%H)"
+    - >
+      if [ "${OLD_COMMIT}" != "${NEW_COMMIT}" ];
+      then python3 create_merge_request.py;
+      fi
 
 #
 # Pages
