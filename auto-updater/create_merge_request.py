@@ -16,6 +16,8 @@ Pushes the local commits to GitLab as a new branch, then creates a Merge Request
 merge into master.
 """
 
+MR_TITLE_START_TEXT = "Automated update"
+
 
 def main():
     """See main module docstring."""
@@ -48,7 +50,7 @@ def main():
         "source_branch": new_branch,
         "target_branch": "master",
         "remove_source_branch": True,
-        "title": f"Automated update {datetime.date.today()}",
+        "title": f"{MR_TITLE_START_TEXT} {datetime.date.today()}",
     }
     response = requests.post(api_merge_request_url, data=data, headers=headers)
     print(

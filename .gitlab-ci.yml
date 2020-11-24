@@ -196,6 +196,7 @@ test_buildgrid_pants:
 auto_update_refs_and_generate_merge_requests:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TASK == "auto-update"'
+  allow_failure: true
   image: python
   before_script:
     - pip3 install requests
@@ -206,6 +207,7 @@ auto_update_refs_and_generate_merge_requests:
     - export GIT_SSH_COMMAND="ssh -o 'IdentitiesOnly yes' -o 'StrictHostKeyChecking no' -i $BOT_SSH_KEY"
     - cd auto-updater
   script:
+    - python3 check_for_open_automated_merge_requests.py "${CI_PROJECT_ID}" "${CI_API_V4_URL}"
     - OLD_COMMIT="$(git log -n1 --format=%H)"
     - python3 update_refs_in_docker_compose_yaml.py
     - NEW_COMMIT="$(git log -n1 --format=%H)"
