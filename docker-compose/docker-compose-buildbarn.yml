@@ -45,7 +45,7 @@ services:
 
 
   scheduler:
-    image: buildbarn/bb-scheduler:20201111T151042Z-67172b7
+    image: buildbarn/bb-scheduler:20201116T104239Z-1a8407a
     command:
     - /config/scheduler.jsonnet
     expose:
@@ -68,7 +68,7 @@ services:
 
 
   worker:
-    image: buildbarn/bb-worker:20201111T151042Z-67172b7
+    image: buildbarn/bb-worker:20201116T104239Z-1a8407a
     command:
     - /config/worker.jsonnet
     ports:
@@ -96,7 +96,7 @@ services:
 
 
   runner-installer:
-    image: buildbarn/bb-runner-installer:20201111T151042Z-67172b7
+    image: buildbarn/bb-runner-installer:20201116T104239Z-1a8407a
     entrypoint: []
     # This prevents ETXTBSY errors that result from attempting to run
     # installed executables before they have been fully copied.
