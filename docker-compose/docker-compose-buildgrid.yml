@@ -9,7 +9,7 @@ services:
     - start
     - -vvv
     - /config/server.config
-    image: registry.gitlab.com/buildgrid/buildgrid/buildgrid:2bbb33df #0.0.5
+    image: registry.gitlab.com/buildgrid/buildgrid/buildgrid:53412dc3 #0.0.5
     restart: on-failure
     ports:
     - 8980:8980
