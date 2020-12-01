@@ -23,7 +23,7 @@ local common = import 'common.libsonnet';
       concurrency: 8,
       platform: {
         properties: [
-          { name: 'OSFamily', value: 'Linux' },
+          { name: 'OSFamily', value: 'linux' },
         ],
       },
       defaultExecutionTimeout: '1800s',

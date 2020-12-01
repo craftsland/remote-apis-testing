@@ -43,7 +43,7 @@ services:
     - --request-timeout=30 
     - --runner-arg=--disable-localcas
     - --platform
-    - OSFamily=Linux
+    - OSFamily=linux
     depends_on:
     - frontend
 

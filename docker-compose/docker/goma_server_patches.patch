@@ -105,10 +105,10 @@ index 0000000..2cb6493
 +    remoteexec_platform: {
 +        properties:{
 +            name:"OSFamily"  
-+            value:"Linux"
-+        }  
++            value:"linux"
++        }
 +        rbe_instance_basename:"remote-execution"
-+    }  
++    }
 +    dimensions: "os:linux"
 +}
 -- 

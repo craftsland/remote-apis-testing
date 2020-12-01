@@ -11,7 +11,7 @@ services:
     environment: 
     - RECC_SERVER=frontend:8980
     - RECC_INSTANCE=remote-execution
-    - RECC_REMOTE_PLATFORM_OSFamily=Linux
+    - RECC_REMOTE_PLATFORM_OSFamily=linux
     - CC=/recc/build/bin/recc /usr/bin/gcc 
     command: >
       sh -c
