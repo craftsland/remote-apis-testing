@@ -6,7 +6,7 @@ configs: {
     remoteexec_platform: {
         properties:{
             name:"OSFamily"  
-            value:"Linux"
+            value:"linux"
         }  
         rbe_instance_basename:"remote-execution"
     }  

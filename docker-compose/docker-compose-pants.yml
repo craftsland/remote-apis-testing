@@ -15,5 +15,5 @@ services:
           --remote-execution-server=frontend:8980 \
           --remote-store-server=frontend:8980 \
           --remote-instance-name=remote-execution \
-          --remote-execution-extra-platform-properties=OSFamily=Linux \
+          --remote-execution-extra-platform-properties=OSFamily=linux \
           test helloworld:: "

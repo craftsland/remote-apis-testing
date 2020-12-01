@@ -11,7 +11,7 @@ services:
       sh -c
       "/usr/local/bin/bazel build
       --remote_instance_name=remote-execution
-      --remote_default_exec_properties=OSFamily=Linux
+      --remote_default_exec_properties=OSFamily=linux
       --remote_executor=grpc://frontend:8980 ${BAZEL_ARGS}
       @abseil-hello//:hello_main"
     volumes:
