@@ -5,7 +5,7 @@ services:
       context: docker
       target: bazel
       args:
-        BAZEL_VERSION: 3.7.0
+        BAZEL_VERSION: 3.7.1
     image: bazel-client:latest
     command: >
       sh -c
