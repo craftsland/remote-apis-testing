@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y build-essential libyaml-dev
 # Install build action dependencies.
 # - Python 3 is used by the Pants client support.
 RUN apt-get install -y python3 python3-distutils tar unzip
+# - Python -> Python3 symlink needed for GOMA and BuildFarm
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Goma client
 
@@ -27,7 +29,6 @@ RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools
 WORKDIR depot_tools
 RUN ./cipd install infra/goma/client/linux-amd64  	git_revision:$GOMA_CLIENT_GIT_SHA -root ../goma
 
-RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN apt-get install -y lsof
 
 RUN useradd -m goma --uid=1000
