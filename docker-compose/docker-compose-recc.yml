@@ -5,8 +5,8 @@ services:
       context: docker
       target: recc
       args:  
-        RECC_VERSION: 0.0.36
-        BUILDBOX_VERSION: 0.0.21
+        RECC_VERSION: 0.0.38
+        BUILDBOX_VERSION: 0.0.38
     image: recc:latest 
     environment: 
     - RECC_SERVER=frontend:8980
