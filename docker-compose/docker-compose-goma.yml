@@ -5,7 +5,7 @@ services:
       context: docker
       target: goma_client
       args:
-        GOMA_CLIENT_GIT_SHA: 432acf306d0f92b538f298738466d4029795fb72
+        GOMA_CLIENT_GIT_SHA: be1b7f4547023e809b636dc9572c976ccb33dcac
     image: goma-client:latest
     environment: 
     - GOMA_ARBITRARY_TOOLCHAIN_SUPPORT=true
