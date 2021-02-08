@@ -20,7 +20,7 @@ workflow:
     - apk add --update curl && rm -rf /var/cache/apk/*
     - apk add py-pip
     - apk add python3-dev libffi-dev openssl-dev gcc libc-dev make bash
-    - pip install docker-compose
+    - pip install cryptography==3.3.2 docker-compose
     - mkdir results
   script:
     - cd docker-compose
