@@ -5,8 +5,8 @@ services:
       context: docker
       target: recc
       args:  
-        RECC_VERSION: 0.0.38
-        BUILDBOX_COMMON_VERSION: 0.0.39
+        RECC_VERSION: 0.0.40
+        BUILDBOX_COMMON_VERSION: 0.0.40
         BUILDBOX_WORKER_VERSION: 0.0.39
         BUILDBOX_HOST_TOOLS_SHA: f953eb90e743e21a68a8027e721471a65670d30c
     image: recc:latest 
