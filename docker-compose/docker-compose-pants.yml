@@ -9,7 +9,7 @@ services:
       sh -c
         "git clone --branch=main https://github.com/pantsbuild/example-python.git && \
         cd example-python && \
-        git checkout 55a48bbd530207ddf2691cefc8bb89bf078183ca && \
+        git checkout 5e76f94ccabddac74b622dbb9087fc7fd2d8ba17 && \
         ./pants --no-pantsd -ldebug \
           --remote-execution \
           --remote-execution-server=frontend:8980 \
