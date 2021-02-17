@@ -14,6 +14,8 @@ workflow:
 
 .test_template:
   stage: test
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
   image: docker:stable
   allow_failure: true
   before_script:
@@ -175,6 +177,48 @@ test_buildgrid_pants:
     CLIENT: pants
 
 #
+# Automated Updates
+#
+
+# Auto updates require that two environment variables be set up in GitLab CI Settings
+# These should both be set up as 'file' variables (ie when CI runs, the value supplied
+#   in settings will be stored in a temporary file, and the variable will resolve to the
+#   name of the temp file).
+# For security reasons, these variables should be set as "MASKED" and "PROTECTED"
+#
+# BOT_ACCESS_TOKEN should contain an access token with API permissions
+# BOT_SSH_KEY should contain an rsa private key
+#
+# Both of these should be up to date credentials, granting access to the GitLab account
+#   called "remote-apis-testing-bot". The bot account is currently managed by Codethink,
+#   and is registered with the address "remote-apis-testing-bot@codethink.co.uk".
+#
+auto_update_refs_and_generate_merge_requests:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TASK == "auto-update"'
+  allow_failure: true
+  image: python
+  before_script:
+    - pip3 install requests
+    - chmod 600 $BOT_SSH_KEY
+    - git config --global user.name "bot"
+    - git config --global user.email "remote-apis-testing-bot@codethink.co.uk"
+    - git remote set-url origin "git@${CI_SERVER_HOST}:${CI_PROJECT_PATH}.git"
+    - export GIT_SSH_COMMAND="ssh -o 'IdentitiesOnly yes' -o 'StrictHostKeyChecking no' -i $BOT_SSH_KEY"
+    - cd auto-updater
+  script:
+    - python3 check_for_open_automated_merge_requests.py "${CI_PROJECT_ID}" "${CI_API_V4_URL}"
+    - OLD_COMMIT="$(git log -n1 --format=%H)"
+    - python3 update_refs_in_docker_compose_yaml.py
+    - NEW_COMMIT="$(git log -n1 --format=%H)"
+    - >
+      if [ "${OLD_COMMIT}" != "${NEW_COMMIT}" ];
+      then python3 create_merge_request.py "${CI_PROJECT_ID}" "${CI_API_V4_URL}" "${BOT_ACCESS_TOKEN}";
+      else echo "Checks complete. No need to create a new branch or Merge Request.";
+           echo "Everything is already up to date.";
+      fi
+
+#
 # Pages
 #
 
@@ -184,7 +228,7 @@ test_buildgrid_pants:
 pages:review:
   extends: .pages_template
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master"'
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "schedule"'
   variables:
     HUGO_BASEURL: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/
   environment:
@@ -195,6 +239,6 @@ pages:review:
 pages:
   extends: .pages_template
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE != "schedule"'
   variables:
     HUGO_BASEURL: $CI_PAGES_URL
