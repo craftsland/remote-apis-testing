@@ -14,6 +14,8 @@ HELP="""./run.sh - A remote-apis-testing wrapper script
   -u [url]: If specified with the -d flag, the provided url is included in the job_url field in the json output.
 
   -p: Will perform a cleanup of the storage-* directories prior to starting tests. Requires privilege.
+  -g: Will generate the docker-compose yaml files, setting the current versions of clients and servers, as defined in matrix.yml
+  -G: Same as -g, but will overwrite existing yaml files.
 """
 
 # Initialize optional args
@@ -21,8 +23,10 @@ ASSET=""
 CLEAN=""
 JOB_NAME=""
 JOB_URL=""
+GENERATE_YAML=""
+REGENERATE_YAML=""
 
-while getopts ":s:c:a:d:u:p" opt; do
+while getopts ":s:c:a:d:u:pgG" opt; do
   case ${opt} in
     s ) SERVER="$OPTARG";;
     c ) CLIENT="$OPTARG";;
@@ -30,6 +34,8 @@ while getopts ":s:c:a:d:u:p" opt; do
     d ) JOB_NAME="$OPTARG";;
     u ) JOB_URL="$OPTARG";;
     p ) CLEAN="TRUE";;
+    g ) GENERATE_YAML="TRUE";;
+    G ) REGENERATE_YAML="TRUE";;
     : ) echo "Missing argument for -$OPTARG" && exit 1;;
     \?) echo "$HELP" && exit 1;;
   esac
@@ -61,8 +67,20 @@ rm -rf $WORKER bb
 mkdir -m 0777 -p $WORKER/{build,cache,remote-execution}
 
 if [[ "$CLEAN" != "" ]]; then
-  echo "Performing optional clean"
+  echo "Performing optional clean" 1>&2
   rm -rf storage-*
+fi
+
+if [[ "$GENERATE_YAML" != "" || "$REGENERATE_YAML" != "" ]]; then
+  if [[ "$REGENERATE_YAML" != "" ]]; then
+    echo "(Re)generating docker-compose yaml files." 1>&2
+    REGENERATE_FORCE_ARG="--force"
+  else
+    echo "Generating docker-compose yaml files." 1>&2
+    REGENERATE_FORCE_ARG=""
+  fi
+
+  ./create_docker_compose_yaml.py -q ${REGENERATE_FORCE_ARG}
 fi
 
 cleanup() {
