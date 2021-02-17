@@ -35,6 +35,21 @@ while getopts ":s:c:a:d:u:p" opt; do
   esac
 done
 
+# Check docker-compose version
+dc_version=$(docker-compose version --short)
+dc_major=$(echo $dc_version | cut -d "." -f1)
+dc_minor=$(echo $dc_version | cut -d "." -f2)
+dc_patch=$(echo $dc_version | cut -d "." -f3)
+dc_major_target=1
+dc_minor_target=25
+dc_patch_target=1
+if [ $dc_major -lt $dc_major_target ] || \
+   [ $dc_major -eq $dc_major_target -a $dc_minor -lt $dc_minor_target ] || \
+   [ $dc_major -eq $dc_major_target -a $dc_minor -eq $dc_minor_target -a $dc_patch -lt $dc_patch_target ]
+then echo "ERROR: docker-compose version must be $dc_major_target.$dc_minor_target.$dc_patch_target or higher.
+(run 'docker-compose version' to see your current version.)" && false
+fi
+
 # Local directory mounted as a volume for the worker
 WORKER="worker"
 

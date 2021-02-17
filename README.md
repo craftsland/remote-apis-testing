@@ -28,6 +28,11 @@ You will require
 - Docker engine (>= 18.09 with Buildkit installed)
 - Docker compose (>=1.25.1)
 
+You may need to install Docker Compose directly from the [release on
+GitHub](https://github.com/docker/compose/releases/) to get a suitable version.
+([instructions
+here](https://docs.docker.com/compose/install/#install-compose).)
+
 To run:
 
 ```
