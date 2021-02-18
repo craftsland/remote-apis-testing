@@ -82,12 +82,11 @@ def get_tag_list_from_docker_hub(repo, **kwargs):
     return response.json()["tags"]
 
 
-def get_max_tag_from_docker_hub(match_prefix, **kwargs):
+def get_max_tag_from_docker_hub(repo, **kwargs):
     """Retrieves the highest tag (in terms of alphabetical sorting) from a docker
     repository on Docker Hub."""
     # BuildBarn repo tags names start with a timestamp in YYYYMMDDTHHMM format,
     # so the latest tag can be found just by sorting alphabetically.
-    repo = match_prefix.rstrip(":")
     return max(get_tag_list_from_docker_hub(repo))
 
 

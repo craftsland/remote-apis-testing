@@ -41,88 +41,95 @@ publicly accessible container registry.
 being built using multistage docker builds, with a common build environment
 constructed from ubuntu 20.04
 
-## Automated ref updates
+## `Matrix.yml`, Jinja2 templates, and automated ref updates
 
-As part of the CI process, the project runs a regular scheduled job to look for updates
-to each client/server. If the script finds new versions of one or more software, it will
-automatically create a new branch that includes the update, then generate a merge request
-to merge the update into master.
+For the remote-apis-testing project to be as useful as possible, it's important
+to always use the most up to date version of clients, servers, and remote-asset
+servers. To make it as easy as possible to keep each implementation up to date,
+we use jinja-2 templates, and a central file called `matrix.yml` which stores
+version numbers.
 
-The script works by editing the `docker-compose-{service}.yml` files in the
-`/docker-compse` directory. It updates one or more "refs" in each file, where a ref
-might be:
-* A git commit sha
-* A git tag
-* A docker repository tag
-* Any other identifier that can be found by an automated script
+To create a jinja2 template file, start by writing a docker-compose yaml file
+for your project. Then, identify any elements which will change whenever a new
+version of your project is released. `matrix.yml` refers to these as
+`version_refs`, and they would be things like version numbers, docker tags, or
+git commit hashes. Replace these values with variable names, and enclose the
+variable names in `{{double curly braces}}`. Finally, save the file with the
+suffix `.jinja2_template` and add the file to the `docker-compose-templates`
+directory.
 
-To enable automated updates for a new server or a new client, you need to add a new
-namedtuple to the list in `update_refs_in_docker_compose_yaml.py`. For example:
-
+eg from `docker-compose-buildfarm.jinja2_template`:
 ```
-    FileData(
-        name="Buildbarn",
-        filename="../docker-compose/docker-compose-buildbarn.yml",
-        refs=[
-            {
-                "function": get_max_tag_from_docker_hub,
-                "match_prefix": "buildbarn/bb-storage:"
-            },
-            {
-                "function": get_max_tag_from_docker_hub,
-                "match_prefix": "buildbarn/bb-scheduler:"
-            },
-        ],
-    ),
-    FileData(
-        name="Pants",
-        filename="../docker-compose/docker-compose-pants.yml",
-        refs=[
-            {
-                "function": get_latest_commit_hash_from_git_repo,
-                "display_name": "pants commit",
-                "match_prefix": "git checkout",
-                "repo": "https://github.com/pantsbuild/example-python.git",
-                "ref": "main",
-            },
-        ],
-    ),
+version: '3.4'
+services:
+  frontend:
+    build:
+      context: docker
+      target: buildfarm
+      args:
+        BUILDFARM_VERSION: {{BUILDFARM_VERSION}}
+        BAZEL_VERSION: {{BUILDFARM_BAZEL_VERSION}} # Version of Bazel required to build Buildfarm
+        BUILDFARM_DAEMON: buildfarm-server
+        BUILDFARM_CONFIG: /config/server.config
+    ports:
+...
 ```
 
-- `filename` is the path to the docker-compose yaml file (relative to the
-  `auto-updater` directory).
-- `name` is a human-readable name for the client or server represented by that
-  file. It is used to print human-readable messages in the updater's output,
-  (including in the auto-generated git commits).
-- Each `ref` is a dictionary definining one "reference" that exists in the
-  docker-compose yaml file, plus the information needed to update that
-  reference.  These references might be a git SHA, a docker tag and version
-  number, etc. The dictionary must include the keys `match_prefix` and `function`.
-- `function` is a function that will retrieve the new ref. Several such
-  functions are defined in `get_up_to_date_references.py`, and more can be
-  added. For instance, `get_highest_version_number_tag_from_git_repo` accepts a
-  repository URL as a keyword argument (keyword `repo`), and returns the highest
-  version number that exists amongst that repository's tags.
-- The function is invoked by submitting the entire `ref` dictionary as
-  \*\*kwargs, so it should accept only keyword arguments. It should also be
-  prepared to ignore keyword arguments that it doesn't need.
-- `match_prefix` is used to locate the old ref inside the docker-compose yaml
-  file, so that it can be replaced with the new ref. It should be a regular
-  expression that occurs immediately before the ref. eg the prefix
-  `"RECC_VERSION:"` is used for updating the string `"RECC_VERSION: 1.0.1"`.
-- Note that when the `function` is invoked it will receive the `match_prefix`
-  as a keyword-argument, which it may either use or ignore. For instance,
-  `get_max_tag_from_docker_hub` uses `match_prefix` to identify the relevant
-  docker image, and doesn't require any other arguments.
-- `display_name` is an optional key that will be used to refer to the ref in
-  human-readable outputs (including the commit message) eg `pants commit` above.
-  If this isn't specified, then `match_prefix` will be used as the display name.
-- Other keyword arguments will depend on the function being used.
+Then, create a new dictionary within the `projects` section of `matrix.yml`.
+This dictionary tells the project where to find the template file, and which
+values to substitute in for each variable. It should also have information which
+will be used by the auto-updater (see below).
 
-`update_refs_in_docker_compose_yaml.py` can be run locally, to test that the
-auto-update is set up correctly. Try editing the docker file to have an earlier
-version of the ref(s), then run the script. The script should restore everything
-to the latest version (or to newer versions, if they are available).
+eg (from `matrix.yml`):
+```
+  buildfarm:
+    filename: docker-compose-buildfarm.jinja2_template
+    version_refs:
+      BUILDFARM_VERSION:
+        value: 1.6.0
+        update_function: get_highest_version_number_tag_from_git_repo
+        update_args:
+          repo: https://github.com/bazelbuild/bazel-buildfarm.git
+      BUILDFARM_BAZEL_VERSION:
+        value: 3.6.0
+        update_function: get_buildfarm_bazel_version
+        update_args:
+          repo: https://github.com/bazelbuild/bazel-buildfarm.git
+          url_string: https://raw.githubusercontent.com/bazelbuild/bazel-buildfarm/{}/.bazelversion
+  buildgrid:
+    filename: docker-compose-buildgrid.jinja2_template
+...
+```
+
+When tests are run, a script will use the template file to generate
+docker-compose yaml, by substituting in the relevant value for each variable.
+
+As part of the CI process, GitLab runs a regular scheduled job to look for
+updates to each client/server. If the script finds new versions of one or more
+software projects, it will automatically update the relevant values in
+`matrix.yml`, commit the changes, and create a new merge request.
+
+Specifically, the auto-updater will update each variable individually, by
+running the associated `update_function`, with the associated `update_args`
+supplied to it as keyword arguments. Update functions are stored in
+the python library file `auto-updater/get_up_to_date_references.py`, and new
+functions can be added if needed.
+
+Update functions should accept only keyword arguments, and should
+return a single string. eg `get_highest_version_number_tag_from_git_repo`
+returns a string like `1.6.2`, and this would then be used to overwrite the
+existing `1.6.0` value.
+
+If it isn't possible to supply a suitable update function, you can set
+`update_function: null` or just `update_function:` (with nothing after the
+colon), to tell the auto-updater that it should skip this variable. 
+
+`auto-updater/update_refs_in_docker_compose_yaml.py` can be run locally, to
+test that the auto-update is set up correctly. If there are new versions
+available, then the script should detect them. If there are no new versions
+avialable, try editing refs in `matrix.yml` to earlier versions (and commit that
+edit as a temporary commit). Running the script should then restore the current
+version.
 
 ## Static site
 
