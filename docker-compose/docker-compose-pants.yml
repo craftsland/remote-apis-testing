@@ -4,16 +4,14 @@ services:
     build:
       context: docker
       target: pants_client
+      args:
+        PANTS_COMMIT: 5e76f94ccabddac74b622dbb9087fc7fd2d8ba17
     image: pants_client:latest
-    command: >
-      sh -c
-        "git clone --branch=main https://github.com/pantsbuild/example-python.git && \
-        cd example-python && \
-        git checkout 5e76f94ccabddac74b622dbb9087fc7fd2d8ba17 && \
-        ./pants --no-pantsd -ldebug \
-          --remote-execution \
-          --remote-execution-server=frontend:8980 \
-          --remote-store-server=frontend:8980 \
-          --remote-instance-name=remote-execution \
-          --remote-execution-extra-platform-properties=OSFamily=linux \
-          test helloworld:: "
+    command: >-
+      ./pants --no-pantsd -ldebug
+      --remote-execution
+      --remote-execution-server=frontend:8980
+      --remote-store-server=frontend:8980
+      --remote-instance-name=remote-execution
+      --remote-execution-extra-platform-properties=OSFamily=linux
+      test helloworld::

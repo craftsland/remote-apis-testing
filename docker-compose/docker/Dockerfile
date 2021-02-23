@@ -208,4 +208,8 @@ FROM build_env as pants_client
 #
 # Note: Pants is installed in the source repository by a wrapper script and not on
 # any system path. Thus, there is no need to install Pants in this image.
+ARG PANTS_COMMIT
 RUN apt-get update && apt-get install -y curl git python3 python3-dev python3-distutils
+RUN git clone --branch=main https://github.com/pantsbuild/example-python.git
+WORKDIR /example-python
+RUN git checkout $PANTS_COMMIT
