@@ -2,7 +2,11 @@ local common = import 'common.libsonnet';
 
 {
   blobstore: common.blobstore,
-  global: { diagnosticsHttpListenAddress: ':7980' },
+  global: { diagnosticsHttpServer: {
+    listenAddress: ':7980',
+    enablePrometheus: true,
+    enablePprof: true,
+  } },
   grpcServers: [{
     listenAddresses: [':8980'],
     authenticationPolicy: { allow: {} },
