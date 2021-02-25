@@ -61,7 +61,11 @@ local common = import 'common.libsonnet';
       },
     },
   },
-  global: { diagnosticsHttpListenAddress: ':7981' },
+  global: { diagnosticsHttpServer: {
+    listenAddress: ':7981',
+    enablePrometheus: true,
+    enablePprof: true,
+  } },
   grpcServers: [{
     listenAddresses: [':8981'],
     authenticationPolicy: { allow: {} },

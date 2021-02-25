@@ -1,7 +1,11 @@
 local common = import 'common.libsonnet';
 
 {
-  global: { diagnosticsHttpListenAddress: ':7982' },
+  global: { diagnosticsHttpServer: {
+    listenAddress: ':7982',
+    enablePrometheus: true,
+    enablePprof: true,
+  } },
   adminHttpListenAddress: ':12345',
   clientGrpcServers: [{
     listenAddresses: [':8982'],

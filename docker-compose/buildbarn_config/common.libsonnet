@@ -34,6 +34,10 @@
     },
   },
   browserUrl: 'http://localhost:7984',
-  global: { diagnosticsHttpListenAddress: ':80' },
+  global: { diagnosticsHttpServer: {
+    listenAddress: ':80',
+    enablePrometheus: true,
+    enablePprof: true,
+  } },
   maximumMessageSizeBytes: 16 * 1024 * 1024,
 }
