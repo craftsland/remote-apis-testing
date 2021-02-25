@@ -135,7 +135,7 @@ FILELIST = [
             {
                 "function": get_latest_commit_hash_from_git_repo,
                 "display_name": "pants commit",
-                "match_prefix": "git checkout",
+                "match_prefix": "PANTS_COMMIT:",
                 "repo": "https://github.com/pantsbuild/example-python.git",
                 "ref": "main",
             },
