@@ -1,7 +1,7 @@
-From 56503c2760ba4c2791077a0e81ab61025ea9190f Mon Sep 17 00:00:00 2001
+From 87f141b2a16e2839134b0730e08717dba7936893 Mon Sep 17 00:00:00 2001
 From: Christopher Phang <christopher.phang@codethink.co.uk>
 Date: Sun, 9 Aug 2020 13:53:37 +0100
-Subject: [PATCH 1/4] remoteexec: provide no auth option
+Subject: [PATCH 1/3] remoteexec: provide no auth option
 
 Currently, there is only one method for authentication
 for goma server/client communication which is mandatory.
@@ -38,18 +38,18 @@ index 0000000..5e7bf07
 +	return ctx, nil
 +}
 diff --git a/cmd/remoteexec_proxy/main.go b/cmd/remoteexec_proxy/main.go
-index 55f018e..8ad580c 100644
+index 97bd04a..db1bb5c 100644
 --- a/cmd/remoteexec_proxy/main.go
 +++ b/cmd/remoteexec_proxy/main.go
-@@ -67,6 +67,7 @@ var (
- 	serviceAccountJSON     = flag.String("service-account-json", "", "service account json, used to talk to RBE and cloud storage (if --file-cache-bucket is used)")
- 	platformContainerImage = flag.String("platform-container-image", "", "docker uri of platform container image")
- 	insecureRemoteexec     = flag.Bool("insecure-remoteexec", false, "insecure grpc for remoteexec API")
-+	insecureServerAccess   = flag.Bool("insecure-serveraccess", false, "insecure access between goma client/server")
- 	insecureSkipVerify     = flag.Bool("insecure-skip-verify", false, "insecure skip verifying the server certificate")
- 	execMaxRetryCount      = flag.Int("exec-max-retry-count", 5, "max retry count for exec call. 0 is unlimited count, but bound to ctx timtout. Use small number for powerful clients to run local fallback quickly. Use large number for powerless clients to use remote more than local.")
- 
-@@ -438,13 +439,21 @@ func main() {
+@@ -68,6 +68,7 @@ var (
+ 	serviceAccountJSON       = flag.String("service-account-json", "", "service account json, used to talk to RBE and cloud storage (if --file-cache-bucket is used)")
+ 	platformContainerImage   = flag.String("platform-container-image", "", "docker uri of platform container image")
+ 	insecureRemoteexec       = flag.Bool("insecure-remoteexec", false, "insecure grpc for remoteexec API")
++	insecureServerAccess     = flag.Bool("insecure-serveraccess", false, "insecure access between goma client/server")
+ 	insecureSkipVerify       = flag.Bool("insecure-skip-verify", false, "insecure skip verifying the server certificate")
+ 	additionalTLSCertificate = flag.String("additional-tls-certificate", "", "additional TLS root certificate for verifying the server certificate")
+ 	execMaxRetryCount        = flag.Int("exec-max-retry-count", 5, "max retry count for exec call. 0 is unlimited count, but bound to ctx timtout. Use small number for powerful clients to run local fallback quickly. Use large number for powerless clients to use remote more than local.")
+@@ -475,13 +476,21 @@ func main() {
  		logger.Fatal(err)
  	}
  	mux := http.DefaultServeMux
@@ -75,13 +75,13 @@ index 55f018e..8ad580c 100644
  	})
  
 -- 
-2.25.1
+2.20.1
 
 
-From 32f62ca22073a401515f89b074d7fe6b4ed5dc1e Mon Sep 17 00:00:00 2001
+From b5e12d7ca14ff18d77eb966c8c86d74fc72e2b99 Mon Sep 17 00:00:00 2001
 From: Christopher Phang <christopher.phang@codethink.co.uk>
 Date: Sun, 9 Aug 2020 13:55:27 +0100
-Subject: [PATCH 2/4] WIP: Provide example configuration
+Subject: [PATCH 2/3] WIP: Provide example configuration
 
 This includes platform configuration and command descriptors.
 
@@ -93,7 +93,7 @@ Some documentation in the README may also be of benefit.
 
 diff --git a/cmd/remoteexec_proxy/platform b/cmd/remoteexec_proxy/platform
 new file mode 100644
-index 0000000..2cb6493
+index 0000000..4b04fc4
 --- /dev/null
 +++ b/cmd/remoteexec_proxy/platform
 @@ -0,0 +1,14 @@
@@ -104,7 +104,7 @@ index 0000000..2cb6493
 +    }
 +    remoteexec_platform: {
 +        properties:{
-+            name:"OSFamily"  
++            name:"OSFamily"
 +            value:"linux"
 +        }
 +        rbe_instance_basename:"remote-execution"
@@ -112,26 +112,29 @@ index 0000000..2cb6493
 +    dimensions: "os:linux"
 +}
 -- 
-2.25.1
+2.20.1
 
 
-From 0fab0b403e4ef81250409499835fa14979ef0d90 Mon Sep 17 00:00:00 2001
+From ccfda2399703246b52782481028cbd2218f4fe57 Mon Sep 17 00:00:00 2001
 From: Christopher Phang <christopher.phang@codethink.co.uk>
 Date: Sun, 9 Aug 2020 13:58:21 +0100
-Subject: [PATCH 3/4] WIP: Hardcode input root dir determination
+Subject: [PATCH 3/3] WIP: Hardcode input root dir determination
 
 ---
- remoteexec/inputroot.go | 18 +-----------------
- 1 file changed, 1 insertion(+), 17 deletions(-)
+ remoteexec/inputroot.go | 21 +--------------------
+ 1 file changed, 1 insertion(+), 20 deletions(-)
 
 diff --git a/remoteexec/inputroot.go b/remoteexec/inputroot.go
-index c3e282a..4ae1af2 100644
+index e6a37a0..e3a0eb6 100644
 --- a/remoteexec/inputroot.go
 +++ b/remoteexec/inputroot.go
-@@ -163,23 +163,7 @@ func checkInputRootDir(filepath clientFilePath, dir string) error {
+@@ -235,26 +235,7 @@ func checkInputRootDir(filepath clientFilePath, dir string) error {
  // If second return value is true, chroot must be used.  It become true only
  // if `allowChroot` is true and common input root is "/".
- func inputRootDir(filepath clientFilePath, paths []string, allowChroot bool) (string, bool, error) {
+ func inputRootDir(filepath clientFilePath, paths []string, allowChroot bool, execRootDir string) (string, bool, error) {
+-	if execRootDir != "" {
+-		return execRootDir, execRootDir == "/" && allowChroot, nil
+-	}
 -	root := commonDir(filepath, paths)
 -	if needChroot(filepath, root) && allowChroot {
 -		switch filepath.(type) {
@@ -154,65 +157,5 @@ index c3e282a..4ae1af2 100644
  
  var errOutOfRoot = errors.New("out of root")
 -- 
-2.25.1
-
-
-From e70125285f6645ee5d5e6c35910cb2412b1c0eea Mon Sep 17 00:00:00 2001
-From: Christopher Phang <christopher.phang@codethink.co.uk>
-Date: Sun, 9 Aug 2020 17:20:03 +0100
-Subject: [PATCH 4/4] WIP: Remove out of band additions of platform properties
-
----
- remoteexec/exec.go | 12 ------------
- 1 file changed, 12 deletions(-)
-
-diff --git a/remoteexec/exec.go b/remoteexec/exec.go
-index 8533800..a7c20f4 100644
---- a/remoteexec/exec.go
-+++ b/remoteexec/exec.go
-@@ -718,10 +718,6 @@ func (r *request) newWrapperScript(ctx context.Context, cmdConfig *cmdpb.Config,
- 	switch wt {
- 	case wrapperNsjailChroot:
- 		logger.Infof("run with nsjail chroot")
--		// needed for bind mount.
--		r.addPlatformProperty(ctx, "dockerPrivileged", "true")
--		// needed for chroot command and mount command.
--		r.addPlatformProperty(ctx, "dockerRunAsRoot", "true")
- 		nsjailCfg := nsjailConfig(cwd, r.filepath, r.gomaReq.GetToolchainSpecs(), r.gomaReq.Env)
- 		files = []fileDesc{
- 			{
-@@ -737,13 +733,9 @@ func (r *request) newWrapperScript(ctx context.Context, cmdConfig *cmdpb.Config,
- 	case wrapperInputRootAbsolutePath:
- 		if rand.Float64() < r.f.HardeningRatio {
- 			logger.Infof("run with InputRootAbsolutePath + runsc")
--			r.addPlatformProperty(ctx, "dockerRuntime", "runsc")
--			r.addPlatformProperty(ctx, "label:runsc", "available")
- 		} else {
- 			logger.Infof("run with InputRootAbsolutePath")
- 		}
--		// https://cloud.google.com/remote-build-execution/docs/remote-execution-properties#container_properties
--		r.addPlatformProperty(ctx, "InputRootAbsolutePath", r.tree.RootDir())
- 		for _, e := range r.gomaReq.Env {
- 			envs = append(envs, e)
- 		}
-@@ -757,8 +749,6 @@ func (r *request) newWrapperScript(ctx context.Context, cmdConfig *cmdpb.Config,
- 	case wrapperRelocatable:
- 		if rand.Float64() < r.f.HardeningRatio {
- 			logger.Infof("run with chdir + runsc: relocatable")
--			r.addPlatformProperty(ctx, "dockerRuntime", "runsc")
--			r.addPlatformProperty(ctx, "label:runsc", "available")
- 		} else {
- 			logger.Infof("run with chdir: relocatable")
- 		}
-@@ -793,8 +783,6 @@ func (r *request) newWrapperScript(ctx context.Context, cmdConfig *cmdpb.Config,
- 		}
- 	case wrapperWinInputRootAbsolutePath:
- 		logger.Infof("run on win with InputRootAbsolutePath")
--		// https://cloud.google.com/remote-build-execution/docs/remote-execution-properties#container_properties
--		r.addPlatformProperty(ctx, "InputRootAbsolutePath", r.tree.RootDir())
- 		wn, data, err := wrapperForWindows(ctx)
- 		if err != nil {
- 			return err
--- 
-2.25.1
+2.20.1
 
