@@ -32,8 +32,8 @@ services:
       context: docker
       target: buildbox
       args:
-        BUILDBOX_COMMON_VERSION: 0.0.40
-        BUILDBOX_WORKER_VERSION: 0.0.39
+        BUILDBOX_COMMON_VERSION: 0.0.41
+        BUILDBOX_WORKER_VERSION: 0.0.41
         BUILDBOX_HOST_TOOLS_SHA: f953eb90e743e21a68a8027e721471a65670d30c
     image: buildbox:latest
     restart: on-failure
