@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   asset:
-      image: buildbarn/bb-remote-asset:20210123T121514Z-6467d13
+      image: buildbarn/bb-remote-asset:20210226T094237Z-abe0803
       command: /remote_asset_config/asset.jsonnet
       ports:
       - "8979:8979"

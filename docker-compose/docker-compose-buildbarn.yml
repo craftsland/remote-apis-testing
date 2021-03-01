@@ -4,7 +4,7 @@
 version: '3.4'
 services: 
   frontend:
-    image: &bb-storage buildbarn/bb-storage:20210220T154226Z-9835bf1
+    image: &bb-storage buildbarn/bb-storage:20210226T075542Z-a042798
     command:
     - /config/frontend.jsonnet
     ports:
