@@ -121,12 +121,12 @@ projects:
         update_args:
           repo: buildbarn/bb-storage
       BB_BROWSER_VERSION:
-        value: 20210220T182341Z-24bb99b
+        value: 20210302T124112Z-eca2e25
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-browser
       BB_REMOTE_EXECUTION_VERSION:
-        value: 20210220T174437Z-530c147
+        value: 20210302T115032Z-475a5a6
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-scheduler
