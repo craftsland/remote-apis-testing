@@ -4,7 +4,7 @@
 version: '3.4'
 services: 
   frontend:
-    image: &bb-storage buildbarn/bb-storage:20210226T075542Z-a042798
+    image: &bb-storage buildbarn/bb-storage:{{BB_STORAGE_VERSION}}
     command:
     - /config/frontend.jsonnet
     ports:
@@ -45,7 +45,7 @@ services:
 
 
   scheduler:
-    image: buildbarn/bb-scheduler:20210220T174437Z-530c147
+    image: buildbarn/bb-scheduler:{{BB_REMOTE_EXECUTION_VERSION}}
     command:
     - /config/scheduler.jsonnet
     expose:
@@ -58,7 +58,7 @@ services:
 
 
   browser:
-    image: buildbarn/bb-browser:20210220T182341Z-24bb99b
+    image: buildbarn/bb-browser:{{BB_BROWSER_VERSION}}
     command:
     - /config/browser.jsonnet
     ports:
@@ -68,7 +68,7 @@ services:
 
 
   worker:
-    image: buildbarn/bb-worker:20210220T174437Z-530c147
+    image: buildbarn/bb-worker:{{BB_REMOTE_EXECUTION_VERSION}}
     command:
     - /config/worker.jsonnet
     ports:
@@ -96,7 +96,7 @@ services:
 
 
   runner-installer:
-    image: buildbarn/bb-runner-installer:20210220T174437Z-530c147
+    image: buildbarn/bb-runner-installer:{{BB_REMOTE_EXECUTION_VERSION}}
     entrypoint: []
     # This prevents ETXTBSY errors that result from attempting to run
     # installed executables before they have been fully copied.
@@ -111,5 +111,3 @@ services:
     working_dir: /bb
     volumes:
     - ./bb:/bb
-
-

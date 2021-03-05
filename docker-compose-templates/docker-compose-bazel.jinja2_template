@@ -5,7 +5,7 @@ services:
       context: docker
       target: bazel
       args:
-        BAZEL_VERSION: 4.0.0
+        BAZEL_VERSION: {{BAZEL_VERSION}}
     image: bazel-client:latest
     command: >
       sh -c
@@ -16,6 +16,3 @@ services:
       @abseil-hello//:hello_main"
     volumes:
     - ./WORKSPACE:/WORKSPACE
-
-
-

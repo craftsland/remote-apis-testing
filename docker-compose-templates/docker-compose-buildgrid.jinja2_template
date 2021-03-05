@@ -9,7 +9,7 @@ services:
     - start
     - -vvv
     - /config/server.config
-    image: registry.gitlab.com/buildgrid/buildgrid/buildgrid:3b4097e4 #0.0.11
+    image: registry.gitlab.com/buildgrid/buildgrid/buildgrid:{{BUILDGRID_VERSION_HASH}} #{{BUILDGRID_VERSION}}
     restart: on-failure
     ports:
     - 8980:8980
@@ -32,9 +32,9 @@ services:
       context: docker
       target: buildbox
       args:
-        BUILDBOX_COMMON_VERSION: 0.0.41
-        BUILDBOX_WORKER_VERSION: 0.0.41
-        BUILDBOX_HOST_TOOLS_SHA: f953eb90e743e21a68a8027e721471a65670d30c
+        BUILDBOX_COMMON_VERSION: {{BUILDBOX_COMMON_VERSION}}
+        BUILDBOX_WORKER_VERSION: {{BUILDBOX_WORKER_VERSION}}
+        BUILDBOX_HOST_TOOLS_SHA: {{BUILDBOX_HOST_TOOLS_SHA}}
     image: buildbox:latest
     restart: on-failure
     command:
@@ -48,5 +48,3 @@ services:
     - OSFamily=linux
     depends_on:
     - frontend
-
-

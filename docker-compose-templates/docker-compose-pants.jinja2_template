@@ -5,7 +5,7 @@ services:
       context: docker
       target: pants_client
       args:
-        PANTS_COMMIT: 5e76f94ccabddac74b622dbb9087fc7fd2d8ba17
+        PANTS_COMMIT: {{PANTS_COMMIT}}
     image: pants_client:latest
     command: >-
       ./pants --no-pantsd -ldebug
