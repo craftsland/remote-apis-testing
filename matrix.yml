@@ -73,7 +73,7 @@ projects:
           repo: https://chromium.googlesource.com/infra/goma/client.git
           ref: master
       GOMA_SERVER_VERSION:
-        value: v0.0.15
+        value: v0.0.17
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/server
