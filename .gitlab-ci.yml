@@ -199,7 +199,7 @@ auto_update_refs_and_generate_merge_requests:
   allow_failure: true
   image: python
   before_script:
-    - pip3 install requests
+    - pip3 install requests ruamel.yaml
     - chmod 600 $BOT_SSH_KEY
     - git config --global user.name "bot"
     - git config --global user.email "remote-apis-testing-bot@codethink.co.uk"
@@ -213,7 +213,9 @@ auto_update_refs_and_generate_merge_requests:
     - NEW_COMMIT="$(git log -n1 --format=%H)"
     - >
       if [ "${OLD_COMMIT}" != "${NEW_COMMIT}" ];
-      then python3 create_merge_request.py "${CI_PROJECT_ID}" "${CI_API_V4_URL}" "${BOT_ACCESS_TOKEN}";
+      then
+           if [[ -n $WEBHOOK_URL ]]; then WEBHOOK_ARG="--webhook_url_file ${WEBHOOK_URL}"; else WEBHOOK_ARG=""; fi
+           python3 create_merge_request.py "${CI_PROJECT_ID}" "${CI_API_V4_URL}" "${BOT_ACCESS_TOKEN}" $WEBHOOK_ARG;
       else echo "Checks complete. No need to create a new branch or Merge Request.";
            echo "Everything is already up to date.";
       fi
