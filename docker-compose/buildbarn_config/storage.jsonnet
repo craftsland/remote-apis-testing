@@ -26,7 +26,7 @@ local common = import 'common.libsonnet';
         },
         persistent: {
           stateDirectoryPath: '/storage-cas/persistent_state',
-          minimumEpochInterval: '5m',
+          minimumEpochInterval: '300s',
         },
       },
     },
@@ -55,7 +55,7 @@ local common = import 'common.libsonnet';
           },
           persistent: {
             stateDirectoryPath: '/storage-ac/persistent_state',
-            minimumEpochInterval: '5m',
+            minimumEpochInterval: '300s',
           },
         },
       },
