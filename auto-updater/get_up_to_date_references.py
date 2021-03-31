@@ -10,7 +10,9 @@ import requests
 def get_latest_commit_hash_from_git_repo(repo, ref, **kwargs):
     """Gets the commit hash for a particular reference on a git repository.
     For instance, if ref = "master", retrieves the latest commit on master."""
-    ref_line = subprocess.check_output(["git", "ls-remote", repo, ref], text=True)
+    ref_line = subprocess.check_output(["git", "ls-remote", repo, f"{ref}^{{}}"], text=True)
+    if ref_line == "":
+        ref_line = subprocess.check_output(["git", "ls-remote", repo, ref], text=True)
     # ref_line will be of the format "{commit_hash}\t{ref}"
     return ref_line.split("\t")[0]
 
@@ -24,7 +26,7 @@ def get_short_latest_commit_hash_from_git_repo(repo, ref, **kwargs):
 # ===== Git tags ==============
 def get_tag_list_from_git_repo(repo, **kwargs):
     """Gets the list of all tags from a specified Git repository"""
-    ls_remote_output = subprocess.check_output(["git", "ls-remote", repo], text=True)
+    ls_remote_output = subprocess.check_output(["git", "ls-remote", "--tags", repo], text=True)
     refs_list = ls_remote_output.split("\n")
     tags_list = [
         ref_str.split("\trefs/tags/")[1]
