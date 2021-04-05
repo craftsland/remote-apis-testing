@@ -47,7 +47,7 @@ projects:
     filename: docker-compose-remote_asset.jinja2_template
     version_refs:
       REMOTE_ASSET_VERSION:
-        value: 20210226T094237Z-abe0803
+        value: 20210401T101328Z-6da46f5
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-remote-asset
