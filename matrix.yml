@@ -47,7 +47,7 @@ projects:
     filename: docker-compose-remote_asset.jinja2_template
     version_refs:
       REMOTE_ASSET_VERSION:
-        value: 20210226T094237Z-abe0803
+        value: 20210401T101328Z-6da46f5
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-remote-asset
@@ -67,7 +67,7 @@ projects:
     filename: docker-compose-goma.jinja2_template
     version_refs:
       GOMA_CLIENT_GIT_SHA:
-        value: 1cffeb7978539ac2fee02257ca0a95a05b4c6cc0
+        value: e62b624f07afe9834ffceac8b2a65f9bc3e39dd1
         update_function: get_latest_commit_hash_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/client.git
@@ -116,7 +116,7 @@ projects:
     filename: docker-compose-buildbarn.jinja2_template
     version_refs:
       BB_STORAGE_VERSION:
-        value: 20210324T135539Z-5317965
+        value: 20210402T082800Z-9b54035
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-storage
@@ -126,7 +126,7 @@ projects:
         update_args:
           repo: buildbarn/bb-browser
       BB_REMOTE_EXECUTION_VERSION:
-        value: 20210324T152229Z-c826ba0
+        value: 20210331T102011Z-2fa7b43
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-scheduler
@@ -134,7 +134,7 @@ projects:
     filename: docker-compose-buildfarm.jinja2_template
     version_refs:
       BUILDFARM_VERSION:
-        value: 1.6.0
+        value: 1.7.0
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
@@ -148,17 +148,17 @@ projects:
     filename: docker-compose-buildgrid.jinja2_template
     version_refs:
       BUILDGRID_VERSION:
-        value: 0.0.11
+        value: 0.0.13
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildgrid.git
       BUILDGRID_VERSION_HASH:
-        value: 3b4097e4
+        value: 1f69ff71
         update_function: get_short_hash_for_highest_tag_in_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildgrid.git
       BUILDBOX_COMMON_VERSION:
-        value: 0.0.41
+        value: 0.0.42
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildbox/buildbox-common.git
