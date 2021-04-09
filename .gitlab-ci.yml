@@ -19,10 +19,6 @@ workflow:
   image: ${CI_REGISTRY_IMAGE}/gitlab-ci-image:2021-03-05
   allow_failure: true
   before_script:
-    - apk add --update curl && rm -rf /var/cache/apk/*
-    - apk add py-pip
-    - apk add python3-dev libffi-dev openssl-dev gcc libc-dev make bash
-    - pip install cryptography==3.3.2 docker-compose jinja2 ruamel.yaml
     - mkdir results
   script:
     - cd docker-compose
