@@ -190,7 +190,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     && apt-get clean
 
-RUN git clone --depth=1 --branch $RECC_VERSION https://gitlab.com/bloomberg/recc.git /recc
+RUN git clone --depth=1 --branch $RECC_VERSION https://gitlab.com/BuildGrid/recc.git /recc
 
 WORKDIR /recc
 
