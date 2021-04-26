@@ -67,7 +67,7 @@ projects:
     filename: docker-compose-goma.jinja2_template
     version_refs:
       GOMA_CLIENT_GIT_SHA:
-        value: 1ee777274217847803c04051c9c418d0c6651307
+        value: 6113c2e7706f2eca7f2915d04f748b3036a7b239
         update_function: get_latest_commit_hash_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/client.git
@@ -116,7 +116,7 @@ projects:
     filename: docker-compose-buildbarn.jinja2_template
     version_refs:
       BB_STORAGE_VERSION:
-        value: 20210417T034714Z-1de6dd5
+        value: 20210421T031843Z-1ee7951
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-storage
