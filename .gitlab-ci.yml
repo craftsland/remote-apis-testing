@@ -16,13 +16,9 @@ workflow:
   stage: test
   rules:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
-  image: docker:stable
+  image: ${CI_REGISTRY_IMAGE}/gitlab-ci-image:2021-03-05
   allow_failure: true
   before_script:
-    - apk add --update curl && rm -rf /var/cache/apk/*
-    - apk add py-pip
-    - apk add python3-dev libffi-dev openssl-dev gcc libc-dev make bash
-    - pip install cryptography==3.3.2 docker-compose jinja2 ruamel.yaml
     - mkdir results
   script:
     - cd docker-compose
@@ -219,6 +215,22 @@ auto_update_refs_and_generate_merge_requests:
       else echo "Checks complete. No need to create a new branch or Merge Request.";
            echo "Everything is already up to date.";
       fi
+
+#
+# Generate CI Docker Image
+#
+generate_ci_docker_image:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web" && $MANUAL_TASK == "generate-ci-docker-image"'
+  image: docker:stable
+  script:
+    - cd gitlab-ci
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - IMAGE_NAME="${CI_REGISTRY_IMAGE}/gitlab-ci-image:$(date -I)"
+    - docker build -t $IMAGE_NAME .
+    - docker push $IMAGE_NAME
+  services:
+    - docker:dind
 
 #
 # Pages
