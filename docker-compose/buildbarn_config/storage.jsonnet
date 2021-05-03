@@ -43,7 +43,7 @@ local common = import 'common.libsonnet';
           keyLocationMapMaximumPutAttempts: 32,
           oldBlocks: 8,
           currentBlocks: 24,
-          newBlocks: 3,
+          newBlocks: 1,
           blocksOnBlockDevice: {
             source: {
               file: {
