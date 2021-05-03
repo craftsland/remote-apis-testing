@@ -1,4 +1,4 @@
-From 87f141b2a16e2839134b0730e08717dba7936893 Mon Sep 17 00:00:00 2001
+From 004f3c9c754baf3ef6a29662cbc25ec93ecb5558 Mon Sep 17 00:00:00 2001
 From: Christopher Phang <christopher.phang@codethink.co.uk>
 Date: Sun, 9 Aug 2020 13:53:37 +0100
 Subject: [PATCH 1/3] remoteexec: provide no auth option
@@ -38,10 +38,10 @@ index 0000000..5e7bf07
 +	return ctx, nil
 +}
 diff --git a/cmd/remoteexec_proxy/main.go b/cmd/remoteexec_proxy/main.go
-index 97bd04a..db1bb5c 100644
+index f4a220c..82eafb9 100644
 --- a/cmd/remoteexec_proxy/main.go
 +++ b/cmd/remoteexec_proxy/main.go
-@@ -68,6 +68,7 @@ var (
+@@ -69,6 +69,7 @@ var (
  	serviceAccountJSON       = flag.String("service-account-json", "", "service account json, used to talk to RBE and cloud storage (if --file-cache-bucket is used)")
  	platformContainerImage   = flag.String("platform-container-image", "", "docker uri of platform container image")
  	insecureRemoteexec       = flag.Bool("insecure-remoteexec", false, "insecure grpc for remoteexec API")
@@ -49,7 +49,7 @@ index 97bd04a..db1bb5c 100644
  	insecureSkipVerify       = flag.Bool("insecure-skip-verify", false, "insecure skip verifying the server certificate")
  	additionalTLSCertificate = flag.String("additional-tls-certificate", "", "additional TLS root certificate for verifying the server certificate")
  	execMaxRetryCount        = flag.Int("exec-max-retry-count", 5, "max retry count for exec call. 0 is unlimited count, but bound to ctx timtout. Use small number for powerful clients to run local fallback quickly. Use large number for powerless clients to use remote more than local.")
-@@ -475,13 +476,21 @@ func main() {
+@@ -480,13 +481,21 @@ func main() {
  		logger.Fatal(err)
  	}
  	mux := http.DefaultServeMux
@@ -65,8 +65,8 @@ index 97bd04a..db1bb5c 100644
 +	}
  	frontend.Register(mux, frontend.Frontend{
  		Backend: localBackend{
- 			ExecService: reExecServer{re},
- 			FileService: reFileServer{fileServiceClient.Service},
+ 			ExecService: reExecServer{re: re},
+ 			FileService: reFileServer{s: fileServiceClient.Service},
 -			Auth: &auth.Auth{
 -				Client: authClient{Service: authService},
 -			},
@@ -77,8 +77,7 @@ index 97bd04a..db1bb5c 100644
 -- 
 2.20.1
 
-
-From b5e12d7ca14ff18d77eb966c8c86d74fc72e2b99 Mon Sep 17 00:00:00 2001
+From 045be3d92efdb4ec732ba3a375da405b80eabe96 Mon Sep 17 00:00:00 2001
 From: Christopher Phang <christopher.phang@codethink.co.uk>
 Date: Sun, 9 Aug 2020 13:55:27 +0100
 Subject: [PATCH 2/3] WIP: Provide example configuration
@@ -114,8 +113,7 @@ index 0000000..4b04fc4
 -- 
 2.20.1
 
-
-From ccfda2399703246b52782481028cbd2218f4fe57 Mon Sep 17 00:00:00 2001
+From 59fbdbb83f619efd489d98168f858eaaaddddb01 Mon Sep 17 00:00:00 2001
 From: Christopher Phang <christopher.phang@codethink.co.uk>
 Date: Sun, 9 Aug 2020 13:58:21 +0100
 Subject: [PATCH 3/3] WIP: Hardcode input root dir determination
