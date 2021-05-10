@@ -67,13 +67,13 @@ projects:
     filename: docker-compose-goma.jinja2_template
     version_refs:
       GOMA_CLIENT_GIT_SHA:
-        value: 6113c2e7706f2eca7f2915d04f748b3036a7b239
+        value: eb2e76c81f2216fe8b5dbcffef291664cedf26fc
         update_function: get_latest_commit_hash_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/client.git
           ref: master
       GOMA_SERVER_VERSION:
-        value: v0.0.17
+        value: v0.0.18
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/server
@@ -116,7 +116,7 @@ projects:
     filename: docker-compose-buildbarn.jinja2_template
     version_refs:
       BB_STORAGE_VERSION:
-        value: 20210421T031843Z-1ee7951
+        value: 20210430T141345Z-6b1bb48
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-storage
@@ -126,7 +126,7 @@ projects:
         update_args:
           repo: buildbarn/bb-browser
       BB_REMOTE_EXECUTION_VERSION:
-        value: 20210331T102011Z-2fa7b43
+        value: 20210430T150052Z-ed1e2f4
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-scheduler
