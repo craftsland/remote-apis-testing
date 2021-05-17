@@ -134,12 +134,12 @@ projects:
     filename: docker-compose-buildfarm.jinja2_template
     version_refs:
       BUILDFARM_VERSION:
-        value: 1.7.0
+        value: 1.8.0
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
       BUILDFARM_BAZEL_VERSION:
-        value: 3.6.0
+        value: "4.0.0\n"
         update_function: get_buildfarm_bazel_version
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
