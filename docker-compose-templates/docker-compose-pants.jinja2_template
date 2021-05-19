@@ -10,8 +10,8 @@ services:
     command: >-
       ./pants --no-pantsd -ldebug
       --remote-execution
-      --remote-execution-server=frontend:8980
-      --remote-store-server=frontend:8980
+      --remote-execution-address=grpc://frontend:8980
+      --remote-store-address=grpc://frontend:8980
       --remote-instance-name=remote-execution
       --remote-execution-extra-platform-properties=OSFamily=linux
       test helloworld::
