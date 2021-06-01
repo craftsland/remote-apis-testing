@@ -1,4 +1,4 @@
-To run our GitLab CI pipelines, we use a customer docker image based on the
+To run our GitLab CI pipelines, we use a custom docker image based on the
 `docker:stable` image. To speed up the CI jobs, our custom image has various
 dependencies pre-installed.
 
