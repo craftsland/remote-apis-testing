@@ -51,7 +51,7 @@ remote_asset_test:
         SERVER: *server_list
 
 #
-# Pages Template
+# Pages
 #
 
 .pages_template:
@@ -71,6 +71,28 @@ remote_asset_test:
   artifacts:
     paths:
       - public
+
+
+# a stopgap to simulate review apps, allows us to quickly see
+# the status of an MR before merging it
+# see: https://gitlab.com/gitlab-org/gitlab/-/issues/16907#note_214936412
+pages:review:
+  extends: .pages_template
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "schedule"'
+  variables:
+    HUGO_BASEURL: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
+
+# build static gitlab page for displaying remote-apis-testing results
+pages:
+  extends: .pages_template
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE != "schedule"'
+  variables:
+    HUGO_BASEURL: $CI_PAGES_URL
 
 #
 # Automated Updates
@@ -119,6 +141,7 @@ auto_update_refs_and_generate_merge_requests:
 #
 # Generate CI Docker Image
 #
+
 generate_ci_docker_image:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "web" && $MANUAL_TASK == "generate-ci-docker-image"'
@@ -131,28 +154,3 @@ generate_ci_docker_image:
     - docker push $IMAGE_NAME
   services:
     - docker:dind
-
-#
-# Pages
-#
-
-# a stopgap to simulate review apps, allows us to quickly see
-# the status of an MR before merging it
-# see: https://gitlab.com/gitlab-org/gitlab/-/issues/16907#note_214936412
-pages:review:
-  extends: .pages_template
-  rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "schedule"'
-  variables:
-    HUGO_BASEURL: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/
-  environment:
-    name: review/$CI_COMMIT_REF_NAME
-    url: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
-
-# build static gitlab page for displaying remote-apis-testing results
-pages:
-  extends: .pages_template
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE != "schedule"'
-  variables:
-    HUGO_BASEURL: $CI_PAGES_URL
