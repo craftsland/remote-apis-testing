@@ -96,12 +96,12 @@ projects:
         update_args:
           repo: https://gitlab.com/BuildGrid/recc.git
       BUILDBOX_COMMON_VERSION:
-        value: 0.0.44
+        value: 0.0.46
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildbox/buildbox-common.git
       BUILDBOX_WORKER_VERSION:
-        value: 0.0.44
+        value: 0.0.46
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildbox/buildbox-worker.git
