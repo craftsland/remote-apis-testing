@@ -9,7 +9,7 @@ workflow:
     - when: always
 
 #
-# Templates
+# Tests
 #
 
 .test_template:
@@ -31,6 +31,29 @@ workflow:
       - results/
     when: always
 
+test:
+  #tests without remote_asset
+  extends: .test_template
+  parallel:
+    matrix:
+      - CLIENT: [bazel, goma, pants, recc]
+        SERVER: &server_list [buildbarn, buildfarm, buildgrid] 
+
+remote_asset_test:
+  #tests with remote_asset
+  extends: .test_template
+  variables:
+    BAZEL_ARGS: "--remote_cache=grpc://frontend:8980 --experimental_remote_downloader=grpc://asset:8979"
+  parallel:
+    matrix:
+      - CLIENT: [bazel]
+        ASSET: [remote_asset]
+        SERVER: *server_list
+
+#
+# Pages
+#
+
 .pages_template:
   stage: deploy
   image: monachus/hugo:v0.74.3
@@ -49,128 +72,27 @@ workflow:
     paths:
       - public
 
-.remote_downloader_template:
+
+# a stopgap to simulate review apps, allows us to quickly see
+# the status of an MR before merging it
+# see: https://gitlab.com/gitlab-org/gitlab/-/issues/16907#note_214936412
+pages:review:
+  extends: .pages_template
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "schedule"'
   variables:
-    BAZEL_ARGS: "--remote_cache=grpc://frontend:8980 --experimental_remote_downloader=grpc://asset:8979"
+    HUGO_BASEURL: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
 
-#
-# Bazel client
-#
-
-test_buildbarn_bazel:
-  extends: .test_template
+# build static gitlab page for displaying remote-apis-testing results
+pages:
+  extends: .pages_template
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE != "schedule"'
   variables:
-    SERVER: buildbarn
-    CLIENT: bazel
-
-test_buildfarm_bazel:
-  extends: .test_template
-  variables:
-    SERVER: buildfarm
-    CLIENT: bazel
-
-test_buildgrid_bazel:
-  extends: .test_template
-  variables:
-    SERVER: buildgrid
-    CLIENT: bazel
-
-#
-# Bazel client w/ remote asset
-#
-
-test_buildbarn_bazel_remote_asset:
-  extends:
-    - .test_template
-    - .remote_downloader_template
-  variables:
-    SERVER: buildbarn
-    CLIENT: bazel
-    ASSET: remote_asset
-
-test_buildfarm_bazel_remote_asset:
-  extends:
-    - .test_template
-    - .remote_downloader_template
-  variables:
-    SERVER: buildfarm
-    CLIENT: bazel
-    ASSET: remote_asset
-
-test_buildgrid_bazel_remote_asset:
-  extends:
-    - .test_template
-    - .remote_downloader_template
-  variables:
-    SERVER: buildgrid
-    CLIENT: bazel
-    ASSET: remote_asset
-
-#
-# Goma client
-#
-
-test_buildbarn_goma:
-  extends: .test_template
-  variables:
-    SERVER: buildbarn
-    CLIENT: goma
-
-test_buildfarm_goma:
-  extends: .test_template
-  variables:
-    SERVER: buildfarm
-    CLIENT: goma
-
-test_buildgrid_goma:
-  extends: .test_template
-  variables:
-    SERVER: buildgrid
-    CLIENT: goma
-
-#
-# Recc client
-#
-
-test_buildbarn_recc:
-  extends: .test_template
-  variables:
-    SERVER: buildbarn
-    CLIENT: recc
-
-test_buildfarm_recc:
-  extends: .test_template
-  variables:
-    SERVER: buildfarm
-    CLIENT: recc
-
-test_buildgrid_recc:
-  extends: .test_template
-  variables:
-    SERVER: buildgrid
-    CLIENT: recc
-
-#
-# Pants client
-#
-
-test_buildbarn_pants:
-  extends: .test_template
-  variables:
-    SERVER: buildbarn
-    CLIENT: pants
-
-test_buildfarm_pants:
-  extends: .test_template
-  variables:
-    SERVER: buildfarm
-    CLIENT: pants
-
-test_buildgrid_pants:
-  extends: .test_template
-  variables:
-    SERVER: buildgrid
-    CLIENT: pants
+    HUGO_BASEURL: $CI_PAGES_URL
 
 #
 # Automated Updates
@@ -219,6 +141,7 @@ auto_update_refs_and_generate_merge_requests:
 #
 # Generate CI Docker Image
 #
+
 generate_ci_docker_image:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "web" && $MANUAL_TASK == "generate-ci-docker-image"'
@@ -231,28 +154,3 @@ generate_ci_docker_image:
     - docker push $IMAGE_NAME
   services:
     - docker:dind
-
-#
-# Pages
-#
-
-# a stopgap to simulate review apps, allows us to quickly see
-# the status of an MR before merging it
-# see: https://gitlab.com/gitlab-org/gitlab/-/issues/16907#note_214936412
-pages:review:
-  extends: .pages_template
-  rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE != "schedule"'
-  variables:
-    HUGO_BASEURL: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/
-  environment:
-    name: review/$CI_COMMIT_REF_NAME
-    url: https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
-
-# build static gitlab page for displaying remote-apis-testing results
-pages:
-  extends: .pages_template
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE != "schedule"'
-  variables:
-    HUGO_BASEURL: $CI_PAGES_URL
