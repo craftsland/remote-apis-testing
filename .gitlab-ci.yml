@@ -22,8 +22,16 @@ workflow:
     - mkdir results
   script:
     - cd docker-compose
-    - if [ -z "$ASSET" ]; then ASSET_ARG=""; else export ASSET_ARG="-a docker-compose-$ASSET.yml"; fi
-    - ./run.sh -g -s docker-compose-$SERVER.yml -c docker-compose-$CLIENT.yml -d $SERVER+$CLIENT $ASSET_ARG -u $CI_JOB_URL > ../results/${SERVER}+${CLIENT}.json
+    - |
+      if [ -z "$ASSET" ]; then
+        export ASSET_ARG=""; ASSET_JOB_NAME_ARG="";
+      else
+        export ASSET_ARG="-a docker-compose-$ASSET.yml"; ASSET_JOB_NAME_ARG="_with_${ASSET}";
+      fi
+    - >
+      ./run.sh -g
+      -s docker-compose-$SERVER.yml -c docker-compose-$CLIENT.yml $ASSET_ARG -d $SERVER+$CLIENT$ASSET_JOB_NAME_ARG
+      -u $CI_JOB_URL > ../results/${SERVER}+${CLIENT}${ASSET_JOB_NAME_ARG}.json
   services:
     - docker:dind
   artifacts:
