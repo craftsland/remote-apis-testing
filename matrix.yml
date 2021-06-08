@@ -59,7 +59,7 @@ projects:
     filename: docker-compose-bazel.jinja2_template
     version_refs:
       BAZEL_VERSION:
-        value: 4.0.0
+        value: 4.1.0
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://github.com/bazelbuild/bazel.git
@@ -67,13 +67,13 @@ projects:
     filename: docker-compose-goma.jinja2_template
     version_refs:
       GOMA_CLIENT_GIT_SHA:
-        value: 0510b32bc33603588b940ab2dad4314ef71da9d4
+        value: 1e7f66a26f539a126e4f18798efe2cb4bf322900
         update_function: get_latest_commit_hash_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/client.git
           ref: master
       GOMA_SERVER_VERSION:
-        value: v0.0.18
+        value: v0.0.19
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/server
@@ -96,12 +96,12 @@ projects:
         update_args:
           repo: https://gitlab.com/BuildGrid/recc.git
       BUILDBOX_COMMON_VERSION:
-        value: 0.0.44
+        value: 0.0.46
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildbox/buildbox-common.git
       BUILDBOX_WORKER_VERSION:
-        value: 0.0.44
+        value: 0.0.46
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildbox/buildbox-worker.git
@@ -148,22 +148,22 @@ projects:
     filename: docker-compose-buildgrid.jinja2_template
     version_refs:
       BUILDGRID_VERSION:
-        value: 0.0.17
+        value: 0.0.19
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildgrid.git
       BUILDGRID_VERSION_HASH:
-        value: 56def688
+        value: adf69e42
         update_function: get_short_hash_for_highest_tag_in_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildgrid.git
       BUILDBOX_COMMON_VERSION:
-        value: 0.0.44
+        value: 0.0.46
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildbox/buildbox-common.git
       BUILDBOX_WORKER_VERSION:
-        value: 0.0.44
+        value: 0.0.46
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildbox/buildbox-worker.git
