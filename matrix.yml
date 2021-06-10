@@ -139,7 +139,7 @@ projects:
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
       BUILDFARM_BAZEL_VERSION:
-        value: "4.0.0\n"
+        value: "4.0.0"
         update_function: get_buildfarm_bazel_version
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
