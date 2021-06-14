@@ -105,7 +105,7 @@ def get_buildfarm_bazel_version(repo, url_string, **kwargs):
     """Retrieves the appropriate Bazel version tag, for the latest Buildfarm tag"""
     tag = get_highest_version_number_tag_from_git_repo(repo)
     file_url = url_string.format(tag)
-    return get_remote_file_content(file_url)
+    return get_remote_file_content(file_url).strip()
 
 
 # ===== GitLab Container Repo Tags  ===========
