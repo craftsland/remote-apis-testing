@@ -116,17 +116,17 @@ projects:
     filename: docker-compose-buildbarn.jinja2_template
     version_refs:
       BB_STORAGE_VERSION:
-        value: 20210507T062155Z-c7b69db
+        value: 20210612T140245Z-0c202af
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-storage
       BB_BROWSER_VERSION:
-        value: 20210324T163303Z-63021c8
+        value: 20210612T215726Z-9e0e2f4
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-browser
       BB_REMOTE_EXECUTION_VERSION:
-        value: 20210430T150052Z-ed1e2f4
+        value: 20210612T211840Z-40946a1
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-scheduler
