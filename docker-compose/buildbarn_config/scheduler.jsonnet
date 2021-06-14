@@ -18,4 +18,6 @@ local common = import 'common.libsonnet';
   browserUrl: common.browserUrl,
   contentAddressableStorage: common.blobstore.contentAddressableStorage,
   maximumMessageSizeBytes: common.maximumMessageSizeBytes,
+  defaultExecutionTimeout: '1800s',
+  maximumExecutionTimeout: '3600s',
 }

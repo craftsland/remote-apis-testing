@@ -1,5 +1,5 @@
-# The contents of this file are covered by APACHE License Version 2.
-# Modifications were made to this file for remote-apis-testing compatability
+// The contents of this file are covered by APACHE License Version 2.
+// Modifications were made to this file for remote-apis-testing compatability
 
 local common = import 'common.libsonnet';
 
@@ -30,8 +30,6 @@ local common = import 'common.libsonnet';
           { name: 'OSFamily', value: 'linux' },
         ],
       },
-      defaultExecutionTimeout: '1800s',
-      maximumExecutionTimeout: '3600s',
       workerId: {
         datacenter: 'paris',
         rack: '4',
