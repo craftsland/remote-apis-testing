@@ -67,7 +67,7 @@ projects:
     filename: docker-compose-goma.jinja2_template
     version_refs:
       GOMA_CLIENT_GIT_SHA:
-        value: 1e7f66a26f539a126e4f18798efe2cb4bf322900
+        value: 31bb6ec236fa12c6a3ebef4f6edce125136bc685
         update_function: get_latest_commit_hash_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/client.git
@@ -116,17 +116,17 @@ projects:
     filename: docker-compose-buildbarn.jinja2_template
     version_refs:
       BB_STORAGE_VERSION:
-        value: 20210507T062155Z-c7b69db
+        value: 20210612T140245Z-0c202af
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-storage
       BB_BROWSER_VERSION:
-        value: 20210324T163303Z-63021c8
+        value: 20210612T215726Z-9e0e2f4
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-browser
       BB_REMOTE_EXECUTION_VERSION:
-        value: 20210430T150052Z-ed1e2f4
+        value: 20210612T211840Z-40946a1
         update_function: get_max_tag_from_docker_hub
         update_args:
           repo: buildbarn/bb-scheduler
@@ -139,7 +139,7 @@ projects:
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
       BUILDFARM_BAZEL_VERSION:
-        value: "4.0.0"
+        value: 4.0.0
         update_function: get_buildfarm_bazel_version
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
