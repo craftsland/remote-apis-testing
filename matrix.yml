@@ -67,7 +67,7 @@ projects:
     filename: docker-compose-goma.jinja2_template
     version_refs:
       GOMA_CLIENT_GIT_SHA:
-        value: 1e7f66a26f539a126e4f18798efe2cb4bf322900
+        value: 31bb6ec236fa12c6a3ebef4f6edce125136bc685
         update_function: get_latest_commit_hash_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/client.git
@@ -139,7 +139,7 @@ projects:
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
       BUILDFARM_BAZEL_VERSION:
-        value: "4.0.0"
+        value: 4.0.0
         update_function: get_buildfarm_bazel_version
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
