@@ -158,7 +158,7 @@ projects:
         update_args:
           repo: https://gitlab.com/BuildGrid/buildgrid.git
       BUILDBOX_COMMON_VERSION:
-        value: 0.0.46
+        value: 0.0.47
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildbox/buildbox-common.git
