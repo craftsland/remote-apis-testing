@@ -106,17 +106,16 @@ trap cleanup EXIT
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
-{
-  docker-compose -f $SERVER build
-  docker-compose -f $SERVER up -d
-  docker-compose -f $SERVER logs --follow &
+docker-compose -f $SERVER build 1>&2
+docker-compose -f $SERVER up -d 1>&2
+docker-compose -f $SERVER logs --follow 1>&2 &
 
-  if [[ "$ASSET" != "" ]]; then
-    docker-compose -f $ASSET build
-    docker-compose -f $ASSET up -d
-    docker-compose -f $ASSET logs --follow &
-  fi
+if [[ "$ASSET" != "" ]]; then
+  docker-compose -f $ASSET build 1>&2
+  docker-compose -f $ASSET up -d 1>&2
+  docker-compose -f $ASSET logs --follow 1>&2 &
+fi
 
-  docker-compose -f $CLIENT build
-  docker-compose -f $CLIENT up --exit-code-from client
-} 1>&2
+docker-compose -f $CLIENT build 1>&2
+docker-compose -f $CLIENT up --exit-code-from client 1>&2
+
