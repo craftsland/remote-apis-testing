@@ -134,7 +134,7 @@ projects:
     filename: docker-compose-buildfarm.jinja2_template
     version_refs:
       BUILDFARM_VERSION:
-        value: 1.9.0
+        value: 1.9.2
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
