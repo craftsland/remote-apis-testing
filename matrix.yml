@@ -67,7 +67,7 @@ projects:
     filename: docker-compose-goma.jinja2_template
     version_refs:
       GOMA_CLIENT_GIT_SHA:
-        value: 93f92a71431849be697d91c74052595a56c237e6
+        value: fc3b4f2068c36e9d8fbd4ee31632afa385c714b0
         update_function: get_latest_commit_hash_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/client.git
@@ -134,7 +134,7 @@ projects:
     filename: docker-compose-buildfarm.jinja2_template
     version_refs:
       BUILDFARM_VERSION:
-        value: 1.9.0
+        value: 1.9.2
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://github.com/bazelbuild/bazel-buildfarm.git
@@ -148,12 +148,12 @@ projects:
     filename: docker-compose-buildgrid.jinja2_template
     version_refs:
       BUILDGRID_VERSION:
-        value: 0.0.20
+        value: 0.0.21
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildgrid.git
       BUILDGRID_VERSION_HASH:
-        value: 964a9b03
+        value: d3eadb60
         update_function: get_short_hash_for_highest_tag_in_git_repo
         update_args:
           repo: https://gitlab.com/BuildGrid/buildgrid.git
