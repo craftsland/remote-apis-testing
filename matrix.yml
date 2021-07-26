@@ -67,7 +67,7 @@ projects:
     filename: docker-compose-goma.jinja2_template
     version_refs:
       GOMA_CLIENT_GIT_SHA:
-        value: fc3b4f2068c36e9d8fbd4ee31632afa385c714b0
+        value: de14069acc2e57a8a143b25e717c1cad5c7e1cd4
         update_function: get_latest_commit_hash_from_git_repo
         update_args:
           repo: https://chromium.googlesource.com/infra/goma/client.git
