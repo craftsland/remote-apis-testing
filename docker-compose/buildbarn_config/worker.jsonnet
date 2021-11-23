@@ -13,7 +13,6 @@ local common = import 'common.libsonnet';
     enablePprof: true,
   } },
   maximumMemoryCachedDirectories: 1000,
-  instanceName: 'remote-execution',
   buildDirectories: [{
     native: {
       buildDirectoryPath: '/worker/build',
