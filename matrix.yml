@@ -59,7 +59,7 @@ projects:
     filename: docker-compose-bazel.jinja2_template
     version_refs:
       BAZEL_VERSION:
-        value: 4.1.0
+        value: 4.2.1
         update_function: get_highest_version_number_tag_from_git_repo
         update_args:
           repo: https://github.com/bazelbuild/bazel.git
