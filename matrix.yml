@@ -82,7 +82,7 @@ projects:
     filename: docker-compose-pants.jinja2_template
     version_refs:
       PANTS_COMMIT:
-        value: 86b41de1e53658127cdd1b0798ae12aa0e2396c7
+        value: d98ea4bb74c04a930c11527b948ba68a1f123c32
         update_function: get_latest_commit_hash_from_git_repo
         update_args:
           repo: https://github.com/pantsbuild/example-python.git
