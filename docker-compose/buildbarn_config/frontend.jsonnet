@@ -14,5 +14,17 @@ local common = import 'common.libsonnet';
   schedulers: {
     '': { endpoint: { address: 'scheduler:8982' } },
   },
+  contentAddressableStorageAuthorizers: {
+    get: { allow: {} },
+    put: { allow: {} },
+    findMissing: { allow: {} },
+  },
+  actionCacheAuthorizers: {
+    get: { allow: {} },
+    put: { instanceNamePrefix: {
+      allowedInstanceNamePrefixes: [''],
+    } },
+  },
+  executeAuthorizer: { allow: {} },
   maximumMessageSizeBytes: common.maximumMessageSizeBytes,
 }
