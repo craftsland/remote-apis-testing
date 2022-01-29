@@ -70,6 +70,17 @@ local common = import 'common.libsonnet';
     listenAddresses: [':8981'],
     authenticationPolicy: { allow: {} },
   }],
-  allowAcUpdatesForInstanceNamePrefixes: [''],
+  contentAddressableStorageAuthorizers: {
+    get: { allow: {} },
+    put: { allow: {} },
+    findMissing: { allow: {} },
+  },
+  actionCacheAuthorizers: {
+    get: { allow: {} },
+    put: { instanceNamePrefix: {
+      allowedInstanceNamePrefixes: [''],
+    } },
+  },
+  executeAuthorizer: { allow: {} },
   maximumMessageSizeBytes: common.maximumMessageSizeBytes,
 }

@@ -15,6 +15,7 @@ local common = import 'common.libsonnet';
     listenAddresses: [':8983'],
     authenticationPolicy: { allow: {} },
   }],
+  executeAuthorizer: { allow: {} },
   browserUrl: common.browserUrl,
   contentAddressableStorage: common.blobstore.contentAddressableStorage,
   maximumMessageSizeBytes: common.maximumMessageSizeBytes,
